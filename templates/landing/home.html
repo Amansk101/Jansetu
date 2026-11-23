@@ -17,6 +17,11 @@
             {% if user.is_authenticated %}{% trans "My dashboard" %}{% else %}{% trans "Sign in" %}{% endif %}
           </a>
         </div>
+        <div class="hero-stats">
+          <div class="hero-stat"><strong>4</strong><span>{% trans "Service areas" %}</span></div>
+          <div class="hero-stat"><strong>23</strong><span>{% trans "Languages" %}</span></div>
+          <div class="hero-stat"><strong>100%</strong><span>{% trans "Audited decisions" %}</span></div>
+        </div>
         <p class="trustline mt-4 mb-0">
           <i class="bi bi-shield-check"></i> {% trans "Demonstration platform using synthetic data" %}
           <span>·</span> {% trans "Final decisions rest with authorised officers" %}
