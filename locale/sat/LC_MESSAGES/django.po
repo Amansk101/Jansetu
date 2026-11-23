@@ -1,0 +1,212 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: JanSutra AI\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Dashboard"
+msgstr "ᱰᱮᱥᱵᱳᱨᱰ"
+
+msgid "Departments"
+msgstr "ᱵᱤᱵᱷᱟᱜ"
+
+msgid "New application"
+msgstr "ᱱᱟᱶᱟ ᱟᱨᱡᱤ"
+
+msgid "Application history"
+msgstr "ᱟᱨᱡᱤ ᱱᱟᱜᱟᱢ"
+
+msgid "AI Assistant"
+msgstr "ᱮᱭᱤ ᱜᱚᱲᱚᱭᱤᱡ"
+
+msgid "Documents"
+msgstr "ᱫᱚᱞᱤᱞ"
+
+msgid "Eligibility"
+msgstr "ᱡᱚᱜᱭᱚᱛᱟ"
+
+msgid "Compensation"
+msgstr "ᱠᱷᱚᱛᱤᱯᱩᱨᱚᱱ"
+
+msgid "Notifications"
+msgstr "ᱥᱩᱪᱱᱟ"
+
+msgid "Reports"
+msgstr "ᱨᱤᱯᱳᱨᱴ"
+
+msgid "Analytics"
+msgstr "ᱵᱤᱥᱞᱮᱥᱚᱱ"
+
+msgid "Services"
+msgstr "ᱥᱮᱵᱟ"
+
+msgid "Certificates"
+msgstr "ᱯᱨᱚᱢᱟᱱᱯᱚᱛᱨᱚ"
+
+msgid "Schemes"
+msgstr "ᱭᱳᱡᱱᱟ"
+
+msgid "Eligibility rules"
+msgstr "ᱡᱚᱜᱭᱚᱛᱟ ᱱᱤᱭᱚᱢ"
+
+msgid "Compensation rates"
+msgstr "ᱠᱷᱚᱛᱤᱯᱩᱨᱚᱱ ᱫᱟᱨ"
+
+msgid "Accounts"
+msgstr "ᱮᱠᱟᱩᱱᱴ"
+
+msgid "Send email"
+msgstr "ᱤᱢᱮᱞ ᱠᱩᱞ"
+
+msgid "Email templates"
+msgstr "ᱤᱢᱮᱞ ᱴᱮᱢᱯᱞᱮᱴ"
+
+msgid "Audit logs"
+msgstr "ᱚᱰᱤᱴ ᱞᱚᱜ"
+
+msgid "Notifications log"
+msgstr "ᱥᱩᱪᱱᱟ ᱞᱚᱜ"
+
+msgid "Profile"
+msgstr "ᱯᱨᱳᱯᱷᱟᱤᱞ"
+
+msgid "Home"
+msgstr "ᱚᱲᱟᱜ"
+
+msgid "Sign out"
+msgstr "ᱥᱟᱭᱤᱱ ᱟᱩᱴ"
+
+msgid "Sign in"
+msgstr "ᱥᱟᱭᱤᱱ ᱤᱱ"
+
+msgid "Create account"
+msgstr "ᱮᱠᱟᱩᱱᱴ ᱛᱮᱭᱟᱨ"
+
+msgid "Open workspace"
+msgstr "ᱣᱟᱨᱠᱥᱯᱮᱥ ᱠᱷᱩᱞᱟᱹᱭ"
+
+msgid "Language"
+msgstr "ᱯᱟᱹᱨᱥᱤ"
+
+msgid "Citizen"
+msgstr "ᱱᱟᱜᱽᱨᱤᱠ"
+
+msgid "Government Officer"
+msgstr "ᱥᱚᱨᱠᱟᱨᱤ ᱚᱯᱷᱤᱥᱟᱨ"
+
+msgid "Administrator"
+msgstr "ᱮᱰᱢᱤᱱᱤᱥᱴᱨᱮᱴᱟᱨ"
+
+msgid "Less paperwork."
+msgstr "ᱠᱚᱢ ᱠᱟᱜᱚᱡᱽ ᱠᱟᱹᱢᱤ᱾"
+
+msgid "Faster decisions."
+msgstr "ᱛᱩᱨᱩᱭ ᱯᱷᱟᱭᱥᱞᱟ᱾"
+
+msgid "Transparent governance."
+msgstr "ᱯᱟᱨᱫᱟᱨᱥᱤ ᱥᱟᱥᱚᱱ᱾"
+
+msgid "Register as citizen"
+msgstr "ᱱᱟᱜᱽᱨᱤᱠ ᱞᱮᱠᱟᱛᱮ ᱨᱮᱡᱤᱥᱴᱟᱨ ᱢᱮ"
+
+msgid "Open my workspace"
+msgstr "ᱤᱧᱟᱜ ᱣᱟᱨᱠᱥᱯᱮᱥ ᱠᱷᱩᱞᱟᱹᱭ ᱢᱮ"
+
+msgid "My dashboard"
+msgstr "ᱤᱧᱟᱜ ᱰᱮᱥᱵᱳᱨᱰ"
+
+msgid "Demonstration platform using synthetic data"
+msgstr "ᱥᱤᱱᱛᱷᱮᱴᱤᱠ ᱰᱮᱴᱟ ᱵᱮᱵᱷᱟᱨ ᱟᱱ ᱯᱨᱚᱫᱚᱨᱥᱚᱱ ᱯᱞᱟᱴᱯᱷᱚᱨᱢ"
+
+msgid "Final decisions rest with authorised officers"
+msgstr "ᱢᱩᱪᱟᱹᱫ ᱜᱚᱴᱟ ᱫᱚ ᱟᱫᱷᱤᱠᱟᱨ ᱢᱟᱱᱟᱣ ᱚᱯᱷᱤᱥᱟᱨ ᱠᱚᱣᱟᱜ ᱛᱤ ᱨᱮ ᱛᱟᱦᱮᱱᱟ"
+
+msgid "Revenue Department"
+msgstr "ᱨᱟᱡᱚᱥᱣᱚ ᱵᱤᱵᱷᱟᱜᱽ"
+
+msgid "District Collectorate – Revenue Administration"
+msgstr "ᱡᱤᱞᱟ ᱠᱚᱞᱮᱠᱴᱚᱨᱮᱴ – ᱨᱟᱡᱚᱥᱣᱚ ᱯᱨᱚᱥᱟᱥᱚᱱ"
+
+msgid "Proposed Pilot Location:"
+msgstr "ᱥᱟᱨᱦᱟᱣ ᱟᱠᱟᱱ ᱯᱟᱭᱞᱚᱴ ᱡᱟᱭᱜᱟ:"
+
+msgid "Office of the Collector, South Goa."
+msgstr "ᱠᱚᱞᱮᱠᱴᱚᱨ ᱚᱯᱷᱤᱥ, ᱫᱟᱹᱠᱷᱤᱱ ᱜᱳᱣᱟ᱾"
+
+msgid "What this platform solves for the department"
+msgstr "ᱱᱚᱶᱟ ᱯᱞᱟᱴᱯᱷᱚᱨᱢ ᱫᱚ ᱵᱤᱵᱷᱟᱜᱽ ᱞᱟᱹᱜᱤᱫ ᱪᱮᱫ ᱥᱚᱞᱦᱮ ᱮᱢᱟ"
+
+msgid "Land Acquisition & Compensation"
+msgstr "ᱡᱟᱭᱜᱟ ᱦᱟᱛᱟᱣ ᱟᱨ ᱠᱷᱚᱛᱤᱯᱩᱨᱚᱱ"
+
+msgid "Disaster Relief"
+msgstr "ᱫᱩᱨᱡᱚᱜᱽ ᱜᱚᱲᱚ"
+
+msgid "Welfare Schemes"
+msgstr "ᱠᱚᱞᱭᱟᱱ ᱭᱳᱡᱱᱟ ᱠᱚ"
+
+msgid "Revenue Services"
+msgstr "ᱨᱟᱡᱚᱥᱣᱚ ᱥᱮᱵᱟ ᱠᱚ"
+
+msgid "How it works"
+msgstr "ᱱᱚᱶᱟ ᱫᱚ ᱪᱮᱫ ᱞᱮᱠᱟ ᱠᱟᱹᱢᱤ ᱮᱫᱟ"
+
+msgid "Ready to try the workflow?"
+msgstr "ᱣᱟᱨᱠᱯᱷᱞᱳ ᱪᱮᱥᱴᱟᱭ ᱞᱟᱹᱜᱤᱫ ᱛᱮᱭᱟᱨ?"
+
+msgid "Log in"
+msgstr "ᱞᱚᱜᱽ ᱤᱱ"
+
+msgid "Sign up"
+msgstr "ᱥᱟᱭᱤᱱ ᱟᱯ"
+
+msgid "Create your account"
+msgstr "ᱟᱢᱟᱜ ᱮᱠᱟᱩᱱᱴ ᱛᱮᱭᱟᱨ ᱢᱮ"
+
+msgid "Sign up as a citizen to submit and track applications."
+msgstr "ᱟᱨᱡᱤ ᱮᱢ ᱟᱨ ᱴᱨᱟᱠ ᱞᱟᱹᱜᱤᱫ ᱱᱟᱜᱽᱨᱤᱠ ᱞᱮᱠᱟᱛᱮ ᱥᱟᱭᱤᱱ ᱟᱯ ᱢᱮ᱾"
+
+msgid "Create citizen account"
+msgstr "ᱱᱟᱜᱽᱨᱤᱠ ᱮᱠᱟᱩᱱᱴ ᱛᱮᱭᱟᱨ ᱢᱮ"
+
+msgid "Officer and administrator accounts are created by an administrator."
+msgstr "ᱚᱯᱷᱤᱥᱟᱨ ᱟᱨ ᱮᱰᱢᱤᱱ ᱮᱠᱟᱩᱱᱴ ᱫᱚ ᱢᱤᱫ ᱮᱰᱢᱤᱱ ᱛᱮᱭᱟᱨ ᱮᱫᱟ᱾"
+
+msgid "Log in to Jan Sutra"
+msgstr "ᱡᱟᱱᱥᱩᱛᱨᱚ ᱨᱮ ᱞᱚᱜᱽ ᱤᱱ ᱢᱮ"
+
+msgid "Choose your account type and enter your credentials."
+msgstr "ᱟᱢᱟᱜ ᱮᱠᱟᱩᱱᱴ ᱞᱮᱠᱟᱱ ᱵᱟᱪᱷᱟᱣ ᱢᱮ ᱟᱨ ᱟᱢᱟᱜ ᱵᱤᱵᱨᱚᱬ ᱮᱢ ᱢᱮ᱾"
+
+msgid "Account type"
+msgstr "ᱮᱠᱟᱩᱱᱴ ᱞᱮᱠᱟᱱ"
+
+msgid "Username or email"
+msgstr "ᱵᱮᱵᱷᱟᱨᱤᱡ ᱧᱩᱛᱩᱢ ᱟᱨ ᱵᱟᱝ ᱤᱢᱮᱞ"
+
+msgid "Password"
+msgstr "ᱯᱟᱥᱣᱟᱨᱰ"
+
+msgid "Forgot your password?"
+msgstr "ᱟᱢᱟᱜ ᱯᱟᱥᱣᱟᱨᱰ ᱦᱤᱞᱟᱹᱣ ᱠᱮᱫᱟᱢ?"
+
+msgid "New citizen? Choose the Sign up tab to create an account."
+msgstr "ᱱᱟᱶᱟ ᱱᱟᱜᱽᱨᱤᱠ? ᱮᱠᱟᱩᱱᱴ ᱛᱮᱭᱟᱨ ᱞᱟᱹᱜᱤᱫ ᱥᱟᱭᱤᱱ ᱟᱯ ᱴᱮᱵᱽ ᱵᱟᱪᱷᱟᱣ ᱢᱮ᱾"
+
+msgid "Officer"
+msgstr "ᱚᱯᱷᱤᱥᱟᱨ"
+
+msgid "Admin"
+msgstr "ᱮᱰᱢᱤᱱᱤᱥᱴᱨᱮᱴᱟᱨ"
+
+msgid "Full name"
+msgstr "ᱯᱩᱨᱟᱹ ᱧᱩᱛᱩᱢ"
+
+msgid "Email address"
+msgstr "ᱤᱢᱮᱞ ᱴᱷᱤᱠᱟᱹᱱᱟ"
+
+msgid ""
+msgstr "Project-Id-Version: JanSutra AI\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=2; plural=(n != 1);\n"
+

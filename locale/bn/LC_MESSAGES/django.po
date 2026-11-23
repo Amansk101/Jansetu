@@ -1,0 +1,212 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: JanSutra AI\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Dashboard"
+msgstr "ড্যাশবোর্ড"
+
+msgid "Departments"
+msgstr "বিভাগসমূহ"
+
+msgid "New application"
+msgstr "নতুন আবেদন"
+
+msgid "Application history"
+msgstr "আবেদনের ইতিহাস"
+
+msgid "AI Assistant"
+msgstr "এআই সহায়ক"
+
+msgid "Documents"
+msgstr "নথিপত্র"
+
+msgid "Eligibility"
+msgstr "যোগ্যতা"
+
+msgid "Compensation"
+msgstr "ক্ষতিপূরণ"
+
+msgid "Notifications"
+msgstr "বিজ্ঞপ্তি"
+
+msgid "Reports"
+msgstr "প্রতিবেদন"
+
+msgid "Analytics"
+msgstr "বিশ্লেষণ"
+
+msgid "Services"
+msgstr "সেবাসমূহ"
+
+msgid "Certificates"
+msgstr "সার্টিফিকেট"
+
+msgid "Schemes"
+msgstr "প্রকল্পসমূহ"
+
+msgid "Eligibility rules"
+msgstr "যোগ্যতার নিয়ম"
+
+msgid "Compensation rates"
+msgstr "ক্ষতিপূরণের হার"
+
+msgid "Accounts"
+msgstr "অ্যাকাউন্ট"
+
+msgid "Send email"
+msgstr "ইমেল পাঠান"
+
+msgid "Email templates"
+msgstr "ইমেল টেমপ্লেট"
+
+msgid "Audit logs"
+msgstr "অডিট লগ"
+
+msgid "Notifications log"
+msgstr "বিজ্ঞপ্তি লগ"
+
+msgid "Profile"
+msgstr "প্রোফাইল"
+
+msgid "Home"
+msgstr "হোম"
+
+msgid "Sign out"
+msgstr "সাইন আউট"
+
+msgid "Sign in"
+msgstr "সাইন ইন"
+
+msgid "Create account"
+msgstr "অ্যাকাউন্ট তৈরি করুন"
+
+msgid "Open workspace"
+msgstr "ওয়ার্কস্পেস খুলুন"
+
+msgid "Language"
+msgstr "ভাষা"
+
+msgid "Citizen"
+msgstr "নাগরিক"
+
+msgid "Government Officer"
+msgstr "সরকারি কর্মকর্তা"
+
+msgid "Administrator"
+msgstr "প্রশাসক"
+
+msgid "Less paperwork."
+msgstr "কম কাগজপত্র।"
+
+msgid "Faster decisions."
+msgstr "দ্রুত সিদ্ধান্ত।"
+
+msgid "Transparent governance."
+msgstr "স্বচ্ছ শাসন।"
+
+msgid "Register as citizen"
+msgstr "নাগরিক হিসেবে নিবন্ধন করুন"
+
+msgid "Open my workspace"
+msgstr "আমার ওয়ার্কস্পেস খুলুন"
+
+msgid "My dashboard"
+msgstr "আমার ড্যাশবোর্ড"
+
+msgid "Demonstration platform using synthetic data"
+msgstr "কৃত্রিম ডেটা ব্যবহার করে প্রদর্শনী প্ল্যাটফর্ম"
+
+msgid "Final decisions rest with authorised officers"
+msgstr "চূড়ান্ত সিদ্ধান্ত অনুমোদিত কর্মকর্তাদের হাতে থাকে"
+
+msgid "Revenue Department"
+msgstr "রাজস্ব বিভাগ"
+
+msgid "District Collectorate – Revenue Administration"
+msgstr "জেলা কালেক্টরেট – রাজস্ব প্রশাসন"
+
+msgid "Proposed Pilot Location:"
+msgstr "প্রস্তাবিত পাইলট স্থান:"
+
+msgid "Office of the Collector, South Goa."
+msgstr "কালেক্টর কার্যালয়, দক্ষিণ গোয়া।"
+
+msgid "What this platform solves for the department"
+msgstr "এই প্ল্যাটফর্ম বিভাগের জন্য কী সমাধান করে"
+
+msgid "Land Acquisition & Compensation"
+msgstr "ভূমি অধিগ্রহণ ও ক্ষতিপূরণ"
+
+msgid "Disaster Relief"
+msgstr "দুর্যোগ ত্রাণ"
+
+msgid "Welfare Schemes"
+msgstr "কল্যাণমূলক প্রকল্প"
+
+msgid "Revenue Services"
+msgstr "রাজস্ব সেবা"
+
+msgid "How it works"
+msgstr "এটি কীভাবে কাজ করে"
+
+msgid "Ready to try the workflow?"
+msgstr "ওয়ার্কফ্লো চেষ্টা করতে প্রস্তুত?"
+
+msgid "Log in"
+msgstr "লগ ইন"
+
+msgid "Sign up"
+msgstr "সাইন আপ"
+
+msgid "Create your account"
+msgstr "আপনার অ্যাকাউন্ট তৈরি করুন"
+
+msgid "Sign up as a citizen to submit and track applications."
+msgstr "আবেদন জমা ও ট্র্যাক করতে নাগরিক হিসেবে সাইন আপ করুন।"
+
+msgid "Create citizen account"
+msgstr "নাগরিক অ্যাকাউন্ট তৈরি করুন"
+
+msgid "Officer and administrator accounts are created by an administrator."
+msgstr "কর্মকর্তা ও প্রশাসক অ্যাকাউন্ট একজন প্রশাসক তৈরি করেন।"
+
+msgid "Log in to Jan Sutra"
+msgstr "জনসূত্রে লগ ইন করুন"
+
+msgid "Choose your account type and enter your credentials."
+msgstr "আপনার অ্যাকাউন্টের ধরন বেছে নিন এবং আপনার তথ্য দিন।"
+
+msgid "Account type"
+msgstr "অ্যাকাউন্টের ধরন"
+
+msgid "Username or email"
+msgstr "ব্যবহারকারীর নাম বা ইমেল"
+
+msgid "Password"
+msgstr "পাসওয়ার্ড"
+
+msgid "Forgot your password?"
+msgstr "আপনার পাসওয়ার্ড ভুলে গেছেন?"
+
+msgid "New citizen? Choose the Sign up tab to create an account."
+msgstr "নতুন নাগরিক? অ্যাকাউন্ট তৈরি করতে সাইন আপ ট্যাব বেছে নিন।"
+
+msgid "Officer"
+msgstr "কর্মকর্তা"
+
+msgid "Admin"
+msgstr "প্রশাসক"
+
+msgid "Full name"
+msgstr "সম্পূর্ণ নাম"
+
+msgid "Email address"
+msgstr "ইমেইল ঠিকানা"
+
+msgid ""
+msgstr "Project-Id-Version: JanSutra AI\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=2; plural=(n != 1);\n"
+

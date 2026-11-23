@@ -1,0 +1,220 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="page-heading mb-4">
+  <div>
+    <span class="eyebrow">AI DOCUMENT PROCESSING</span>
+    <h1>Document Intelligence Hub</h1>
+  </div>
+</div>
+
+{# Search Bar #}
+<form method="get" action="" class="mb-4">
+  <div class="input-group">
+    <span class="input-group-text"><i class="bi bi-search"></i></span>
+    <input type="text" name="q" value="{{ request.GET.q }}" class="form-control"
+           placeholder="Search by file name, applicant name, document number…">
+    <button type="submit" class="btn btn-primary px-4">Search</button>
+    {% if request.GET.q %}
+      <a href="{{ request.path }}" class="btn btn-outline-secondary">Clear</a>
+    {% endif %}
+  </div>
+</form>
+
+{# Info box about OCR process #}
+<div class="alert alert-info d-flex gap-2 mb-4" role="alert">
+  <i class="bi bi-info-circle-fill flex-shrink-0 mt-1"></i>
+  <div>
+    <strong>How Document Intelligence Works:</strong> When a citizen uploads a document, the OCR engine extracts text
+    and identifies key fields automatically — applicant name, document number, dates, and more. Confidence scores
+    indicate extraction quality. Where OCR confidence is low or extraction fails, officers can manually enter or
+    correct field values on the application detail page.
+  </div>
+</div>
+
+{% if documents %}
+  {% for doc in documents %}
+  <div class="panel mb-4">
+    <div class="panel-head d-flex flex-wrap align-items-center gap-2 justify-content-between">
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <i class="bi bi-file-earmark-text fs-5" style="color:var(--teal);"></i>
+        <span class="fw-semibold text-truncate" style="max-width:340px;" title="{{ doc.original_name }}">
+          {{ doc.original_name }}
+        </span>
+
+        {# OCR Status Badge #}
+        {% if doc.ocr_status == 'completed' %}
+          <span class="badge bg-success"><i class="bi bi-check2 me-1"></i>OCR Complete</span>
+        {% elif doc.ocr_status == 'processing' %}
+          <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split me-1"></i>Processing</span>
+        {% elif doc.ocr_status == 'failed' %}
+          <span class="badge bg-danger"><i class="bi bi-x-octagon me-1"></i>OCR Failed</span>
+        {% elif doc.ocr_status == 'pending' %}
+          <span class="badge bg-secondary"><i class="bi bi-clock me-1"></i>Pending OCR</span>
+        {% elif doc.ocr_status == 'skipped' %}
+          <span class="badge bg-light text-dark border">Skipped</span>
+        {% else %}
+          <span class="badge bg-light text-dark border">{{ doc.ocr_status|default:"Unknown" }}</span>
+        {% endif %}
+
+        {# Confidence score #}
+        {% if doc.ocr_confidence is not None %}
+          {% if doc.ocr_confidence >= 80 %}
+            <span class="badge" style="background:var(--green);color:#fff;">
+              <i class="bi bi-graph-up me-1"></i>{{ doc.ocr_confidence|floatformat:0 }}% confidence
+            </span>
+          {% elif doc.ocr_confidence >= 50 %}
+            <span class="badge" style="background:var(--amber);color:#fff;">
+              <i class="bi bi-graph-up me-1"></i>{{ doc.ocr_confidence|floatformat:0 }}% confidence
+            </span>
+          {% else %}
+            <span class="badge bg-danger">
+              <i class="bi bi-graph-down me-1"></i>{{ doc.ocr_confidence|floatformat:0 }}% confidence
+            </span>
+          {% endif %}
+        {% endif %}
+      </div>
+
+      <div class="d-flex align-items-center gap-2 text-muted small flex-wrap">
+        <i class="bi bi-clock"></i> {{ doc.uploaded_at|date:"d M Y, H:i" }}
+        {% if doc.application %}
+          &bull; Application:
+          <a href="{% url 'application_detail' doc.application.public_id %}"
+             class="fw-semibold text-decoration-none" style="color:var(--teal);">
+            #{{ doc.application.public_id }}
+          </a>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="p-3">
+
+      {# OCR Warning #}
+      {% if doc.ocr_warning %}
+        <div class="alert alert-warning d-flex gap-2 py-2 mb-3" role="alert">
+          <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+          <div>{{ doc.ocr_warning }}</div>
+        </div>
+      {% endif %}
+
+      {# Extracted Fields Grid #}
+      {% if doc.extracted_fields %}
+        <h6 class="text-uppercase fw-semibold mb-2" style="color:var(--muted);font-size:.72rem;letter-spacing:.06em;">
+          <i class="bi bi-braces me-1"></i>Extracted Fields
+        </h6>
+        <div class="row g-2 mb-3">
+          {% if doc.extracted_fields.applicant_name %}
+          <div class="col-6 col-md-4 col-lg-3">
+            <div class="border rounded p-2 h-100" style="background:var(--bg);">
+              <div class="text-muted" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;">Applicant Name</div>
+              <div class="fw-semibold small">{{ doc.extracted_fields.applicant_name }}</div>
+            </div>
+          </div>
+          {% endif %}
+          {% if doc.extracted_fields.document_number %}
+          <div class="col-6 col-md-4 col-lg-3">
+            <div class="border rounded p-2 h-100" style="background:var(--bg);">
+              <div class="text-muted" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;">Document Number</div>
+              <div class="fw-semibold small">{{ doc.extracted_fields.document_number }}</div>
+            </div>
+          </div>
+          {% endif %}
+          {% if doc.extracted_fields.date_of_birth %}
+          <div class="col-6 col-md-4 col-lg-3">
+            <div class="border rounded p-2 h-100" style="background:var(--bg);">
+              <div class="text-muted" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;">Date of Birth</div>
+              <div class="fw-semibold small">{{ doc.extracted_fields.date_of_birth }}</div>
+            </div>
+          </div>
+          {% endif %}
+          {% if doc.extracted_fields.address %}
+          <div class="col-6 col-md-4 col-lg-3">
+            <div class="border rounded p-2 h-100" style="background:var(--bg);">
+              <div class="text-muted" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;">Address</div>
+              <div class="fw-semibold small">{{ doc.extracted_fields.address }}</div>
+            </div>
+          </div>
+          {% endif %}
+          {% if doc.extracted_fields.issue_date %}
+          <div class="col-6 col-md-4 col-lg-3">
+            <div class="border rounded p-2 h-100" style="background:var(--bg);">
+              <div class="text-muted" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;">Issue Date</div>
+              <div class="fw-semibold small">{{ doc.extracted_fields.issue_date }}</div>
+            </div>
+          </div>
+          {% endif %}
+          {% if doc.extracted_fields.expiry_date %}
+          <div class="col-6 col-md-4 col-lg-3">
+            <div class="border rounded p-2 h-100" style="background:var(--bg);">
+              <div class="text-muted" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;">Expiry Date</div>
+              <div class="fw-semibold small">{{ doc.extracted_fields.expiry_date }}</div>
+            </div>
+          </div>
+          {% endif %}
+          {% for key, val in doc.extracted_fields.items %}
+            {% if key != 'applicant_name' and key != 'document_number' and key != 'date_of_birth' and key != 'address' and key != 'issue_date' and key != 'expiry_date' %}
+            <div class="col-6 col-md-4 col-lg-3">
+              <div class="border rounded p-2 h-100" style="background:var(--bg);">
+                <div class="text-muted" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;">{{ key|title }}</div>
+                <div class="fw-semibold small">{{ val }}</div>
+              </div>
+            </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="text-muted small mb-3">
+          <i class="bi bi-dash-circle me-1"></i>
+          {% if doc.ocr_status == 'completed' %}
+            OCR completed but no structured fields were extracted.
+          {% elif doc.ocr_status == 'pending' or doc.ocr_status == 'processing' %}
+            Fields will appear here once OCR processing is complete.
+          {% elif doc.ocr_status == 'failed' %}
+            Extraction failed. Please verify the document manually.
+          {% else %}
+            No fields extracted yet.
+          {% endif %}
+        </p>
+      {% endif %}
+
+      {# Action Buttons #}
+      <div class="d-flex gap-2 flex-wrap">
+        {% if doc.file %}
+          <a href="{{ doc.file.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-eye me-1"></i>Preview
+          </a>
+          <a href="{{ doc.file.url }}" download="{{ doc.original_name }}" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-download me-1"></i>Download
+          </a>
+        {% endif %}
+        {% if doc.application %}
+          <a href="{% url 'application_detail' doc.application.public_id %}"
+             class="btn btn-sm" style="border:1px solid var(--teal);color:var(--teal);">
+            <i class="bi bi-box-arrow-up-right me-1"></i>View Application
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+
+{% else %}
+  <div class="empty-state">
+    <i class="bi bi-file-earmark-x"></i>
+    <h5>No Documents Found</h5>
+    <p class="text-muted">
+      {% if request.GET.q %}
+        No documents match your search "<strong>{{ request.GET.q }}</strong>". Try a different term or clear the search.
+      {% else %}
+        No documents have been uploaded yet. Documents appear here when citizens attach files to their applications.
+      {% endif %}
+    </p>
+    {% if request.GET.q %}
+      <a href="{{ request.path }}" class="btn btn-outline-secondary mt-2">
+        <i class="bi bi-x-circle me-1"></i>Clear Search
+      </a>
+    {% endif %}
+  </div>
+{% endif %}
+{% endblock %}

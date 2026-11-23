@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="page-heading mb-4">
+  <div>
+    <span class="eyebrow">ILLUSTRATIVE ESTIMATES</span>
+    <h1>Compensation Calculator</h1>
+  </div>
+</div>
+
+{# Disclaimer #}
+<div class="alert d-flex gap-2 mb-4" role="alert"
+     style="background:#fff3cd;border-left:4px solid var(--amber);border-radius:8px;">
+  <i class="bi bi-exclamation-triangle-fill flex-shrink-0 mt-1" style="color:var(--amber);font-size:1.2rem;"></i>
+  <div>
+    <strong>⚠ Illustrative Estimate — Subject to Official Verification.</strong><br>
+    These demonstration rates are <em>not</em> official government rates. All compensation figures shown are
+    calculated for illustrative purposes only and must be verified and approved by the competent authority
+    before any disbursement.
+  </div>
+</div>
+
+{# Quick Estimate Form #}
+{% if configs %}
+<div class="panel mb-4">
+  <div class="panel-head d-flex align-items-center gap-2">
+    <i class="bi bi-calculator" style="color:var(--teal);"></i>
+    <span class="fw-semibold">Quick Estimate</span>
+  </div>
+  <div class="p-3">
+    <form id="quickEstimateForm" method="post" action="">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="estimate">
+      <div class="row g-3 align-items-end">
+        <div class="col-md-4">
+          <label class="form-label fw-semibold small">Application</label>
+          <select name="application_id" id="appSelect" class="form-select" required>
+            <option value="">— Select Application —</option>
+            {% for application in applications %}
+              <option value="{{ application.pk }}" data-public="{{ application.public_id }}">
+                #{{ application.public_id }} — {{ application.citizen.get_full_name|default:application.citizen.username }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-semibold small">Compensation Config</label>
+          <select name="config_id" class="form-select" required>
+            <option value="">— Select Config —</option>
+            {% for cfg in configs %}
+              <option value="{{ cfg.pk }}">{{ cfg.land_category|default:cfg }} (₹{{ cfg.base_rate|floatformat:0 }}/unit)</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-semibold small">Area (units)</label>
+          <input type="number" name="area" step="0.01" min="0.01" class="form-control" placeholder="e.g. 2.50" required>
+        </div>
+        <div class="col-md-2">
+          <button type="submit" class="btn btn-primary w-100">
+            <i class="bi bi-calculator me-1"></i>Calculate
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endif %}
+
+{# Applications List #}
+{% if applications %}
+  {% for application in applications %}
+  <div class="panel mb-4">
+    <div class="panel-head d-flex flex-wrap align-items-center justify-content-between gap-2">
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-map" style="color:var(--teal);"></i>
+        <a href="{% url 'application_detail' application.public_id %}"
+           class="fw-semibold text-decoration-none" style="color:var(--navy);">
+          #{{ application.public_id }}
+        </a>
+        <span class="text-muted">—</span>
+        <span class="fw-semibold">{{ application.citizen.get_full_name|default:application.citizen.username }}</span>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        {% if application.land_area %}
+          <span class="badge bg-light text-dark border">
+            <i class="bi bi-rulers me-1"></i>{{ application.land_area }} units
+          </span>
+        {% endif %}
+        <span class="status status-{{ application.status }}">{{ application.get_status_display }}</span>
+      </div>
+    </div>
+
+    <div class="p-3">
+      {% with estimates=application.compensation_estimates.all %}
+      {% if estimates %}
+        {% for est in estimates %}
+        <div class="estimate-result mb-3 p-3 rounded" style="background:var(--bg);border:1px solid var(--line);">
+          <div class="row g-2 mb-2 align-items-center">
+            <div class="col-auto">
+              <span class="badge" style="background:rgba(22,125,154,.1);color:var(--teal);border:1px solid rgba(22,125,154,.3);">
+                {{ est.land_category|default:"—" }}
+              </span>
+            </div>
+            <div class="col-auto text-muted small">Area: <strong>{{ est.area|default:"—" }}</strong> units</div>
+            <div class="col-auto ms-auto">
+              <span class="fw-bold fs-5" style="color:var(--green);">
+                ₹{{ est.estimated_amount|floatformat:0 }}
+              </span>
+            </div>
+          </div>
+
+          {# Breakdown #}
+          {% if est.breakdown %}
+          <div class="estimate-breakdown mt-2 p-2 rounded" style="background:#fff;border:1px solid var(--line);font-size:.82rem;">
+            <div class="text-uppercase text-muted fw-semibold mb-1" style="font-size:.68rem;letter-spacing:.05em;">Breakdown</div>
+            <div class="row g-1">
+              {% if est.breakdown.formula %}
+              <div class="col-12 text-muted">
+                <i class="bi bi-braces me-1"></i><em>{{ est.breakdown.formula }}</em>
+              </div>
+              {% endif %}
+              {% if est.breakdown.base_rate %}
+              <div class="col-6 col-md-3">
+                <span class="text-muted">Base Rate:</span>
+                <strong>₹{{ est.breakdown.base_rate }}</strong>
+              </div>
+              {% endif %}
+              {% if est.breakdown.area %}
+              <div class="col-6 col-md-3">
+                <span class="text-muted">Area:</span>
+                <strong>{{ est.breakdown.area }} units</strong>
+              </div>
+              {% endif %}
+              {% if est.breakdown.multiplier %}
+              <div class="col-6 col-md-3">
+                <span class="text-muted">Multiplier:</span>
+                <strong>×{{ est.breakdown.multiplier }}</strong>
+              </div>
+              {% endif %}
+              {% if est.breakdown.gross %}
+              <div class="col-6 col-md-3">
+                <span class="text-muted">Gross:</span>
+                <strong>₹{{ est.breakdown.gross }}</strong>
+              </div>
+              {% endif %}
+              {% for k, v in est.breakdown.items %}
+                {% if k != 'formula' and k != 'base_rate' and k != 'area' and k != 'multiplier' and k != 'gross' %}
+                <div class="col-6 col-md-3">
+                  <span class="text-muted">{{ k|title }}:</span>
+                  <strong>{{ v }}</strong>
+                </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="empty-inline d-flex align-items-center gap-2 p-3 rounded"
+             style="background:var(--bg);border:1px dashed var(--line);">
+          <i class="bi bi-calculator text-muted fs-5"></i>
+          <span class="text-muted">No estimate calculated for this application yet. Use the Quick Estimate panel above.</span>
+        </div>
+      {% endif %}
+      {% endwith %}
+    </div>
+  </div>
+  {% endfor %}
+
+{% else %}
+  <div class="empty-state">
+    <i class="bi bi-map"></i>
+    <h5>No Land Applications Found</h5>
+    <p class="text-muted">
+      There are no land acquisition applications in the system yet. Compensation estimates are available
+      once land applications are submitted and a compensation configuration is set up.
+    </p>
+  </div>
+{% endif %}
+
+{% endblock %}

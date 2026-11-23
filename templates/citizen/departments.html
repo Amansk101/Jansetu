@@ -1,0 +1,43 @@
+{% extends 'base.html' %}{% block title %}Government Departments · JanSutra AI{% endblock %}{% block content %}
+<main class="app-shell">
+  <div class="container-fluid px-lg-5 py-4">
+
+    <div class="page-heading mb-4">
+      <a class="backlink" href="{% url 'dashboard' %}"><i class="bi bi-arrow-left"></i> Back to dashboard</a>
+      <h1>Government Services</h1>
+      <p>Choose a department, then the exact service you need. Each service lists the documents you must upload before it reaches the officer.</p>
+    </div>
+
+    {% for d in departments %}
+    <section class="panel mb-4">
+      <div class="panel-head d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <div>
+          <h3><i class="bi {{ d.icon|default:'bi-building' }} me-2 text-primary"></i>{{ d.name }}</h3>
+          <p class="mb-0">{{ d.description|default:"Services offered by this department." }}</p>
+        </div>
+        <a href="{% url 'department_detail' d.id %}">Open department <i class="bi bi-arrow-right"></i></a>
+      </div>
+      <div class="p-3">
+        <div class="row g-2">
+          {% for s in d.services.all %}{% if s.active %}
+          <div class="col-md-6 col-xl-4">
+            <a class="d-flex align-items-center gap-3 border rounded-3 p-3 text-decoration-none h-100 text-body" href="{% url 'service_detail' s.slug %}">
+              <i class="bi {{ s.icon|default:'bi-file-earmark-text' }} fs-4 text-secondary"></i>
+              <span class="flex-grow-1">
+                <strong class="d-block small">{{ s.name }}</strong>
+                <span class="text-muted" style="font-size:.76rem">{{ s.processing_time|default:"Timeline as per rules" }}</span>
+              </span>
+              <i class="bi bi-chevron-right text-muted"></i>
+            </a>
+          </div>
+          {% endif %}{% endfor %}
+        </div>
+      </div>
+    </section>
+    {% empty %}
+    <div class="empty-state py-5"><i class="bi bi-building"></i><h5 class="mt-2">No departments configured</h5><p class="text-muted small">The administrator has not published any departments yet.</p></div>
+    {% endfor %}
+
+  </div>
+</main>
+{% endblock %}

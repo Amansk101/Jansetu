@@ -1,0 +1,55 @@
+{% extends 'base.html' %}{% load static %}
+{% block title %}AI Assistant · JanSutra AI{% endblock %}
+{% block content %}
+<main class="app-shell">
+  <div class="container py-5">
+
+    <div class="page-heading mb-4">
+      <span class="eyebrow">AI CITIZEN ASSISTANT</span>
+      <h1>Ask JanSutra AI</h1>
+      <p class="text-muted">Instant guidance on applications, documents, eligibility and status — answered only from approved government information. An authorised officer always makes the final decision.</p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <section class="panel p-0 d-flex flex-column" style="height:580px;">
+          <div class="panel-head px-3 pt-3 pb-2 mb-0">
+            <div>
+              <h5 class="mb-0" style="color:var(--navy);"><i class="bi bi-robot me-2"></i>Assistant</h5>
+              <p class="small text-muted mb-0">Guidance only · grounded in approved department information</p>
+            </div>
+          </div>
+          <div id="assistantThread" class="assistant-thread flex-grow-1 px-3 pb-2">
+            <div class="assistant-bubble assistant-bot">Hello{% if user.first_name %} {{ user.first_name }}{% endif %}! I am the JanSutra AI assistant. Ask me about applying for a service, the documents you need, your eligibility, compensation, or how to track an application.</div>
+          </div>
+          <form id="assistantForm" class="p-3 border-top d-flex gap-2" style="border-color:var(--line)!important;">
+            {% csrf_token %}
+            <input id="assistantInput" name="question" class="form-control" placeholder="Type your question…" autocomplete="off" maxlength="300" required>
+            <button class="btn btn-primary" type="submit" aria-label="Send"><i class="bi bi-send"></i></button>
+          </form>
+        </section>
+      </div>
+
+      <div class="col-lg-4">
+        <section class="panel p-3">
+          <h5 style="color:var(--navy);"><i class="bi bi-lightbulb me-2"></i>Suggested questions</h5>
+          <p class="small text-muted">Tap a question to ask it instantly.</p>
+          <div id="assistantSuggestions" class="d-grid gap-2 assistant-suggestions">
+            {% for faq in faqs %}
+            <button type="button" class="btn btn-outline-secondary btn-sm suggestion-btn" data-q="{{ faq.question }}">{{ faq.question }}</button>
+            {% empty %}
+            <p class="text-muted small mb-0">No approved questions are configured yet. The administrator can add them from the Django admin.</p>
+            {% endfor %}
+          </div>
+        </section>
+        <section class="panel p-3">
+          <h6 style="color:var(--navy);"><i class="bi bi-shield-check me-2"></i>How this works</h6>
+          <p class="small text-muted mb-0">The assistant answers only from information approved by the department. It never approves or rejects anything — decisions are made by an authorised officer.</p>
+        </section>
+      </div>
+    </div>
+
+  </div>
+</main>
+{% endblock %}
+{% block scripts %}<script src="{% static 'js/assistant.js' %}"></script>{% endblock %}

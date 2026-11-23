@@ -1,0 +1,311 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+{% if kind == 'department' %}{% url 'manage_departments' as manage_url %}
+{% elif kind == 'scheme' %}{% url 'manage_schemes' as manage_url %}
+{% elif kind == 'rule' %}{% url 'manage_rules' as manage_url %}
+{% else %}{% url 'manage_rates' as manage_url %}{% endif %}
+<div class="page-heading mb-4">
+  <div>
+    <h1>{{ title }}</h1>
+  </div>
+  <div>
+    <a href="{{ manage_url }}" class="btn btn-outline-secondary btn-sm">
+      <i class="bi bi-arrow-counterclockwise me-1"></i>Reset
+    </a>
+  </div>
+</div>
+
+{# Disclaimer above form #}
+{% if disclaimer %}
+<div class="alert d-flex gap-2 mb-4" role="alert"
+     style="background:#fff3cd;border-left:4px solid var(--amber);border-radius:8px;">
+  <i class="bi bi-exclamation-triangle-fill flex-shrink-0 mt-1" style="color:var(--amber);"></i>
+  <div>{{ disclaimer }}</div>
+</div>
+{% endif %}
+
+<div class="row g-4">
+
+  {# ── LEFT: Form Panel ── #}
+  <div class="col-lg-4">
+    <div class="panel h-100">
+      <div class="panel-head d-flex align-items-center gap-2">
+        {% if edit %}
+          <i class="bi bi-pencil-square" style="color:var(--teal);"></i>
+          <span class="fw-semibold">Update {{ kind|title }}</span>
+        {% else %}
+          <i class="bi bi-plus-circle" style="color:var(--teal);"></i>
+          <span class="fw-semibold">Add New {{ kind|title }}</span>
+        {% endif %}
+      </div>
+      <div class="p-3">
+        <form method="post" action="">
+          {% csrf_token %}
+          {% if edit %}
+            <input type="hidden" name="id" value="{{ edit.pk }}">
+            <input type="hidden" name="action" value="save">
+          {% else %}
+            <input type="hidden" name="action" value="save">
+          {% endif %}
+
+          {% for field in form %}
+          <div class="mb-3">
+            <label for="{{ field.id_for_label }}" class="form-label fw-semibold small">
+              {{ field.label }}
+              {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
+            </label>
+            {% if field.field.widget.input_type == 'checkbox' %}
+              <div class="form-check">
+                {{ field }}
+                <label class="form-check-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+              </div>
+            {% elif field.field.widget.allow_multiple_selected %}
+              <select name="{{ field.html_name }}" id="{{ field.id_for_label }}" multiple
+                      class="form-select{% if field.errors %} is-invalid{% endif %}" size="4">
+                {% for opt_val, opt_label in field.field.choices %}
+                  <option value="{{ opt_val }}"
+                    {% if field.value and opt_val in field.value %}selected{% endif %}>
+                    {{ opt_label }}
+                  </option>
+                {% endfor %}
+              </select>
+            {% elif field.field.widget.input_type == 'select' %}
+              <select name="{{ field.html_name }}" id="{{ field.id_for_label }}"
+                      class="form-select{% if field.errors %} is-invalid{% endif %}">
+                {% for opt_val, opt_label in field.field.choices %}
+                  <option value="{{ opt_val }}"
+                    {% if field.value|stringformat:"s" == opt_val|stringformat:"s" %}selected{% endif %}>
+                    {{ opt_label }}
+                  </option>
+                {% endfor %}
+              </select>
+            {% elif field.field.widget.input_type == 'textarea' %}
+              <textarea name="{{ field.html_name }}" id="{{ field.id_for_label }}" rows="3"
+                        class="form-control{% if field.errors %} is-invalid{% endif %}"
+                        placeholder="{{ field.label }}">{{ field.value|default:'' }}</textarea>
+            {% else %}
+              <input type="{{ field.field.widget.input_type }}"
+                     name="{{ field.html_name }}"
+                     id="{{ field.id_for_label }}"
+                     value="{{ field.value|default:'' }}"
+                     class="form-control{% if field.errors %} is-invalid{% endif %}"
+                     placeholder="{{ field.label }}">
+            {% endif %}
+            {% if field.errors %}
+              <div class="invalid-feedback">{{ field.errors|join:" " }}</div>
+            {% endif %}
+            {% if field.help_text %}
+              <div class="form-text text-muted small">{{ field.help_text }}</div>
+            {% endif %}
+          </div>
+          {% endfor %}
+
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger py-2 small">{{ form.non_field_errors|join:" " }}</div>
+          {% endif %}
+
+          <div class="d-flex gap-2 mt-3">
+            <button type="submit" class="btn btn-primary flex-grow-1">
+              {% if edit %}
+                <i class="bi bi-check2 me-1"></i>Update
+              {% else %}
+                <i class="bi bi-plus-lg me-1"></i>Save
+              {% endif %}
+            </button>
+            <a href="{{ manage_url }}" class="btn btn-outline-secondary">
+              Cancel
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  {# ── RIGHT: Existing Items Table ── #}
+  <div class="col-lg-8">
+    <div class="panel">
+      <div class="panel-head d-flex align-items-center gap-2">
+        <i class="bi bi-table" style="color:var(--teal);"></i>
+        <span class="fw-semibold">Existing {{ kind|title }}s</span>
+        {% if rows %}
+          <span class="badge bg-secondary ms-auto">{{ rows|length }}</span>
+        {% endif %}
+      </div>
+
+      {% if rows %}
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0 small">
+          <thead class="table-light">
+            <tr>
+              {% if kind == 'department' %}
+                <th>Name</th><th>Code</th><th>Categories</th><th>Officers</th><th>Cases</th><th class="text-end">Actions</th>
+              {% elif kind == 'scheme' %}
+                <th>Name</th><th>Category</th><th>Income Limit</th><th>Cases</th><th>Active</th><th class="text-end">Actions</th>
+              {% elif kind == 'rule' %}
+                <th>Scheme</th><th>Rule Name</th><th>Field</th><th>Operator</th><th>Threshold</th><th>Active</th><th class="text-end">Actions</th>
+              {% elif kind == 'rate' %}
+                <th>Land Category</th><th>Base Rate</th><th>Multiplier</th><th>Extras</th><th>Deductions</th><th>Active</th><th class="text-end">Actions</th>
+              {% endif %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in rows %}
+            <tr{% if edit and edit.pk == row.pk %} class="table-active"{% endif %}>
+              {% if kind == 'department' %}
+                <td class="fw-semibold">{{ row.name }}</td>
+                <td><code>{{ row.code }}</code></td>
+                <td>
+                  {% for cat in row.categories %}
+                    <span class="badge bg-light text-dark border me-1">{{ cat|title }}</span>
+                  {% empty %}
+                    <span class="text-muted">—</span>
+                  {% endfor %}
+                </td>
+                <td>{{ row.officers.count|default:"0" }}</td>
+                <td>{{ row.applications.count|default:"0" }}</td>
+                <td class="text-end">
+                  <a href="{{ manage_url }}?edit={{ row.pk }}"
+                     class="btn btn-xs btn-outline-primary btn-sm me-1">
+                    <i class="bi bi-pencil"></i> Edit
+                  </a>
+                  <form method="post" action="" class="d-inline"
+                        onsubmit="return confirm('Delete {{ row.name }}? This cannot be undone.');">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="delete">
+                    <input type="hidden" name="id" value="{{ row.pk }}">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </form>
+                </td>
+
+              {% elif kind == 'scheme' %}
+                <td class="fw-semibold">{{ row.name }}</td>
+                <td>{{ row.get_category_display|default:row.category }}</td>
+                <td>
+                  {% if row.income_limit %}
+                    ₹{{ row.income_limit|floatformat:0 }}
+                  {% else %}
+                    <span class="text-muted">—</span>
+                  {% endif %}
+                </td>
+                <td>{{ row.cases|default:"0" }}</td>
+                <td>
+                  {% if row.active %}
+                    <span class="status status-approved">Active</span>
+                  {% else %}
+                    <span class="status status-rejected">Inactive</span>
+                  {% endif %}
+                </td>
+                <td class="text-end">
+                  <a href="{{ manage_url }}?edit={{ row.pk }}"
+                     class="btn btn-sm btn-outline-primary me-1">
+                    <i class="bi bi-pencil"></i> Edit
+                  </a>
+                  <form method="post" action="" class="d-inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="toggle">
+                    <input type="hidden" name="id" value="{{ row.pk }}">
+                    <button type="submit" class="btn btn-sm btn-outline-warning"
+                            title="{% if row.active %}Deactivate{% else %}Activate{% endif %}">
+                      {% if row.active %}
+                        <i class="bi bi-pause-circle"></i> Deactivate
+                      {% else %}
+                        <i class="bi bi-play-circle"></i> Activate
+                      {% endif %}
+                    </button>
+                  </form>
+                </td>
+
+              {% elif kind == 'rule' %}
+                <td>{{ row.scheme.name|default:"—" }}</td>
+                <td class="fw-semibold">{{ row.name }}</td>
+                <td><code>{{ row.field_name }}</code></td>
+                <td><span class="badge bg-light text-dark border">{{ row.operator }}</span></td>
+                <td>{{ row.threshold }}</td>
+                <td>
+                  {% if row.active %}
+                    <span class="status status-approved">Yes</span>
+                  {% else %}
+                    <span class="status status-rejected">No</span>
+                  {% endif %}
+                </td>
+                <td class="text-end">
+                  <a href="{{ manage_url }}?edit={{ row.pk }}"
+                     class="btn btn-sm btn-outline-primary me-1">
+                    <i class="bi bi-pencil"></i>
+                  </a>
+                  <form method="post" action="" class="d-inline"
+                        onsubmit="return confirm('Delete this rule?');">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="delete">
+                    <input type="hidden" name="id" value="{{ row.pk }}">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </form>
+                </td>
+
+              {% elif kind == 'rate' %}
+                <td class="fw-semibold">{{ row.land_category|default:"—" }}</td>
+                <td>₹{{ row.base_rate|floatformat:2 }}</td>
+                <td>×{{ row.multiplier|default:"1.0" }}</td>
+                <td>
+                  {% if row.additional_components %}
+                    <span class="text-success">+₹{{ row.additional_components|floatformat:0 }}</span>
+                  {% else %}
+                    <span class="text-muted">—</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if row.deductions %}
+                    <span class="text-danger">-₹{{ row.deductions|floatformat:0 }}</span>
+                  {% else %}
+                    <span class="text-muted">—</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if row.active %}
+                    <span class="status status-approved">Active</span>
+                  {% else %}
+                    <span class="status status-rejected">Inactive</span>
+                  {% endif %}
+                </td>
+                <td class="text-end">
+                  <a href="{{ manage_url }}?edit={{ row.pk }}"
+                     class="btn btn-sm btn-outline-primary me-1">
+                    <i class="bi bi-pencil"></i> Edit
+                  </a>
+                  <form method="post" action="" class="d-inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="toggle">
+                    <input type="hidden" name="id" value="{{ row.pk }}">
+                    <button type="submit" class="btn btn-sm btn-outline-warning">
+                      {% if row.active %}
+                        <i class="bi bi-pause-circle"></i> Deactivate
+                      {% else %}
+                        <i class="bi bi-play-circle"></i> Activate
+                      {% endif %}
+                    </button>
+                  </form>
+                </td>
+              {% endif %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+        <div class="empty-state py-5">
+          <i class="bi bi-inbox"></i>
+          <h6 class="mt-2">No {{ kind|title }}s Yet</h6>
+          <p class="text-muted small">Use the form on the left to add the first {{ kind }}.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}

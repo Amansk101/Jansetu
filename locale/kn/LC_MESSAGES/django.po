@@ -1,0 +1,212 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: JanSutra AI\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Dashboard"
+msgstr "ಡ್ಯಾಶ್ಬೋರ್ಡ್"
+
+msgid "Departments"
+msgstr "ಇಲಾಖೆಗಳು"
+
+msgid "New application"
+msgstr "ಹೊಸ ಅರ್ಜಿ"
+
+msgid "Application history"
+msgstr "ಅರ್ಜಿ ಇತಿಹಾಸ"
+
+msgid "AI Assistant"
+msgstr "ಎಐ ಸಹಾಯಕ"
+
+msgid "Documents"
+msgstr "ದಾಖಲೆಗಳು"
+
+msgid "Eligibility"
+msgstr "ಅರ್ಹತೆ"
+
+msgid "Compensation"
+msgstr "ಪರಿಹಾರ"
+
+msgid "Notifications"
+msgstr "ಅಧಿಸೂಚನೆಗಳು"
+
+msgid "Reports"
+msgstr "ವರದಿಗಳು"
+
+msgid "Analytics"
+msgstr "ವಿಶ್ಲೇಷಣೆ"
+
+msgid "Services"
+msgstr "ಸೇವೆಗಳು"
+
+msgid "Certificates"
+msgstr "ಪ್ರಮಾಣಪತ್ರಗಳು"
+
+msgid "Schemes"
+msgstr "ಯೋಜನೆಗಳು"
+
+msgid "Eligibility rules"
+msgstr "ಅರ್ಹತಾ ನಿಯಮಗಳು"
+
+msgid "Compensation rates"
+msgstr "ಪರಿಹಾರ ದರಗಳು"
+
+msgid "Accounts"
+msgstr "ಖಾತೆಗಳು"
+
+msgid "Send email"
+msgstr "ಇಮೇಲ್ ಕಳುಹಿಸಿ"
+
+msgid "Email templates"
+msgstr "ಇಮೇಲ್ ಟೆಂಪ್ಲೇಟ್ಗಳು"
+
+msgid "Audit logs"
+msgstr "ಆಡಿಟ್ ಲಾಗ್ಗಳು"
+
+msgid "Notifications log"
+msgstr "ಅಧಿಸೂಚನೆ ಲಾಗ್"
+
+msgid "Profile"
+msgstr "ಪ್ರೊಫೈಲ್"
+
+msgid "Home"
+msgstr "ಮುಖಪುಟ"
+
+msgid "Sign out"
+msgstr "ಸೈನ್ ಔಟ್"
+
+msgid "Sign in"
+msgstr "ಸೈನ್ ಇನ್"
+
+msgid "Create account"
+msgstr "ಖಾತೆ ರಚಿಸಿ"
+
+msgid "Open workspace"
+msgstr "ಕಾರ್ಯಕ್ಷೇತ್ರ ತೆರೆಯಿರಿ"
+
+msgid "Language"
+msgstr "ಭಾಷೆ"
+
+msgid "Citizen"
+msgstr "ನಾಗರಿಕ"
+
+msgid "Government Officer"
+msgstr "ಸರ್ಕಾರಿ ಅಧಿಕಾರಿ"
+
+msgid "Administrator"
+msgstr "ನಿರ್ವಾಹಕ"
+
+msgid "Less paperwork."
+msgstr "ಕಡಿಮೆ ಕಾಗದ ಪತ್ರಗಳು."
+
+msgid "Faster decisions."
+msgstr "ವೇಗದ ನಿರ್ಧಾರಗಳು."
+
+msgid "Transparent governance."
+msgstr "ಪಾರದರ್ಶಕ ಆಡಳಿತ."
+
+msgid "Register as citizen"
+msgstr "ನಾಗರಿಕರಾಗಿ ನೋಂದಣಿ ಮಾಡಿ"
+
+msgid "Open my workspace"
+msgstr "ನನ್ನ ಕಾರ್ಯಕ್ಷೇತ್ರ ತೆರೆಯಿರಿ"
+
+msgid "My dashboard"
+msgstr "ನನ್ನ ಡ್ಯಾಶ್ಬೋರ್ಡ್"
+
+msgid "Demonstration platform using synthetic data"
+msgstr "ಸಿಂಥೆಟಿಕ್ ಡೇಟಾ ಬಳಸುವ ಪ್ರದರ್ಶನ ವೇದಿಕೆ"
+
+msgid "Final decisions rest with authorised officers"
+msgstr "ಅಂತಿಮ ನಿರ್ಧಾರಗಳು ಅಧಿಕೃತ ಅಧಿಕಾರಿಗಳ ಬಳಿ ಇರುತ್ತವೆ"
+
+msgid "Revenue Department"
+msgstr "ಕಂದಾಯ ಇಲಾಖೆ"
+
+msgid "District Collectorate – Revenue Administration"
+msgstr "ಜಿಲ್ಲಾ ಕಲೆಕ್ಟರೇಟ್ – ಕಂದಾಯ ಆಡಳಿತ"
+
+msgid "Proposed Pilot Location:"
+msgstr "ಪ್ರಸ್ತಾವಿತ ಪೈಲಟ್ ಸ್ಥಳ:"
+
+msgid "Office of the Collector, South Goa."
+msgstr "ಕಲೆಕ್ಟರ್ ಕಚೇರಿ, ದಕ್ಷಿಣ ಗೋವಾ."
+
+msgid "What this platform solves for the department"
+msgstr "ಈ ವೇದಿಕೆ ಇಲಾಖೆಗೆ ಏನನ್ನು ಪರಿಹರಿಸುತ್ತದೆ"
+
+msgid "Land Acquisition & Compensation"
+msgstr "ಭೂ ಸ್ವಾಧೀನ ಮತ್ತು ಪರಿಹಾರ"
+
+msgid "Disaster Relief"
+msgstr "ವಿಪತ್ತು ಪರಿಹಾರ"
+
+msgid "Welfare Schemes"
+msgstr "ಕಲ್ಯಾಣ ಯೋಜನೆಗಳು"
+
+msgid "Revenue Services"
+msgstr "ಕಂದಾಯ ಸೇವೆಗಳು"
+
+msgid "How it works"
+msgstr "ಇದು ಹೇಗೆ ಕೆಲಸ ಮಾಡುತ್ತದೆ"
+
+msgid "Ready to try the workflow?"
+msgstr "ಕಾರ್ಯಪ್ರವಾಹವನ್ನು ಪ್ರಯತ್ನಿಸಲು ಸಿದ್ಧರಿದ್ದೀರಾ?"
+
+msgid "Log in"
+msgstr "ಲಾಗ್ ಇನ್"
+
+msgid "Sign up"
+msgstr "ಸೈನ್ ಅಪ್"
+
+msgid "Create your account"
+msgstr "ನಿಮ್ಮ ಖಾತೆ ರಚಿಸಿ"
+
+msgid "Sign up as a citizen to submit and track applications."
+msgstr "ಅರ್ಜಿ ಸಲ್ಲಿಸಲು ಮತ್ತು ಟ್ರ್ಯಾಕ್ ಮಾಡಲು ನಾಗರಿಕರಾಗಿ ಸೈನ್ ಅಪ್ ಮಾಡಿ."
+
+msgid "Create citizen account"
+msgstr "ನಾಗರಿಕ ಖಾತೆ ರಚಿಸಿ"
+
+msgid "Officer and administrator accounts are created by an administrator."
+msgstr "ಅಧಿಕಾರಿ ಮತ್ತು ನಿರ್ವಾಹಕ ಖಾತೆಗಳನ್ನು ನಿರ್ವಾಹಕರಿಂದ ರಚಿಸಲಾಗುತ್ತದೆ."
+
+msgid "Log in to Jan Sutra"
+msgstr "ಜನಸೂತ್ರಕ್ಕೆ ಲಾಗ್ ಇನ್ ಮಾಡಿ"
+
+msgid "Choose your account type and enter your credentials."
+msgstr "ನಿಮ್ಮ ಖಾತೆ ಪ್ರಕಾರವನ್ನು ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ನಿಮ್ಮ ರುಜುವಾತುಗಳನ್ನು ನಮೂದಿಸಿ."
+
+msgid "Account type"
+msgstr "ಖಾತೆ ಪ್ರಕಾರ"
+
+msgid "Username or email"
+msgstr "ಬಳಕೆದಾರಹೆಸರು ಅಥವಾ ಇಮೇಲ್"
+
+msgid "Password"
+msgstr "ಪಾಸ್ವರ್ಡ್"
+
+msgid "Forgot your password?"
+msgstr "ನಿಮ್ಮ ಪಾಸ್ವರ್ಡ್ ಮರೆತಿರಾ?"
+
+msgid "New citizen? Choose the Sign up tab to create an account."
+msgstr "ಹೊಸ ನಾಗರಿಕರೇ? ಖಾತೆ ರಚಿಸಲು ಸೈನ್ ಅಪ್ ಟ್ಯಾಬ್ ಆಯ್ಕೆಮಾಡಿ."
+
+msgid "Officer"
+msgstr "ಅಧಿಕಾರಿ"
+
+msgid "Admin"
+msgstr "ನಿರ್ವಾಹಕ"
+
+msgid "Full name"
+msgstr "ಪೂರ್ಣ ಹೆಸರು"
+
+msgid "Email address"
+msgstr "ಇಮೇಲ್ ವಿಳಾಸ"
+
+msgid ""
+msgstr "Project-Id-Version: JanSutra AI\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=2; plural=(n != 1);\n"
+

@@ -1,0 +1,154 @@
+{% extends 'base.html' %}{% load static i18n %}{% block title %}JanSutra AI · Revenue Department Pilot{% endblock %}
+{% block content %}
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container py-5">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-7">
+        <span class="eyebrow"><i class="bi bi-patch-check"></i> INTELLIGENT GOVERNANCE · PROPOSED PILOT</span>
+        <h1>{% trans "Less paperwork." %}<br>{% trans "Faster decisions." %}<br><span>{% trans "Transparent governance." %}</span></h1>
+        <p class="lead">JanSutra AI is a citizen-service and case-management platform built for the Revenue Department. It brings applications, document review, eligibility checks and compensation estimation into one accountable workflow — with officers making every final decision.</p>
+        <div class="d-flex flex-wrap gap-2 mt-4">
+          <a class="btn btn-primary" href="{% if user.is_authenticated %}{% url 'dashboard' %}{% else %}{% url 'register' %}{% endif %}">
+            {% if user.is_authenticated %}{% trans "Open my workspace" %}{% else %}{% trans "Register as citizen" %}{% endif %}<i class="bi bi-arrow-right ms-2"></i>
+          </a>
+          <a class="btn btn-outline-primary" href="{% if user.is_authenticated %}{% url 'dashboard' %}{% else %}{% url 'login' %}{% endif %}">
+            {% if user.is_authenticated %}{% trans "My dashboard" %}{% else %}{% trans "Sign in" %}{% endif %}
+          </a>
+        </div>
+        <p class="trustline mt-4 mb-0">
+          <i class="bi bi-shield-check"></i> {% trans "Demonstration platform using synthetic data" %}
+          <span>·</span> {% trans "Final decisions rest with authorised officers" %}
+        </p>
+      </div>
+      <div class="col-lg-5">
+        <div class="panel mb-0">
+          <div class="panel-head">
+            <div>
+              <span class="eyebrow mb-1">PRIMARY DEPARTMENT</span>
+              <h3 class="mb-1">{% trans "Revenue Department" %}</h3>
+              <p>{% trans "District Collectorate – Revenue Administration" %}</p>
+            </div>
+          </div>
+          <div class="callout mb-3">
+            <i class="bi bi-geo-alt"></i>
+            <span><strong>{% trans "Proposed Pilot Location:" %}</strong> {% trans "Office of the Collector, South Goa." %}</span>
+          </div>
+          <div class="callout">
+            <i class="bi bi-info-circle"></i>
+            <span>This is a proposed pilot concept for demonstration only. It is not an official government service and is not connected to any live government database.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Scope: what the platform solves -->
+<section class="section">
+  <div class="container">
+    <div class="section-head mb-4">
+      <span class="eyebrow"><i class="bi bi-diagram-3"></i> SCOPE</span>
+      <h2>{% trans "What this platform solves for the department" %}</h2>
+      <p class="mb-0">Four service areas handled end to end — from citizen submission to officer decision and department reporting.</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-6 col-xl-3">
+        <div class="feature-card">
+          <span class="iconbox"><i class="bi bi-map"></i></span>
+          <h5>{% trans "Land Acquisition & Compensation" %}</h5>
+          <p>Land-related applications with a transparent, configurable compensation estimator. Every figure is an illustrative estimate subject to official verification.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-xl-3">
+        <div class="feature-card">
+          <span class="iconbox"><i class="bi bi-cloud-rain-heavy"></i></span>
+          <h5>{% trans "Disaster Relief" %}</h5>
+          <p>Flood and other disaster relief applications with document capture, verification and status tracking from submission to decision.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-xl-3">
+        <div class="feature-card">
+          <span class="iconbox"><i class="bi bi-people"></i></span>
+          <h5>{% trans "Welfare Schemes" %}</h5>
+          <p>Government scheme applications with a rule-based eligibility check that explains every result for officer review — never an automatic rejection.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-xl-3">
+        <div class="feature-card">
+          <span class="iconbox"><i class="bi bi-file-earmark-text"></i></span>
+          <h5>{% trans "Revenue Services" %}</h5>
+          <p>Citizen applications, document verification and complete status tracking with notifications, remarks and downloadable acknowledgements.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How it works -->
+<section class="section pt-0">
+  <div class="container">
+    <div class="section-head mb-4">
+      <span class="eyebrow"><i class="bi bi-signpost-split"></i> WORKFLOW</span>
+      <h2>{% trans "How it works" %}</h2>
+      <p class="mb-0">A transparent six-step journey where AI assists and authorised officers decide.</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-lg-6">
+        <div class="panel h-100">
+          <div class="journey-step done">
+            <span>1</span>
+            <div><b>Citizen submits an application</b><small>Selects a service, fills the category form and uploads supporting documents.</small></div>
+            <i class="bi bi-arrow-right"></i>
+          </div>
+          <div class="journey-step done">
+            <span>2</span>
+            <div><b>AI processes the documents</b><small>OCR extracts name, address, document number and dates; missing or unreadable fields and possible duplicates are flagged.</small></div>
+            <i class="bi bi-arrow-right"></i>
+          </div>
+          <div class="journey-step done">
+            <span>3</span>
+            <div><b>Eligibility &amp; compensation</b><small>The rules engine checks eligibility and the calculator estimates compensation where a land case applies, with a full breakdown.</small></div>
+            <i class="bi bi-arrow-right"></i>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="panel h-100">
+          <div class="journey-step current">
+            <span>4</span>
+            <div><b>Officer reviews the case</b><small>Verifies documents, corrects extracted data, requests missing documents and records the official approve or reject decision with a reason.</small></div>
+            <i class="bi bi-arrow-right"></i>
+          </div>
+          <div class="journey-step">
+            <span>5</span>
+            <div><b>Citizen is notified</b><small>Sees the updated status, officer remarks and final decision in their dashboard, and can respond to correction requests.</small></div>
+            <i class="bi bi-arrow-right"></i>
+          </div>
+          <div class="journey-step">
+            <span>6</span>
+            <div><b>Administrator monitors</b><small>Views live application statistics, department and scheme performance, audit trails and exportable CSV reports.</small></div>
+            <i class="bi bi-arrow-right"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-strip">
+  <div class="container d-flex flex-wrap justify-content-between align-items-center gap-3">
+    <div>
+      <h3 class="mb-1 text-white">{% trans "Ready to try the workflow?" %}</h3>
+      <p class="mb-0">Sign in with a demo account or register as a citizen to submit an application.</p>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+      <a class="btn btn-primary" href="{% url 'login' %}">{% trans "Sign in" %}</a>
+      <a class="btn btn-outline-light" href="{% url 'register' %}">{% trans "Create citizen account" %}</a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

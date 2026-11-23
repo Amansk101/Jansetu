@@ -1,0 +1,65 @@
+# Render Blueprint for JanSutra AI (Django + PostgreSQL).
+# Deploy: Render Dashboard -> New -> Blueprint -> select this repository.
+databases:
+  - name: jansutra-db
+    databaseName: jansutra
+    user: jansutra
+    plan: free
+    region: singapore
+
+services:
+  - type: web
+    name: jansutra-ai
+    runtime: python
+    plan: free
+    region: singapore
+    buildCommand: './build.sh'
+    startCommand: 'gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120'
+    envVars:
+      - key: PYTHON_VERSION
+        value: '3.13.4'
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_DEBUG
+        value: 'false'
+      - key: DJANGO_ALLOWED_HOSTS
+        value: '.onrender.com'
+      - key: DJANGO_CSRF_TRUSTED_ORIGINS
+        value: 'https://*.onrender.com'
+      - key: DATABASE_URL
+        fromDatabase:
+          name: jansutra-db
+          property: connectionString
+      - key: REQUIRE_EMAIL_VERIFICATION
+        value: 'false'
+      - key: WEB_CONCURRENCY
+        value: '2'
+      # --- Administrator / District Collector account (created during build) ---
+      - key: COLLECTOR_USERNAME
+        value: admin
+      - key: COLLECTOR_EMAIL
+        value: armaan.sk113@gmail.com
+      - key: COLLECTOR_PASSWORD
+        sync: false
+      # --- AI Citizen Assistant (leave the key blank to use FAQ-only answers) ---
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-3.8-flash
+      - key: GEMINI_FALLBACK_MODELS
+        value: 'gemini-flash-latest,gemini-3.1-flash-lite'
+      - key: GEMINI_TIMEOUT
+        value: '3'
+      # --- Outgoing email (certificates, status updates) ---
+      - key: EMAIL_HOST
+        value: smtp.gmail.com
+      - key: EMAIL_PORT
+        value: '587'
+      - key: EMAIL_USE_TLS
+        value: 'true'
+      - key: EMAIL_HOST_USER
+        value: armaan.sk113@gmail.com
+      - key: EMAIL_HOST_PASSWORD
+        sync: false
+      - key: DEFAULT_FROM_EMAIL
+        value: 'JanSutra AI <armaan.sk113@gmail.com>'

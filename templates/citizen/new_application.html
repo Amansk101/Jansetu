@@ -1,0 +1,443 @@
+{% extends 'base.html' %}{% block title %}New Application · JanSutra AI{% endblock %}{% block content %}
+<main class="app-shell">
+  <div class="container-fluid px-lg-5 py-4" style="max-width:900px">
+
+    <div class="page-heading mb-4">
+      <a class="backlink" href="{% url 'departments' %}"><i class="bi bi-arrow-left"></i> Back to departments</a>
+      <h1>Submit New Application</h1>
+      <p>Choose the department, then the exact service. The documents you can upload appear automatically — any two of them are mandatory. <span class="text-muted small">A unique Application ID is generated on submission.</span></p>
+    </div>
+
+    {% if preselected %}
+    <div class="callout mb-4">
+      <i class="bi bi-check2-circle" style="color:var(--teal);font-size:1.1rem;flex:none"></i>
+      <div><strong>Applying for {{ preselected.name }}</strong> · {{ preselected.department.name }}. The document checklist for this service is already loaded — upload any two.</div>
+    </div>
+    {% endif %}
+
+    <form id="applicationForm" method="post" action="{% url 'new_application' %}" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+      {% for value, label in form.fields.category.choices %}
+        <input type="radio" name="category" value="{{ value }}" class="d-none cat-radio" {% if form.category.value == value %}checked{% endif %}>
+      {% endfor %}
+
+      <!-- Step 1: Department -->
+      <section class="panel mb-4">
+        <div class="panel-head"><div><h3><span class="badge bg-secondary me-2">1</span>Choose Department</h3><p>Which government department do you need a service from?</p></div></div>
+        <div class="p-4">
+          <div class="row g-3">
+            {% for d in departments %}
+            <div class="col-6 col-md-4">
+              <button type="button" class="dept-card card w-100 h-100 border rounded-3 p-3 text-start" data-dept="{{ d.id }}" style="cursor:pointer">
+                <i class="bi {{ d.icon|default:'bi-building' }} fs-3 text-primary mb-2"></i>
+                <strong class="d-block small">{{ d.name }}</strong>
+                <span class="text-muted" style="font-size:.78rem">{{ d.services.count }} service{{ d.services.count|pluralize }}</span>
+              </button>
+            </div>
+            {% empty %}
+            <p class="text-muted mb-0">No departments are configured yet. Please contact the administrator.</p>
+            {% endfor %}
+          </div>
+        </div>
+      </section>
+
+      <!-- Step 2: Service -->
+      <section class="panel mb-4 d-none" id="step-service">
+        <div class="panel-head"><div><h3><span class="badge bg-secondary me-2">2</span>Choose Service</h3><p>Select the exact service you are applying for.</p></div></div>
+        <div class="p-4">
+          <label class="form-label fw-semibold" for="serviceSelect">Service</label>
+          <select name="service_slug" id="serviceSelect" class="form-select" disabled>
+            <option value="">— Choose a department first —</option>
+          </select>
+          <div class="form-text">Not sure? Open a service from the <a href="{% url 'departments' %}">departments directory</a> to read the details first.</div>
+        </div>
+      </section>
+
+      <!-- Step 3: Details -->
+      <section class="panel mb-4 d-none" id="step-details">
+        <div class="panel-head"><div><h3><span class="badge bg-secondary me-2">3</span>Application Details</h3><p>Tell us about your request.</p></div></div>
+        <div class="p-4">
+
+          <div id="field-scheme" class="mb-3 d-none">
+            <label class="form-label fw-semibold" for="{{ form.scheme.id_for_label }}">Welfare Scheme <span class="text-danger">*</span></label>
+            {{ form.scheme }}
+            {% if form.scheme.errors %}<div class="text-danger small mt-1">{{ form.scheme.errors }}</div>{% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold" for="{{ form.description.id_for_label }}">Description <span class="text-danger">*</span></label>
+            {{ form.description }}
+            {% if form.description.errors %}<div class="text-danger small mt-1">{{ form.description.errors }}</div>{% endif %}
+            <div class="form-text">Briefly explain why you are applying and any relevant background.</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold" for="{{ form.income.id_for_label }}">Annual Household Income (&#8377;)</label>
+            {{ form.income }}
+            {% if form.income.errors %}<div class="text-danger small mt-1">{{ form.income.errors }}</div>{% endif %}
+          </div>
+
+          <div id="field-land_area" class="mb-3 d-none">
+            <label class="form-label fw-semibold" for="{{ form.land_area.id_for_label }}">Land Area (in acres) <span class="text-danger">*</span></label>
+            {{ form.land_area }}
+            {% if form.land_area.errors %}<div class="text-danger small mt-1">{{ form.land_area.errors }}</div>{% endif %}
+          </div>
+        </div>
+      </section>
+
+      <!-- Category-specific extras -->
+      <section class="panel mb-4 extra-fields d-none" id="extra-welfare">
+        <div class="panel-head"><div><h3><i class="bi bi-people me-2 text-primary"></i>Welfare Details</h3></div></div>
+        <div class="p-4 row g-3">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Beneficiary Type</label>
+            <input type="text" name="beneficiary_type" class="form-control" placeholder="e.g. BPL household, widow, farmer">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Number of Family Members</label>
+            <input type="number" name="family_members" class="form-control" min="1" placeholder="e.g. 4">
+          </div>
+        </div>
+      </section>
+
+      <section class="panel mb-4 extra-fields d-none" id="extra-disaster">
+        <div class="panel-head"><div><h3><i class="bi bi-exclamation-triangle me-2 text-warning"></i>Disaster Details</h3></div></div>
+        <div class="p-4 row g-3">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Type of Disaster</label>
+            <input type="text" name="disaster_type" class="form-control" placeholder="e.g. flood, drought, cyclone">
+          </div>
+          <div class="col-md-12">
+            <label class="form-label fw-semibold">Loss Summary</label>
+            <textarea name="loss_summary" class="form-control" rows="3" placeholder="Describe the damage / losses incurred"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel mb-4 extra-fields d-none" id="extra-land">
+        <div class="panel-head"><div><h3><i class="bi bi-geo-alt me-2 text-success"></i>Land Details</h3></div></div>
+        <div class="p-4 row g-3">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Survey Number</label>
+            <input type="text" name="survey_number" class="form-control" placeholder="e.g. 123/4A">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Ownership Type</label>
+            <input type="text" name="ownership" class="form-control" placeholder="e.g. Sole owner, joint, inherited">
+          </div>
+        </div>
+      </section>
+
+      <section class="panel mb-4 extra-fields d-none" id="extra-revenue">
+        <div class="panel-head"><div><h3><i class="bi bi-receipt me-2 text-info"></i>Revenue Service Details</h3></div></div>
+        <div class="p-4 row g-3">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Property / Record ID</label>
+            <input type="text" name="property_id" class="form-control" placeholder="e.g. CTS-4512, Survey no.">
+          </div>
+        </div>
+      </section>
+
+      <!-- Step 4: Documents -->
+      <section class="panel mb-4 d-none" id="step-docs">
+        <div class="panel-head"><div><h3><span class="badge bg-secondary me-2">4</span>Upload Documents</h3><p>Upload any <strong>2</strong> documents from the checklist below — those two are mandatory. The AI checks them and the case goes straight to the officer.</p></div></div>
+        <div class="p-4">
+          <div id="docUploadSlots">
+            <p class="text-muted mb-0"><i class="bi bi-arrow-up-circle me-1"></i>Select a service above to see the documents you must upload.</p>
+          </div>
+          <p class="small text-muted mt-3 mb-0"><i class="bi bi-info-circle me-1"></i>Attach PDF, JPG or PNG files (max 8 MB each). You can add more documents later from the application page. Clear scans help the AI read them.</p>
+        </div>
+      </section>
+
+      {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+
+      <div class="d-flex justify-content-end gap-2">
+        <a class="btn btn-outline-secondary" href="{% url 'dashboard' %}">Cancel</a>
+        <button type="submit" id="submitBtn" class="btn btn-primary px-4"><i class="bi bi-send me-2"></i>Review &amp; Submit</button>
+      </div>
+    </form>
+
+    <!-- Final review before submission (PRD §6) -->
+    <div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header"><h5 class="modal-title"><i class="bi bi-clipboard-check me-2 text-primary"></i>Review your application</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+          <div class="modal-body">
+            <p class="text-muted small">Check the details below. A unique Application ID is generated when you submit.</p>
+            <table class="table table-sm mb-3" id="confirmSummary"></table>
+            <div id="confirmMissing"></div>
+            <div class="form-check mt-3">
+              <input class="form-check-input" type="checkbox" id="confirmCheck">
+              <label class="form-check-label small" for="confirmCheck">I confirm that the information and documents provided are correct.</label>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Go back</button>
+            <button type="button" class="btn btn-primary" id="confirmSubmitBtn" disabled><i class="bi bi-send me-2"></i>Confirm &amp; Submit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+{{ service_index|json_script:"service-index-data" }}
+<script>
+(function () {
+  var index = [];
+  try { index = JSON.parse(document.getElementById('service-index-data').textContent); } catch (e) { index = []; }
+  var bySlug = {};
+  index.forEach(function (s) { bySlug[s.slug] = s; });
+  var preselected = "{{ preselected.slug|default:'' }}";
+
+  var select = document.getElementById('serviceSelect');
+  var slots = document.getElementById('docUploadSlots');
+  var stepService = document.getElementById('step-service');
+  var stepDetails = document.getElementById('step-details');
+  var stepDocs = document.getElementById('step-docs');
+  var cards = document.querySelectorAll('.dept-card');
+
+  function escapeHtml(text) {
+    var d = document.createElement('div');
+    d.textContent = text == null ? '' : text;
+    return d.innerHTML;
+  }
+
+  function fillSelect(deptId) {
+    select.innerHTML = '<option value="">— Select a service —</option>';
+    index.filter(function (s) { return String(s.department_id) === String(deptId); }).forEach(function (s) {
+      var o = document.createElement('option');
+      o.value = s.slug;
+      o.textContent = s.name;
+      o.dataset.cat = s.category;
+      select.appendChild(o);
+    });
+    select.disabled = false;
+  }
+
+  function highlightCard(deptId) {
+    cards.forEach(function (c) {
+      var on = String(c.dataset.dept) === String(deptId);
+      c.classList.toggle('border-primary', on);
+      c.classList.toggle('shadow-sm', on);
+    });
+  }
+
+  function setCategory(cat) {
+    var found = false;
+    document.querySelectorAll('.cat-radio').forEach(function (r) {
+      r.checked = (r.value === cat);
+      if (r.checked) found = true;
+    });
+    return found;
+  }
+
+  var extraSections = ['extra-welfare', 'extra-disaster', 'extra-land', 'extra-revenue'];
+  var conditionalFields = ['field-scheme', 'field-land_area'];
+  function applyCategory(cat) {
+    conditionalFields.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.classList.add('d-none');
+    });
+    extraSections.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.classList.add('d-none');
+    });
+    var shows = { welfare: ['field-scheme', 'extra-welfare'], land: ['field-land_area', 'extra-land'],
+                  disaster: ['extra-disaster'], revenue: ['extra-revenue'] }[cat] || [];
+    shows.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.classList.remove('d-none');
+    });
+  }
+
+  function renderSlots(reqs) {
+    slots.innerHTML = '';
+    if (!reqs || !reqs.length) {
+      slots.innerHTML = '<p class="text-muted mb-0"><i class="bi bi-info-circle me-1"></i>This service has no document checklist. Describe your request above.</p>';
+      return;
+    }
+    reqs.forEach(function (req, i) {
+      var row = document.createElement('div');
+      row.className = 'd-flex flex-wrap align-items-center gap-3 border rounded-3 p-3 mb-2';
+
+      var info = document.createElement('div');
+      info.className = 'flex-grow-1';
+      info.style.minWidth = '220px';
+      var badge = req.required
+        ? '<span class="badge bg-primary-subtle text-primary border border-primary ms-1">Recommended</span>'
+        : '<span class="badge bg-light text-secondary border ms-1">Optional</span>';
+      info.innerHTML = '<div class="fw-semibold small"><i class="bi bi-file-earmark-text me-2 text-primary"></i>'
+        + escapeHtml(req.name) + badge + '</div>'
+        + (req.hint ? '<div class="text-muted" style="font-size:.78rem">' + escapeHtml(req.hint) + '</div>' : '');
+      var hidden = document.createElement('input');
+      hidden.type = 'hidden';
+      hidden.name = 'doclabel_' + i;
+      hidden.value = req.name;
+      info.appendChild(hidden);
+
+      var input = document.createElement('input');
+      input.type = 'file';
+      input.className = 'form-control form-control-sm';
+      input.style.maxWidth = '260px';
+      input.name = 'docfile_' + i;
+      input.accept = '.pdf,.jpg,.jpeg,.png';
+
+      var status = document.createElement('span');
+      status.className = 'badge bg-light text-secondary border';
+      status.textContent = 'Not uploaded';
+      input.addEventListener('change', function () {
+        if (input.files && input.files.length) {
+          status.className = 'badge bg-success-subtle text-success border border-success';
+          status.textContent = 'Ready: ' + input.files[0].name;
+          row.classList.add('border-success');
+        } else {
+          status.className = 'badge bg-light text-secondary border';
+          status.textContent = 'Not uploaded';
+          row.classList.remove('border-success');
+        }
+      });
+
+      row.appendChild(info);
+      row.appendChild(input);
+      row.appendChild(status);
+      slots.appendChild(row);
+    });
+  }
+
+  function pickService(slug) {
+    var s = bySlug[slug];
+    if (!s) { renderSlots([]); stepDetails.classList.add('d-none'); stepDocs.classList.add('d-none'); return; }
+    setCategory(s.category);
+    applyCategory(s.category);
+    renderSlots(s.requirements);
+    stepDetails.classList.remove('d-none');
+    stepDocs.classList.remove('d-none');
+  }
+
+  cards.forEach(function (card) {
+    card.addEventListener('click', function () {
+      highlightCard(card.dataset.dept);
+      fillSelect(card.dataset.dept);
+      stepService.classList.remove('d-none');
+      select.value = '';
+      pickService('');
+    });
+  });
+
+  select.addEventListener('change', function () { pickService(select.value); });
+
+  // When arriving from a service page, pre-select the department and service.
+  if (preselected && bySlug[preselected]) {
+    var dept = bySlug[preselected].department_id;
+    highlightCard(dept);
+    fillSelect(dept);
+    stepService.classList.remove('d-none');
+    select.value = preselected;
+    pickService(preselected);
+  }
+
+  // ---- Final review and confirmation before submission (PRD §6) ----
+  var formEl = document.getElementById('applicationForm');
+  var modalEl = document.getElementById('confirmModal');
+  var summaryEl = document.getElementById('confirmSummary');
+  var missingEl = document.getElementById('confirmMissing');
+  var confirmCheck = document.getElementById('confirmCheck');
+  var confirmBtn = document.getElementById('confirmSubmitBtn');
+  var confirmModal = new bootstrap.Modal(modalEl);
+  var missingCount = 0;
+
+  function fieldValue(name) {
+    var el = document.querySelector('[name="' + name + '"]');
+    return el && el.value ? el.value.trim() : '';
+  }
+
+  function slotRows() {
+    return Array.prototype.slice.call(slots.querySelectorAll('.d-flex'));
+  }
+
+  function uploadedDocs() {
+    var docs = [];
+    slotRows().forEach(function (row) {
+      var hidden = row.querySelector('input[type="hidden"]');
+      var input = row.querySelector('input[type="file"]');
+      if (input && input.files && input.files.length) {
+        docs.push((hidden ? hidden.value : input.name) + ' — ' + input.files[0].name);
+      }
+    });
+    return docs;
+  }
+
+  // Any two documents from the service's checklist must be attached (mandatory).
+  function checkList() {
+    var service = bySlug[select.value];
+    if (!service) return [];
+    return (service.requirements || []).map(function (r) { return r.name; });
+  }
+
+  function attachedDocuments() {
+    var names = checkList();
+    var attached = [];
+    slotRows().forEach(function (row) {
+      var hidden = row.querySelector('input[type="hidden"]');
+      var input = row.querySelector('input[type="file"]');
+      if (!hidden || !input) return;
+      if (names.indexOf(hidden.value) !== -1 && input.files && input.files.length) attached.push(hidden.value);
+    });
+    return attached;
+  }
+
+  function syncConfirm() {
+    confirmBtn.disabled = !confirmCheck.checked || missingCount > 0;
+  }
+
+  function renderSummary() {
+    var service = bySlug[select.value] || {};
+    var docs = uploadedDocs();
+    var rows = [
+      ['Department', service.department || '—'],
+      ['Service', service.name || '—'],
+      ['Description', fieldValue('description') || 'Not provided'],
+      ['Annual household income', fieldValue('income') ? '₹' + fieldValue('income') : 'Not provided']
+    ];
+    if (fieldValue('land_area')) rows.push(['Land area (acres)', fieldValue('land_area')]);
+    rows.push(['Documents attached', docs.length ? docs.join('<br>') : 'None']);
+    summaryEl.innerHTML = rows.map(function (pair) {
+      return '<tr><th class="text-muted fw-semibold" style="width:34%">' + escapeHtml(pair[0]) + '</th><td>' + pair[1] + '</td></tr>';
+    }).join('');
+
+    var checklist = checkList();
+    var need = Math.min(2, checklist.length);
+    var attached = attachedDocuments();
+    missingCount = Math.max(0, need - attached.length);
+    var parts = [];
+    if (missingCount > 0) {
+      parts.push('<div class="alert alert-warning mb-0"><strong>Attach at least ' + need
+        + ' documents from the checklist.</strong> Attached ' + attached.length + ' of ' + need + '.');
+      parts.push('</div>');
+    } else {
+      parts.push('<div class="alert alert-success mb-0"><i class="bi bi-check2-circle me-1"></i>'
+        + attached.length + ' document' + (attached.length === 1 ? '' : 's') + ' attached — you can submit.</div>');
+    }
+    missingEl.innerHTML = parts.join('');
+  }
+
+  formEl.addEventListener('submit', function (event) {
+    event.preventDefault();
+    if (!select.value || !bySlug[select.value]) {
+      window.alert('Please choose a department and the exact service before submitting.');
+      return;
+    }
+    renderSummary();
+    confirmCheck.checked = false;
+    syncConfirm();
+    confirmModal.show();
+  });
+  confirmCheck.addEventListener('change', syncConfirm);
+  confirmBtn.addEventListener('click', function () { formEl.submit(); });
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,122 @@
+{% extends 'base.html' %}{% load static %}{% block title %}{{ title }} · JanSutra AI{% endblock %}{% block content %}
+<div class="page-heading mb-4">
+  <div><span class="eyebrow"><i class="bi bi-diagram-3"></i> ADMINISTRATION</span><h1>{{ title }}</h1>
+  <p class="mb-0">Services and their document checklists drive the citizen form, the AI check and the certificate.</p></div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-5">
+    <div class="panel h-100">
+      <div class="panel-head d-flex align-items-center gap-2">
+        <i class="bi {% if edit %}bi-pencil-square{% else %}bi-plus-circle{% endif %}" style="color:var(--teal)"></i>
+        <span class="fw-semibold">{% if edit %}Update service{% else %}Add new service{% endif %}</span>
+      </div>
+      <div class="p-3">
+        <form method="post" action="">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="save">
+          {% if edit %}<input type="hidden" name="id" value="{{ edit.pk }}">{% endif %}
+          {% for field in form %}
+          <div class="mb-3">
+            <label class="form-label fw-semibold small" for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} <span class="text-danger">*</span>{% endif %}</label>
+            {{ field }}
+            {% if field.errors %}<div class="text-danger small mt-1">{{ field.errors|join:" " }}</div>{% endif %}
+            {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+          </div>
+          {% endfor %}
+          {% if form.non_field_errors %}<div class="alert alert-danger py-2 small">{{ form.non_field_errors|join:" " }}</div>{% endif %}
+          <div class="d-flex gap-2 mt-3">
+            <button type="submit" class="btn btn-primary flex-grow-1"><i class="bi bi-check2 me-1"></i>{% if edit %}Update{% else %}Save{% endif %}</button>
+            <a href="{% url 'manage_services' %}" class="btn btn-outline-secondary">Reset</a>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    {% if edit %}
+    <div class="panel mt-4">
+      <div class="panel-head d-flex align-items-center gap-2">
+        <i class="bi bi-list-check" style="color:var(--teal)"></i>
+        <span class="fw-semibold">Document checklist · {{ edit.name }}</span>
+      </div>
+      <div class="p-3">
+        <ul class="list-unstyled mb-3">
+          {% for r in requirements %}
+          <li class="d-flex align-items-center gap-2 border-bottom py-2">
+            <span class="flex-grow-1">
+              <strong class="small">{{ r.name }}</strong>
+              {% if r.required %}<span class="badge bg-danger-subtle text-danger border border-danger">Required</span>{% else %}<span class="badge bg-light text-secondary border">Optional</span>{% endif %}
+              {% if r.description %}<div class="text-muted" style="font-size:.76rem">{{ r.description }}</div>{% endif %}
+            </span>
+            <form method="post" action="">{% csrf_token %}
+              <input type="hidden" name="action" value="delete_requirement">
+              <input type="hidden" name="service" value="{{ edit.pk }}">
+              <input type="hidden" name="id" value="{{ r.pk }}">
+              <button class="btn btn-sm btn-outline-danger" type="submit"><i class="bi bi-trash"></i></button>
+            </form>
+          </li>
+          {% empty %}
+          <li class="text-muted small py-2">No documents yet. Add the first requirement below.</li>
+          {% endfor %}
+        </ul>
+        <form method="post" action="" class="border rounded-3 p-3 bg-light-subtle">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="add_requirement">
+          <input type="hidden" name="service" value="{{ edit.pk }}">
+          <div class="mb-2"><label class="form-label small fw-semibold">Document name</label>{{ requirement_form.name }}</div>
+          <div class="mb-2"><label class="form-label small fw-semibold">Hint (optional)</label>{{ requirement_form.description }}</div>
+          <div class="row g-2 mb-2">
+            <div class="col-6"><label class="form-label small fw-semibold">Formats</label>{{ requirement_form.accepted_formats }}</div>
+            <div class="col-3"><label class="form-label small fw-semibold">Max MB</label>{{ requirement_form.max_size_mb }}</div>
+            <div class="col-3"><label class="form-label small fw-semibold">Order</label>{{ requirement_form.order }}</div>
+          </div>
+          <div class="d-flex gap-3 mb-2">
+            <div class="form-check">{{ requirement_form.required }}<label class="form-check-label small ms-1">Required</label></div>
+            <div class="form-check">{{ requirement_form.active }}<label class="form-check-label small ms-1">Active</label></div>
+          </div>
+          <button class="btn btn-sm btn-primary" type="submit"><i class="bi bi-plus-lg me-1"></i>Add document</button>
+        </form>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="col-lg-7">
+    <div class="panel">
+      <div class="panel-head d-flex align-items-center gap-2">
+        <i class="bi bi-table" style="color:var(--teal)"></i><span class="fw-semibold">Service catalogue</span>
+        <span class="badge bg-secondary ms-auto">{{ services|length }}</span>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0 small">
+          <thead class="table-light"><tr><th>Service</th><th>Department</th><th>Docs</th><th>Cases</th><th>Active</th><th class="text-end">Actions</th></tr></thead>
+          <tbody>
+            {% for s in services %}
+            <tr{% if edit and edit.pk == s.pk %} class="table-active"{% endif %}>
+              <td><span class="fw-semibold">{{ s.name }}</span><div class="text-muted" style="font-size:.72rem">{{ s.get_category_display }}</div></td>
+              <td>{{ s.department.name }}</td>
+              <td>{{ s.requirements.count }}</td>
+              <td>{{ s.cases|default:"0" }}</td>
+              <td>{% if s.active %}<span class="status status-approved">Active</span>{% else %}<span class="status status-rejected">Inactive</span>{% endif %}</td>
+              <td class="text-end">
+                <a href="{% url 'manage_services' %}?edit={{ s.pk }}" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
+                <form method="post" action="" class="d-inline">{% csrf_token %}
+                  <input type="hidden" name="action" value="toggle"><input type="hidden" name="id" value="{{ s.pk }}">
+                  <button class="btn btn-sm btn-outline-warning" type="submit" title="Toggle active"><i class="bi bi-power"></i></button>
+                </form>
+                <form method="post" action="" class="d-inline" onsubmit="return confirm('Delete {{ s.name }}? This removes its document checklist too.');">{% csrf_token %}
+                  <input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="{{ s.pk }}">
+                  <button class="btn btn-sm btn-outline-danger" type="submit"><i class="bi bi-trash"></i></button>
+                </form>
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6"><div class="empty-state py-4"><i class="bi bi-inbox"></i><p class="text-muted small mb-0">No services yet. Add the first service on the left.</p></div></td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

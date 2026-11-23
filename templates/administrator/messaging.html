@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block title %}Send email · JanSutra AI{% endblock %}
+{% block content %}
+<main class="app-shell">
+  <div class="container-fluid px-lg-5 py-4">
+
+    <div class="page-heading mb-4">
+      <span class="eyebrow">ADMINISTRATION</span>
+      <h1>Send email</h1>
+      <p class="text-muted">Email an officer or citizen directly from JanSutra AI. The message is delivered from the department account and also saved as an in-app notification.</p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-lg-6">
+        <section class="panel">
+          <h5 style="color:var(--navy);"><i class="bi bi-envelope-plus me-2"></i>New message</h5>
+          <p class="small text-muted">{{ recipient_count }} officer/citizen account{{ recipient_count|pluralize }} currently have an email address.</p>
+          <form method="post" novalidate>
+            {% csrf_token %}
+            {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+            <div class="mb-3">
+              <label class="form-label" for="{{ form.recipient.id_for_label }}">Recipient</label>
+              {{ form.recipient }}
+              {% for error in form.recipient.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="{{ form.subject.id_for_label }}">Subject</label>
+              {{ form.subject }}
+              {% for error in form.subject.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="{{ form.message.id_for_label }}">Message</label>
+              {{ form.message }}
+              {% for error in form.message.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+            </div>
+            <button class="btn btn-primary"><i class="bi bi-send me-1"></i> Send email</button>
+          </form>
+        </section>
+      </div>
+
+      <div class="col-lg-6">
+        <section class="panel p-0">
+          <div class="panel-head px-3 pt-3 pb-2">
+            <div>
+              <h5 class="mb-0" style="color:var(--navy);"><i class="bi bi-clock-history me-2"></i>Recently sent</h5>
+              <p class="small text-muted mb-0">Messages sent from the administration console.</p>
+            </div>
+            <a href="{% url 'email_log' %}" class="small">Full delivery log</a>
+          </div>
+          {% if sent %}
+          <div class="table-responsive">
+            <table class="table align-middle mb-0">
+              <thead class="table-light"><tr><th>When</th><th>To</th><th>Subject</th><th>Status</th></tr></thead>
+              <tbody>
+                {% for log in sent %}
+                <tr>
+                  <td class="small text-muted text-nowrap">{{ log.created_at|date:'d M H:i' }}</td>
+                  <td class="small">
+                    {% if log.user %}{{ log.user.get_full_name|default:log.user.username }}{% else %}—{% endif %}<br>
+                    <span class="text-muted">{{ log.recipient }}</span>
+                  </td>
+                  <td class="small">{{ log.subject }}</td>
+                  <td>
+                    {% if log.status == 'sent' %}<span class="status status-approved">Sent</span>
+                    {% else %}<span class="status status-rejected" title="{{ log.error }}">Failed</span>{% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <div class="empty-state py-4">
+            <i class="bi bi-envelope"></i>
+            <h5>No messages sent yet</h5>
+            <p class="text-muted small mb-0">Emails you send from this page will be listed here.</p>
+          </div>
+          {% endif %}
+        </section>
+      </div>
+    </div>
+
+  </div>
+</main>
+{% endblock %}

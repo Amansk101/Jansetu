@@ -1,0 +1,67 @@
+{% extends 'base.html' %}{% block title %}{{ service.name }} · JanSutra AI{% endblock %}{% block content %}
+<main class="app-shell">
+  <div class="container-fluid px-lg-5 py-4" style="max-width:960px">
+
+    <div class="page-heading mb-4">
+      <a class="backlink" href="{% url 'department_detail' department.id %}"><i class="bi bi-arrow-left"></i> {{ department.name }}</a>
+      <div class="d-flex flex-wrap justify-content-between align-items-end gap-3">
+        <div>
+          <h1><i class="bi {{ service.icon|default:'bi-file-earmark-text' }} me-2 text-primary"></i>{{ service.name }}</h1>
+          <p class="mb-0">{{ service.description|default:"Government service offered by this department." }}</p>
+        </div>
+        <a class="btn btn-primary px-4" href="{% url 'new_application' %}?service={{ service.slug }}"><i class="bi bi-send me-2"></i>Apply for this service</a>
+      </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-md-3"><div class="metric"><div class="metric-icon teal"><i class="bi bi-clock"></i></div><small>Processing time</small><strong style="font-size:1rem">{{ service.processing_time|default:"As per rules" }}</strong></div></div>
+      <div class="col-6 col-md-3"><div class="metric"><div class="metric-icon amber"><i class="bi bi-cash-coin"></i></div><small>Fee</small><strong style="font-size:1rem">{{ service.fee|default:"As per notification" }}</strong></div></div>
+      <div class="col-6 col-md-3"><div class="metric"><div class="metric-icon coral"><i class="bi bi-file-earmark-text"></i></div><small>Documents</small><strong>{{ requirements|length }}</strong></div></div>
+      <div class="col-6 col-md-3"><div class="metric"><div class="metric-icon green"><i class="bi bi-patch-check"></i></div><small>Certificate</small><strong style="font-size:1rem">{% if template %}Issued{% else %}On approval{% endif %}</strong></div></div>
+    </div>
+
+    <section class="panel mb-4">
+      <div class="panel-head"><div><h3>Documents for this service</h3><p>Upload any <strong>2</strong> documents from this checklist — those two are mandatory. The AI checks each file before the officer reviews your case.</p></div></div>
+      <div class="p-3">
+        <ol class="mb-0 ps-3">
+          {% for r in requirements %}
+          <li class="mb-2">
+            <strong>{{ r.name }}</strong>
+            {% if r.required %}<span class="badge bg-primary-subtle text-primary border border-primary ms-1">Recommended</span>{% else %}<span class="badge bg-light text-secondary border ms-1">Optional</span>{% endif %}
+            {% if r.description %}<div class="text-muted small">{{ r.description }}</div>{% endif %}
+            <div class="text-muted" style="font-size:.76rem">{{ r.accepted_formats|default:"PDF, JPG, PNG" }} · max {{ r.max_size_mb }} MB</div>
+          </li>
+          {% empty %}
+          <li class="text-muted">No documents are configured for this service.</li>
+          {% endfor %}
+        </ol>
+      </div>
+    </section>
+
+    {% if service.eligibility %}
+    <section class="panel mb-4">
+      <div class="panel-head"><div><h3>Who can apply</h3></div></div>
+      <div class="p-3">{{ service.eligibility|linebreaks }}</div>
+    </section>
+    {% endif %}
+
+    {% if service.instructions %}
+    <section class="panel mb-4">
+      <div class="panel-head"><div><h3>How to apply</h3></div></div>
+      <div class="p-3">{{ service.instructions|linebreaks }}</div>
+    </section>
+    {% endif %}
+
+    <div class="callout mb-4">
+      <i class="bi bi-info-circle-fill" style="color:var(--teal);font-size:1.1rem;flex:none"></i>
+      <div>Upload any two documents from the checklist — those two are mandatory; attaching more speeds up verification. After you submit, the AI checks the files and forwards the case to the department officer, who approves it and emails the certificate to you.</div>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2">
+      <a class="btn btn-outline-secondary" href="{% url 'departments' %}">Browse more services</a>
+      <a class="btn btn-primary px-4" href="{% url 'new_application' %}?service={{ service.slug }}"><i class="bi bi-send me-2"></i>Apply now</a>
+    </div>
+
+  </div>
+</main>
+{% endblock %}

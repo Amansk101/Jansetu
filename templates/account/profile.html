@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% block title %}My Profile · JanSutra AI{% endblock %}
+{% block content %}
+<main class="app-shell">
+  <div class="container py-5">
+
+    <div class="page-heading mb-4">
+      <span class="eyebrow">ACCOUNT</span>
+      <h1>My Profile</h1>
+      <p class="text-muted">Personal details used on applications you submit or review.</p>
+    </div>
+
+    <div class="row g-4">
+
+      <!-- Left: Avatar + Account Info -->
+      <div class="col-lg-3">
+        <section class="panel text-center">
+          <!-- Avatar circle -->
+          <div class="avatar mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle bg-primary text-white fw-bold" style="width:80px;height:80px;font-size:2rem;">
+            {{ request.user.first_name|default:request.user.username|first|upper }}
+          </div>
+          <h5 class="mb-0" style="color:var(--navy);">{{ request.user.get_full_name|default:request.user.username }}</h5>
+          <p class="text-muted small mb-2">{{ request.user.email }}</p>
+          <!-- Role badge -->
+          <span class="badge rounded-pill px-3 py-1" style="background:var(--teal);font-size:.75em;">
+            {{ request.user.get_role_display }}
+          </span>
+
+          <hr class="my-3">
+
+          <div class="text-start small text-muted">
+            <div class="mb-2">
+              <i class="bi bi-envelope me-2"></i>
+              <strong>Email address:</strong><br>
+              <span class="text-dark">{{ request.user.email }}</span>
+            </div>
+            <div>
+              <i class="bi bi-shield-lock me-2"></i>
+              <strong>Password:</strong><br>
+              <a href="{% url 'password_change' %}">Change your password</a>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Right: Edit form -->
+      <div class="col-lg-9">
+        <form method="post" action="">
+          {% csrf_token %}
+
+          {% if form.non_field_errors %}
+          <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+          {% endif %}
+
+          <!-- Personal Information -->
+          <section class="panel mb-4">
+            <div class="panel-head mb-3">
+              <div>
+                <h5 class="mb-0" style="color:var(--navy);"><i class="bi bi-person me-2"></i>Personal Information</h5>
+              </div>
+            </div>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label fw-semibold" for="{{ form.first_name.id_for_label }}">{{ form.first_name.label }}</label>
+                {{ form.first_name }}
+                {% for error in form.first_name.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold" for="{{ form.last_name.id_for_label }}">{{ form.last_name.label }}</label>
+                {{ form.last_name }}
+                {% for error in form.last_name.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold" for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+                {{ form.email }}
+                {% for error in form.email.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold" for="{{ form.mobile.id_for_label }}">{{ form.mobile.label }}</label>
+                {{ form.mobile }}
+                {% for error in form.mobile.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold" for="{{ form.date_of_birth.id_for_label }}">{{ form.date_of_birth.label }}</label>
+                {{ form.date_of_birth }}
+                {% for error in form.date_of_birth.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+              </div>
+            </div>
+          </section>
+
+          <!-- Location -->
+          <section class="panel mb-4">
+            <div class="panel-head mb-3">
+              <div>
+                <h5 class="mb-0" style="color:var(--navy);"><i class="bi bi-geo-alt me-2"></i>Location Details</h5>
+              </div>
+            </div>
+            <div class="row g-3">
+              <div class="col-12">
+                <label class="form-label fw-semibold" for="{{ form.address.id_for_label }}">{{ form.address.label }}</label>
+                {{ form.address }}
+                {% for error in form.address.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fw-semibold" for="{{ form.district.id_for_label }}">{{ form.district.label }}</label>
+                {{ form.district }}
+                {% for error in form.district.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fw-semibold" for="{{ form.taluka.id_for_label }}">{{ form.taluka.label }}</label>
+                {{ form.taluka }}
+                {% for error in form.taluka.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fw-semibold" for="{{ form.village.id_for_label }}">{{ form.village.label }}</label>
+                {{ form.village }}
+                {% for error in form.village.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+              </div>
+            </div>
+          </section>
+
+          <div class="d-flex gap-2 align-items-center">
+            <button type="submit" class="btn btn-primary px-4">
+              <i class="bi bi-check2 me-1"></i> Save profile
+            </button>
+            <span class="text-muted small">
+              <i class="bi bi-shield-check me-1"></i>
+              To change your password use the Django admin or contact an administrator.
+            </span>
+          </div>
+
+        </form>
+      </div>
+
+    </div>
+  </div>
+</main>
+{% endblock %}

@@ -1,0 +1,531 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Administration Dashboard · JanSutra AI{% endblock %}
+
+{% block content %}
+<main class="app-shell">
+  <div class="container-fluid px-lg-5 py-4">
+
+    <!-- Page Heading -->
+    <header class="page-heading d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+      <div>
+        <span class="eyebrow"><i class="bi bi-shield-check"></i> DISTRICT OPERATIONS · ADMIN</span>
+        <h1>Administration Dashboard</h1>
+        <p class="mb-0">Full platform oversight — live data from all application records.</p>
+      </div>
+      <div class="d-flex gap-2 flex-wrap align-items-center">
+        {% if unread_count %}
+        <a href="{% url 'notifications' %}" class="btn btn-outline-secondary position-relative">
+          <i class="bi bi-bell"></i>
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">{{ unread_count }}</span>
+        </a>
+        {% endif %}
+        <a href="{% url 'reports' %}" class="btn btn-outline-primary"><i class="bi bi-file-earmark-bar-graph"></i> Reports</a>
+        <a href="{% url 'report_csv' %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="btn btn-outline-secondary"><i class="bi bi-download"></i> Export CSV</a>
+      </div>
+    </header>
+
+    <!-- Top-Row Stat Cards -->
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-xl-2">
+        <div class="metric">
+          <div class="metric-icon teal"><i class="bi bi-people"></i></div>
+          <small>Citizens</small>
+          <strong>{{ citizen_count }}</strong>
+        </div>
+      </div>
+      <div class="col-6 col-xl-2">
+        <div class="metric">
+          <div class="metric-icon teal"><i class="bi bi-person-badge"></i></div>
+          <small>Officers</small>
+          <strong>{{ officer_count }}</strong>
+        </div>
+      </div>
+      <div class="col-6 col-xl-2">
+        <div class="metric">
+          <div class="metric-icon teal"><i class="bi bi-files"></i></div>
+          <small>Total Applications</small>
+          <strong>{{ total }}</strong>
+        </div>
+      </div>
+      <div class="col-6 col-xl-2">
+        <div class="metric">
+          <div class="metric-icon amber"><i class="bi bi-hourglass-split"></i></div>
+          <small>Pending</small>
+          <strong>{{ pending }}</strong>
+        </div>
+      </div>
+      <div class="col-6 col-xl-2">
+        <div class="metric">
+          <div class="metric-icon green"><i class="bi bi-check2-circle"></i></div>
+          <small>Approved</small>
+          <strong>{{ approved }}</strong>
+        </div>
+      </div>
+      <div class="col-6 col-xl-2">
+        <div class="metric">
+          <div class="metric-icon coral"><i class="bi bi-x-circle"></i></div>
+          <small>Rejected</small>
+          <strong>{{ rejected }}</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <section class="panel mb-4">
+      <div class="panel-head">
+        <div>
+          <h3>Filter Applications</h3>
+          <p>Apply filters to the queue below and to CSV export</p>
+        </div>
+      </div>
+      <form class="row g-2 align-items-end px-1 pb-2" method="get" id="adminFilterForm">
+        <div class="col-12 col-md-3">
+          <label class="form-label">Search</label>
+          <input class="form-control" name="q" value="{{ request.GET.q }}" placeholder="Application ID or citizen name">
+        </div>
+        <div class="col-6 col-md-2">
+          <label class="form-label">Category</label>
+          <select class="form-select" name="category">
+            <option value="">All categories</option>
+            {% for value, label in categories %}
+            <option value="{{ value }}" {% if request.GET.category == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-6 col-md-2">
+          <label class="form-label">Status</label>
+          <select class="form-select" name="status">
+            <option value="">All statuses</option>
+            {% for value, label in statuses %}
+            <option value="{{ value }}" {% if request.GET.status == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-6 col-md-2">
+          <label class="form-label">From</label>
+          <input class="form-control" type="date" name="date_from" value="{{ request.GET.date_from }}">
+        </div>
+        <div class="col-6 col-md-2">
+          <label class="form-label">To</label>
+          <input class="form-control" type="date" name="date_to" value="{{ request.GET.date_to }}">
+        </div>
+        <div class="col-6 col-md-1">
+          <label class="form-label d-none d-md-block">&nbsp;</label>
+          <select class="form-select" name="sort">
+            <option value="-created_at" {% if sort == '-created_at' %}selected{% endif %}>Newest</option>
+            <option value="created_at" {% if sort == 'created_at' %}selected{% endif %}>Oldest</option>
+            <option value="status" {% if sort == 'status' %}selected{% endif %}>Status</option>
+            <option value="public_id" {% if sort == 'public_id' %}selected{% endif %}>App ID</option>
+          </select>
+        </div>
+        <div class="col-auto">
+          <label class="form-label d-none d-md-block">&nbsp;</label>
+          <button class="btn btn-outline-primary" type="submit"><i class="bi bi-funnel"></i> Apply</button>
+        </div>
+        {% if request.GET.q or request.GET.status or request.GET.category or request.GET.date_from or request.GET.date_to %}
+        <div class="col-auto">
+          <label class="form-label d-none d-md-block">&nbsp;</label>
+          <a href="{% url 'dashboard' %}" class="btn btn-link text-secondary">Clear</a>
+        </div>
+        {% endif %}
+      </form>
+    </section>
+
+    <!-- Main Content: Queue + Sidebar -->
+    <div class="row g-4 mb-4">
+
+      <!-- Application Queue (wider column) -->
+      <div class="col-xl-8">
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h3>Application Queue</h3>
+              <p>Assign officers and open detailed review</p>
+            </div>
+            <form method="get" action="{% url 'report_csv' %}">
+              {% for key, value in request.GET.items %}
+              <input type="hidden" name="{{ key }}" value="{{ value }}">
+              {% endfor %}
+              <button class="btn btn-sm btn-outline-primary" type="submit">
+                <i class="bi bi-download"></i> Export CSV
+              </button>
+            </form>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table align-middle">
+              <thead>
+                <tr>
+                  <th>
+                    <a href="?{{ filter_query }}&sort={% if sort == 'public_id' %}-public_id{% else %}public_id{% endif %}" class="text-dark text-decoration-none">
+                      App ID {% if sort == 'public_id' %}<i class="bi bi-caret-up-fill"></i>{% elif sort == '-public_id' %}<i class="bi bi-caret-down-fill"></i>{% endif %}
+                    </a>
+                  </th>
+                  <th>Citizen</th>
+                  <th>Category</th>
+                  <th>Scheme</th>
+                  <th>
+                    <a href="?{{ filter_query }}&sort={% if sort == 'status' %}-status{% else %}status{% endif %}" class="text-dark text-decoration-none">
+                      Status {% if sort == 'status' %}<i class="bi bi-caret-up-fill"></i>{% elif sort == '-status' %}<i class="bi bi-caret-down-fill"></i>{% endif %}
+                    </a>
+                  </th>
+                  <th>Days</th>
+                  <th>Assign Officer</th>
+                  <th>
+                    <a href="?{{ filter_query }}&sort={% if sort == 'created_at' %}-created_at{% else %}created_at{% endif %}" class="text-dark text-decoration-none">
+                      Submitted {% if sort == 'created_at' %}<i class="bi bi-caret-up-fill"></i>{% elif sort == '-created_at' %}<i class="bi bi-caret-down-fill"></i>{% endif %}
+                    </a>
+                  </th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for a in applications %}
+                <tr>
+                  <td><a class="fw-semibold" href="{% url 'application_detail' a.public_id %}">{{ a.public_id }}</a></td>
+                  <td>{{ a.citizen.get_full_name|default:a.citizen.username }}</td>
+                  <td>{{ a.get_category_display }}</td>
+                  <td>{{ a.scheme.name|default:"—" }}</td>
+                  <td><span class="status status-{{ a.status }}">{{ a.get_status_display }}</span></td>
+                  <td>
+                    {% if a.pending_days > 14 %}
+                    <span class="text-danger fw-semibold">{{ a.pending_days }}d</span>
+                    {% elif a.pending_days > 7 %}
+                    <span class="text-warning fw-semibold">{{ a.pending_days }}d</span>
+                    {% else %}
+                    <span class="text-muted">{{ a.pending_days }}d</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <form method="post" action="{% url 'officer_action' a.public_id %}" class="d-flex gap-1 align-items-center">
+                      {% csrf_token %}
+                      <input type="hidden" name="action" value="assign">
+                      <select class="form-select form-select-sm" name="officer" style="min-width:140px">
+                        <option value="">— Unassigned —</option>
+                        {% for o in officers %}
+                        <option value="{{ o.id }}" {% if a.assigned_officer_id == o.id %}selected{% endif %}>
+                          {{ o.get_full_name|default:o.username }}
+                        </option>
+                        {% endfor %}
+                      </select>
+                      <button class="btn btn-sm btn-outline-secondary" type="submit" title="Assign">
+                        <i class="bi bi-person-check"></i>
+                      </button>
+                    </form>
+                  </td>
+                  <td><span class="text-muted small">{{ a.created_at|date:"d M Y" }}</span></td>
+                  <td>
+                    <a class="btn btn-sm btn-light" href="{% url 'application_detail' a.public_id %}">
+                      Review <i class="bi bi-arrow-right"></i>
+                    </a>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="9">
+                    <div class="empty-state">
+                      <i class="bi bi-inbox"></i>
+                      <h5>No applications match these filters</h5>
+                      <p>Adjust your search criteria or clear all filters.</p>
+                      <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Clear filters</a>
+                    </div>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          {% if applications.paginator.num_pages > 1 %}
+          <div class="p-3 border-top d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+              {% if applications.has_previous %}
+              <a class="btn btn-sm btn-outline-secondary" href="?{{ filter_query }}&page={{ applications.previous_page_number }}">
+                <i class="bi bi-chevron-left"></i> Previous
+              </a>
+              {% else %}<span></span>{% endif %}
+            </div>
+            <span class="text-muted small">
+              Page {{ applications.number }} of {{ applications.paginator.num_pages }}
+              — {{ applications.paginator.count }} records
+            </span>
+            <div>
+              {% if applications.has_next %}
+              <a class="btn btn-sm btn-outline-secondary" href="?{{ filter_query }}&page={{ applications.next_page_number }}">
+                Next <i class="bi bi-chevron-right"></i>
+              </a>
+              {% else %}<span></span>{% endif %}
+            </div>
+          </div>
+          {% endif %}
+        </section>
+      </div>
+
+      <!-- Right Sidebar: Charts + Links -->
+      <div class="col-xl-4">
+
+        <!-- Status Doughnut -->
+        <section class="panel mb-4">
+          <div class="panel-head">
+            <div>
+              <h3>By Status</h3>
+              <p>Filtered record counts</p>
+            </div>
+          </div>
+          <canvas id="statusChart" height="220"></canvas>
+          {{ by_status|json_script:"statusData" }}
+        </section>
+
+        <!-- Category Bar -->
+        <section class="panel mb-4">
+          <div class="panel-head">
+            <div>
+              <h3>By Category</h3>
+              <p>Filtered service breakdown</p>
+            </div>
+          </div>
+          <canvas id="categoryChart" height="180"></canvas>
+          {{ by_category|json_script:"categoryData" }}
+        </section>
+
+        <!-- Monthly Trend Bar -->
+        <section class="panel mb-4">
+          <div class="panel-head">
+            <div>
+              <h3>Monthly Trend</h3>
+              <p>Applications submitted over time</p>
+            </div>
+          </div>
+          <canvas id="monthlyChart" height="180"></canvas>
+          {{ monthly_trend|json_script:"monthlyData" }}
+        </section>
+
+        <!-- Quick Admin Links -->
+        <section class="panel mb-4">
+          <div class="panel-head">
+            <div>
+              <h3>Quick Admin Links</h3>
+              <p>Manage platform settings</p>
+            </div>
+          </div>
+          <div class="d-flex flex-column gap-2 pb-2">
+            <a href="{% url 'manage_departments' %}" class="btn btn-outline-secondary text-start">
+              <i class="bi bi-building me-2"></i>Departments
+            </a>
+            <a href="{% url 'manage_schemes' %}" class="btn btn-outline-secondary text-start">
+              <i class="bi bi-collection me-2"></i>Schemes
+            </a>
+            <a href="{% url 'manage_rules' %}" class="btn btn-outline-secondary text-start">
+              <i class="bi bi-sliders me-2"></i>Eligibility Rules
+            </a>
+            <a href="{% url 'manage_rates' %}" class="btn btn-outline-secondary text-start">
+              <i class="bi bi-cash-coin me-2"></i>Compensation Rates
+            </a>
+            <a href="{% url 'manage_accounts' %}" class="btn btn-outline-secondary text-start">
+              <i class="bi bi-people me-2"></i>Accounts
+            </a>
+            <a href="{% url 'audit_logs' %}" class="btn btn-outline-secondary text-start">
+              <i class="bi bi-journal-text me-2"></i>Audit Logs
+            </a>
+            <a href="{% url 'reports' %}" class="btn btn-primary text-start">
+              <i class="bi bi-file-earmark-bar-graph me-2"></i>Reports &amp; Analytics
+            </a>
+          </div>
+        </section>
+
+        <!-- Officer Workload -->
+        {% if officers %}
+        <section class="panel mb-4">
+          <div class="panel-head">
+            <div>
+              <h3>Officer Workload</h3>
+              <p>Assigned cases per officer</p>
+            </div>
+          </div>
+          {% for officer in officers %}
+          <div class="workload-row">
+            <span>{{ officer.get_full_name|default:officer.username }}</span>
+            <b>{{ officer.assigned_applications.count }} cases</b>
+          </div>
+          {% endfor %}
+        </section>
+        {% endif %}
+
+      </div>
+    </div>
+
+    <!-- Bottom Panels: Scheme + Department Tables -->
+    <div class="row g-4 mb-4">
+
+      <!-- Scheme Performance -->
+      <div class="col-lg-6">
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h3>Scheme Statistics</h3>
+              <p>Applications per scheme (all time)</p>
+            </div>
+          </div>
+          {% if by_scheme %}
+          <div class="table-responsive">
+            <table class="table align-middle mb-0">
+              <thead>
+                <tr>
+                  <th>Scheme</th>
+                  <th class="text-end">Applications</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in by_scheme %}
+                <tr>
+                  <td>{{ row.scheme__name|default:"No scheme assigned" }}</td>
+                  <td class="text-end fw-semibold">{{ row.n }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <div class="empty-state">
+            <i class="bi bi-collection"></i>
+            <h5>No scheme data yet</h5>
+            <p>Scheme statistics appear once applications are submitted.</p>
+          </div>
+          {% endif %}
+        </section>
+      </div>
+
+      <!-- Department Performance -->
+      <div class="col-lg-6">
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h3>Department Performance</h3>
+              <p>Cases and officers per department</p>
+            </div>
+          </div>
+          {% if department_rows %}
+          <div class="table-responsive">
+            <table class="table align-middle mb-0">
+              <thead>
+                <tr>
+                  <th>Department</th>
+                  <th class="text-center">Cases</th>
+                  <th class="text-center">Officers</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in department_rows %}
+                <tr>
+                  <td class="fw-semibold">{{ row.name }}</td>
+                  <td class="text-center">{{ row.n }}</td>
+                  <td class="text-center">{{ row.officers_n }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <div class="empty-state">
+            <i class="bi bi-building"></i>
+            <h5>No departments configured</h5>
+            <p><a href="{% url 'manage_departments' %}">Create departments</a> to see this breakdown.</p>
+          </div>
+          {% endif %}
+        </section>
+      </div>
+
+    </div>
+
+  </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+(function () {
+  const COLORS = ['#167d9a','#e8a23a','#2e9d75','#d9534f','#39a6a3','#627d98','#102a43','#b87c1e','#52c1bd','#f4a261'];
+
+  function buildDoughnut(canvasId, dataId) {
+    const el = document.getElementById(dataId);
+    if (!el) return;
+    const raw = JSON.parse(el.textContent);
+    if (!raw || !raw.length) return;
+    new Chart(document.getElementById(canvasId), {
+      type: 'doughnut',
+      data: {
+        labels: raw.map(r => r.status || r.category || '—'),
+        datasets: [{ data: raw.map(r => r.n), backgroundColor: COLORS, borderWidth: 2, borderColor: '#fff' }]
+      },
+      options: {
+        cutout: '62%',
+        plugins: { legend: { position: 'right', labels: { font: { family: 'DM Sans', size: 11 }, boxWidth: 13 } } },
+        maintainAspectRatio: true
+      }
+    });
+  }
+
+  function buildBar(canvasId, dataId, labelKey) {
+    const el = document.getElementById(dataId);
+    if (!el) return;
+    const raw = JSON.parse(el.textContent);
+    if (!raw || !raw.length) return;
+    new Chart(document.getElementById(canvasId), {
+      type: 'bar',
+      data: {
+        labels: raw.map(r => r[labelKey] || '—'),
+        datasets: [{
+          data: raw.map(r => r.n),
+          backgroundColor: COLORS,
+          borderRadius: 5,
+          borderSkipped: false
+        }]
+      },
+      options: {
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, grid: { color: '#e4ebf2' }, ticks: { font: { family: 'DM Sans' } } },
+          x: { grid: { display: false }, ticks: { font: { family: 'DM Sans', size: 11 } } }
+        },
+        maintainAspectRatio: true
+      }
+    });
+  }
+
+  function buildMonthlyBar(canvasId, dataId) {
+    const el = document.getElementById(dataId);
+    if (!el) return;
+    const raw = JSON.parse(el.textContent);
+    if (!raw || !raw.length) return;
+    new Chart(document.getElementById(canvasId), {
+      type: 'bar',
+      data: {
+        labels: raw.map(r => r.month ? r.month.substring(0, 7) : '—'),
+        datasets: [{
+          label: 'Applications',
+          data: raw.map(r => r.n),
+          backgroundColor: '#167d9a',
+          borderRadius: 5,
+          borderSkipped: false
+        }]
+      },
+      options: {
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, grid: { color: '#e4ebf2' }, ticks: { font: { family: 'DM Sans' } } },
+          x: { grid: { display: false }, ticks: { font: { family: 'DM Sans', size: 11 }, maxRotation: 45 } }
+        },
+        maintainAspectRatio: true
+      }
+    });
+  }
+
+  buildDoughnut('statusChart', 'statusData');
+  buildBar('categoryChart', 'categoryData', 'category');
+  buildMonthlyBar('monthlyChart', 'monthlyData');
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,11 @@
+Django>=5.2,<6.1
+Pillow>=10.0
+python-dotenv>=1.0
+psycopg[binary]>=3.2
+pytesseract>=0.3.13
+pdf2image>=1.17
+opencv-python-headless>=4.10
+# Production serving (Render): WSGI server, static files, DATABASE_URL parsing.
+gunicorn>=23.0
+whitenoise>=6.7
+dj-database-url>=2.2

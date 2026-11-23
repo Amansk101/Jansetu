@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}Notifications · JanSutra AI{% endblock %}
+{% block content %}
+<main class="app-shell">
+  <div class="container py-5">
+
+    <div class="page-heading d-flex justify-content-between align-items-start mb-4">
+      <div>
+        <span class="eyebrow">UPDATES</span>
+        <h1>
+          Notifications
+          {% if unread_count %}
+          <span class="badge rounded-pill bg-danger ms-2" style="font-size:.6em;vertical-align:middle;">{{ unread_count }} unread</span>
+          {% endif %}
+        </h1>
+        <p class="text-muted">Stay informed about your service applications and status changes.</p>
+      </div>
+      {% if notifications %}
+      <form method="post" action="">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="mark_all_read">
+        <button type="submit" class="btn btn-outline-primary">
+          <i class="bi bi-check2-all me-1"></i> Mark all read
+        </button>
+      </form>
+      {% endif %}
+    </div>
+
+    <section class="panel p-0">
+      {% for n in notifications %}
+      <div class="notification-row {% if not n.read %}unread{% endif %} d-flex align-items-start gap-3 p-3" style="border-bottom:1px solid var(--line);">
+        <div class="notification-icon flex-shrink-0 d-flex align-items-center justify-content-center rounded-circle {% if not n.read %}bg-primary text-white{% else %}bg-light text-muted{% endif %}" style="width:40px;height:40px;">
+          <i class="bi bi-bell{% if not n.read %}-fill{% endif %}"></i>
+        </div>
+        <div class="flex-grow-1 min-width-0">
+          <div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
+            <p class="mb-0 {% if not n.read %}fw-bold{% endif %}" style="color:var(--navy);">{{ n.message }}</p>
+            <small class="text-muted text-nowrap">
+              <i class="bi bi-clock me-1"></i>{{ n.created_at|date:"d M Y, H:i" }}
+            </small>
+          </div>
+          {% if n.application %}
+          <div class="mt-1">
+            <a href="{% url 'application_detail' n.application.public_id %}" class="btn btn-sm btn-outline-secondary py-0">
+              <i class="bi bi-box-arrow-up-right me-1"></i>View application {{ n.application.public_id }}
+            </a>
+          </div>
+          {% endif %}
+        </div>
+        {% if not n.read %}
+        <span class="flex-shrink-0 rounded-circle bg-primary" style="width:8px;height:8px;margin-top:6px;" title="Unread"></span>
+        {% endif %}
+      </div>
+      {% empty %}
+      <div class="empty-state py-5 text-center">
+        <i class="bi bi-bell-slash" style="font-size:3rem;color:var(--muted);"></i>
+        <h5 class="mt-3" style="color:var(--navy);">No notifications yet</h5>
+        <p class="text-muted">When your applications are updated, notifications will appear here.</p>
+        <a href="{% url 'new_application' %}" class="btn btn-primary mt-2">
+          <i class="bi bi-plus-circle me-1"></i> Submit an application
+        </a>
+      </div>
+      {% endfor %}
+    </section>
+
+  </div>
+</main>
+{% endblock %}

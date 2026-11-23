@@ -1,0 +1,212 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: JanSutra AI\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Dashboard"
+msgstr "ડેશબોર્ડ"
+
+msgid "Departments"
+msgstr "વિભાગો"
+
+msgid "New application"
+msgstr "નવી અરજી"
+
+msgid "Application history"
+msgstr "અરજી ઇતિહાસ"
+
+msgid "AI Assistant"
+msgstr "એઆઈ સહાયક"
+
+msgid "Documents"
+msgstr "દસ્તાવેજો"
+
+msgid "Eligibility"
+msgstr "પાત્રતા"
+
+msgid "Compensation"
+msgstr "વળતર"
+
+msgid "Notifications"
+msgstr "સૂચનાઓ"
+
+msgid "Reports"
+msgstr "અહેવાલો"
+
+msgid "Analytics"
+msgstr "વિશ્લેષણ"
+
+msgid "Services"
+msgstr "સેવાઓ"
+
+msgid "Certificates"
+msgstr "પ્રમાણપત્રો"
+
+msgid "Schemes"
+msgstr "યોજનાઓ"
+
+msgid "Eligibility rules"
+msgstr "પાત્રતા નિયમો"
+
+msgid "Compensation rates"
+msgstr "વળતર દરો"
+
+msgid "Accounts"
+msgstr "ખાતાં"
+
+msgid "Send email"
+msgstr "ઇમેઇલ મોકલો"
+
+msgid "Email templates"
+msgstr "ઇમેઇલ ટેમ્પલેટ"
+
+msgid "Audit logs"
+msgstr "ઓડિટ લોગ"
+
+msgid "Notifications log"
+msgstr "સૂચના લોગ"
+
+msgid "Profile"
+msgstr "પ્રોફાઇલ"
+
+msgid "Home"
+msgstr "હોમ"
+
+msgid "Sign out"
+msgstr "સાઇન આઉટ"
+
+msgid "Sign in"
+msgstr "સાઇન ઇન"
+
+msgid "Create account"
+msgstr "ખાતું બનાવો"
+
+msgid "Open workspace"
+msgstr "વર્કસ્પેસ ખોલો"
+
+msgid "Language"
+msgstr "ભાષા"
+
+msgid "Citizen"
+msgstr "નાગરિક"
+
+msgid "Government Officer"
+msgstr "સરકારી અધિકારી"
+
+msgid "Administrator"
+msgstr "વ્યવસ્થાપક"
+
+msgid "Less paperwork."
+msgstr "ઓછું કાગળકામ."
+
+msgid "Faster decisions."
+msgstr "ઝડપી નિર્ણયો."
+
+msgid "Transparent governance."
+msgstr "પારદર્શક શાસન."
+
+msgid "Register as citizen"
+msgstr "નાગરિક તરીકે નોંધણી કરો"
+
+msgid "Open my workspace"
+msgstr "મારું વર્કસ્પેસ ખોલો"
+
+msgid "My dashboard"
+msgstr "મારું ડેશબોર્ડ"
+
+msgid "Demonstration platform using synthetic data"
+msgstr "સિન્થેટિક ડેટાનો ઉપયોગ કરતું પ્રદર્શન પ્લેટફોર્મ"
+
+msgid "Final decisions rest with authorised officers"
+msgstr "અંતિમ નિર્ણયો અધિકૃત અધિકારીઓ પાસે રહે છે"
+
+msgid "Revenue Department"
+msgstr "મહેસૂલ વિભાગ"
+
+msgid "District Collectorate – Revenue Administration"
+msgstr "જિલ્લા કલેક્ટર કચેરી – મહેસૂલ વહીવટ"
+
+msgid "Proposed Pilot Location:"
+msgstr "પ્રસ્તાવિત પાયલોટ સ્થળ:"
+
+msgid "Office of the Collector, South Goa."
+msgstr "કલેક્ટર કચેરી, દક્ષિણ ગોવા."
+
+msgid "What this platform solves for the department"
+msgstr "આ પ્લેટફોર્મ વિભાગ માટે શું ઉકેલે છે"
+
+msgid "Land Acquisition & Compensation"
+msgstr "જમીન સંપાદન અને વળતર"
+
+msgid "Disaster Relief"
+msgstr "આપત્તિ રાહત"
+
+msgid "Welfare Schemes"
+msgstr "કલ્યાણ યોજનાઓ"
+
+msgid "Revenue Services"
+msgstr "મહેસૂલ સેવાઓ"
+
+msgid "How it works"
+msgstr "તે કેવી રીતે કાર્ય કરે છે"
+
+msgid "Ready to try the workflow?"
+msgstr "વર્કફ્લો અજમાવવા તૈયાર છો?"
+
+msgid "Log in"
+msgstr "લોગ ઇન"
+
+msgid "Sign up"
+msgstr "સાઇન અપ"
+
+msgid "Create your account"
+msgstr "તમારું ખાતું બનાવો"
+
+msgid "Sign up as a citizen to submit and track applications."
+msgstr "અરજી સબમિટ કરવા અને ટ્રેક કરવા નાગરિક તરીકે સાઇન અપ કરો."
+
+msgid "Create citizen account"
+msgstr "નાગરિક ખાતું બનાવો"
+
+msgid "Officer and administrator accounts are created by an administrator."
+msgstr "અધિકારી અને વ્યવસ્થાપક ખાતાં એક વ્યવસ્થાપક દ્વારા બનાવવામાં આવે છે."
+
+msgid "Log in to Jan Sutra"
+msgstr "જનસૂત્રમાં લોગ ઇન કરો"
+
+msgid "Choose your account type and enter your credentials."
+msgstr "તમારો ખાતાનો પ્રકાર પસંદ કરો અને તમારી વિગતો દાખલ કરો."
+
+msgid "Account type"
+msgstr "ખાતાનો પ્રકાર"
+
+msgid "Username or email"
+msgstr "વપરાશકર્તાનામ અથવા ઇમેઇલ"
+
+msgid "Password"
+msgstr "પાસવર્ડ"
+
+msgid "Forgot your password?"
+msgstr "તમારો પાસવર્ડ ભૂલી ગયા?"
+
+msgid "New citizen? Choose the Sign up tab to create an account."
+msgstr "નવા નાગરિક? ખાતું બનાવવા સાઇન અપ ટૅબ પસંદ કરો."
+
+msgid "Officer"
+msgstr "અધિકારી"
+
+msgid "Admin"
+msgstr "વ્યવસ્થાપક"
+
+msgid "Full name"
+msgstr "પૂરું નામ"
+
+msgid "Email address"
+msgstr "ઈમેલ સરનામું"
+
+msgid ""
+msgstr "Project-Id-Version: JanSutra AI\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=2; plural=(n != 1);\n"
+

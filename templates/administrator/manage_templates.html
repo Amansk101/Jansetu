@@ -1,0 +1,70 @@
+{% extends 'base.html' %}{% load static %}{% block title %}{{ title }} · JanSutra AI{% endblock %}{% block content %}
+<div class="page-heading mb-4">
+  <div><span class="eyebrow"><i class="bi bi-patch-check"></i> ADMINISTRATION</span><h1>{{ title }}</h1>
+  <p class="mb-0">The layout used when a service is approved. The certificate number and QR code are added automatically.</p></div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-5">
+    <div class="panel h-100">
+      <div class="panel-head d-flex align-items-center gap-2">
+        <i class="bi {% if edit %}bi-pencil-square{% else %}bi-plus-circle{% endif %}" style="color:var(--teal)"></i>
+        <span class="fw-semibold">{% if edit %}Update template{% else %}Add new template{% endif %}</span>
+      </div>
+      <div class="p-3">
+        <form method="post" action="">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="save">
+          {% if edit %}<input type="hidden" name="id" value="{{ edit.pk }}">{% endif %}
+          {% for field in form %}
+          <div class="mb-3">
+            <label class="form-label fw-semibold small" for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} <span class="text-danger">*</span>{% endif %}</label>
+            {{ field }}
+            {% if field.errors %}<div class="text-danger small mt-1">{{ field.errors|join:" " }}</div>{% endif %}
+            {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+          </div>
+          {% endfor %}
+          {% if form.non_field_errors %}<div class="alert alert-danger py-2 small">{{ form.non_field_errors|join:" " }}</div>{% endif %}
+          <div class="d-flex gap-2 mt-3">
+            <button type="submit" class="btn btn-primary flex-grow-1"><i class="bi bi-check2 me-1"></i>{% if edit %}Update{% else %}Save{% endif %}</button>
+            <a href="{% url 'manage_templates' %}" class="btn btn-outline-secondary">Reset</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-7">
+    <div class="panel">
+      <div class="panel-head d-flex align-items-center gap-2">
+        <i class="bi bi-table" style="color:var(--teal)"></i><span class="fw-semibold">Configured templates</span>
+        <span class="badge bg-secondary ms-auto">{{ rows|length }}</span>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0 small">
+          <thead class="table-light"><tr><th>Service</th><th>Title</th><th>Signatory</th><th>Active</th><th class="text-end">Actions</th></tr></thead>
+          <tbody>
+            {% for t in rows %}
+            <tr{% if edit and edit.pk == t.pk %} class="table-active"{% endif %}>
+              <td><span class="fw-semibold">{{ t.service.name }}</span><div class="text-muted" style="font-size:.72rem">{{ t.service.department.name }}</div></td>
+              <td>{{ t.title }}{% if t.subtitle %}<div class="text-muted" style="font-size:.72rem">{{ t.subtitle|truncatechars:50 }}</div>{% endif %}</td>
+              <td>{{ t.signatory_name|default:t.signatory_designation|default:"—" }}</td>
+              <td>{% if t.active %}<span class="status status-approved">Active</span>{% else %}<span class="status status-rejected">Inactive</span>{% endif %}</td>
+              <td class="text-end">
+                <a href="{% url 'manage_templates' %}?edit={{ t.pk }}" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
+                <form method="post" action="" class="d-inline" onsubmit="return confirm('Delete this certificate template?');">{% csrf_token %}
+                  <input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="{{ t.pk }}">
+                  <button class="btn btn-sm btn-outline-danger" type="submit"><i class="bi bi-trash"></i></button>
+                </form>
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5"><div class="empty-state py-4"><i class="bi bi-inbox"></i><p class="text-muted small mb-0">No templates yet. When a service has no template, a standard certificate is generated.</p></div></td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

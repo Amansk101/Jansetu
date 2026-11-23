@@ -1,0 +1,212 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: JanSutra AI\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Dashboard"
+msgstr "ड्यासबोर्ड"
+
+msgid "Departments"
+msgstr "दिभाग"
+
+msgid "New application"
+msgstr "गोदान आवेदन"
+
+msgid "Application history"
+msgstr "आवेदन जौथाय"
+
+msgid "AI Assistant"
+msgstr "एआइ हेल्पार"
+
+msgid "Documents"
+msgstr "दोकुमेन्ट"
+
+msgid "Eligibility"
+msgstr "जायखिजाया"
+
+msgid "Compensation"
+msgstr "मुआवजा"
+
+msgid "Notifications"
+msgstr "बुंथु"
+
+msgid "Reports"
+msgstr "रिपर्ट"
+
+msgid "Analytics"
+msgstr "बिजिरनाय"
+
+msgid "Services"
+msgstr "सिबाय"
+
+msgid "Certificates"
+msgstr "सर्टिफिकेट"
+
+msgid "Schemes"
+msgstr "स्किम"
+
+msgid "Eligibility rules"
+msgstr "जायखिजाया नियम"
+
+msgid "Compensation rates"
+msgstr "मुआवजा दर"
+
+msgid "Accounts"
+msgstr "अकाउन्ट"
+
+msgid "Send email"
+msgstr "इमेल दैथाय"
+
+msgid "Email templates"
+msgstr "इमेल टेम्पलेट"
+
+msgid "Audit logs"
+msgstr "अडिट लग"
+
+msgid "Notifications log"
+msgstr "बुंथु लग"
+
+msgid "Profile"
+msgstr "प्रोफाइल"
+
+msgid "Home"
+msgstr "होम"
+
+msgid "Sign out"
+msgstr "साइन आउट"
+
+msgid "Sign in"
+msgstr "साइन इन"
+
+msgid "Create account"
+msgstr "अकाउन्ट दा"
+
+msgid "Open workspace"
+msgstr "वर्कस्पेस खेव"
+
+msgid "Language"
+msgstr "राव"
+
+msgid "Citizen"
+msgstr "नागरिक"
+
+msgid "Government Officer"
+msgstr "सरकारी अफिसार"
+
+msgid "Administrator"
+msgstr "एडमिनिस्ट्रेटर"
+
+msgid "Less paperwork."
+msgstr "खम कागज खामानि।"
+
+msgid "Faster decisions."
+msgstr "खोरोम सानथाइ।"
+
+msgid "Transparent governance."
+msgstr "साफा शासन।"
+
+msgid "Register as citizen"
+msgstr "नागरिक हिसाबै रेजिस्टार खालाम"
+
+msgid "Open my workspace"
+msgstr "आंनि वर्कस्पेस खेव"
+
+msgid "My dashboard"
+msgstr "आंनि ड्यासबोर्ड"
+
+msgid "Demonstration platform using synthetic data"
+msgstr "नकली डेटा बाहायनाय दिनथि मंच"
+
+msgid "Final decisions rest with authorised officers"
+msgstr "जोबोर सानथाइखौ मोनथाय जानाय अफिसारफोरनि आखाय थायो"
+
+msgid "Revenue Department"
+msgstr "राजस्व दिभाग"
+
+msgid "District Collectorate – Revenue Administration"
+msgstr "जिला कलेक्टरेट – राजस्व प्रशासन"
+
+msgid "Proposed Pilot Location:"
+msgstr "फोरमानखानाय पाइलट जायगा:"
+
+msgid "Office of the Collector, South Goa."
+msgstr "कलेक्टर दफ्तर, दक्षिण गोवा।"
+
+msgid "What this platform solves for the department"
+msgstr "बे मंचा दिभागनि थाखाय मा सोलायो"
+
+msgid "Land Acquisition & Compensation"
+msgstr "हा बाहायनाय आरो मुआवजा"
+
+msgid "Disaster Relief"
+msgstr "दुखुनि हेल्प"
+
+msgid "Welfare Schemes"
+msgstr "हालो दिहुननाय स्किमफोर"
+
+msgid "Revenue Services"
+msgstr "राजस्व सिबायफोर"
+
+msgid "How it works"
+msgstr "बे माबोरै खामलायो"
+
+msgid "Ready to try the workflow?"
+msgstr "वर्कफ्लो नाजानाय थाखाय सिगां?"
+
+msgid "Log in"
+msgstr "लग इन"
+
+msgid "Sign up"
+msgstr "साइन आप"
+
+msgid "Create your account"
+msgstr "नोंनि अकाउन्ट दा"
+
+msgid "Sign up as a citizen to submit and track applications."
+msgstr "आवेदन दैथाय आरो ट्रयाक खालामनो नागरिक हिसाबै साइन आप खालाम।"
+
+msgid "Create citizen account"
+msgstr "नागरिक अकाउन्ट दा"
+
+msgid "Officer and administrator accounts are created by an administrator."
+msgstr "अफिसार आरो एडमिन अकाउन्टखौ मोनसे एडमिना दा।"
+
+msgid "Log in to Jan Sutra"
+msgstr "जनसूत्रआव लग इन खालाम"
+
+msgid "Choose your account type and enter your credentials."
+msgstr "नोंनि अकाउन्ट रोखोम सायख’ आरो नोंनि खौथुमफोर हाब।"
+
+msgid "Account type"
+msgstr "अकाउन्ट रोखोम"
+
+msgid "Username or email"
+msgstr "बाहायग्रा मुं एबा इमेल"
+
+msgid "Password"
+msgstr "पासवर्ड"
+
+msgid "Forgot your password?"
+msgstr "नोंनि पासवर्ड बावबाय?"
+
+msgid "New citizen? Choose the Sign up tab to create an account."
+msgstr "गोदान नागरिक? अकाउन्ट दानो साइन आप टेब सायख’।"
+
+msgid "Officer"
+msgstr "अफिसार"
+
+msgid "Admin"
+msgstr "एडमिन"
+
+msgid "Full name"
+msgstr "आबुं मुंदांग"
+
+msgid "Email address"
+msgstr "इमेल ठिकाना"
+
+msgid ""
+msgstr "Project-Id-Version: JanSutra AI\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=2; plural=(n != 1);\n"
+

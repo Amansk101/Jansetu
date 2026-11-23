@@ -1,0 +1,212 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: JanSutra AI\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Dashboard"
+msgstr "ഡാഷ്ബോർഡ്"
+
+msgid "Departments"
+msgstr "വകുപ്പുകൾ"
+
+msgid "New application"
+msgstr "പുതിയ അപേക്ഷ"
+
+msgid "Application history"
+msgstr "അപേക്ഷാ ചരിത്രം"
+
+msgid "AI Assistant"
+msgstr "എഐ സഹായി"
+
+msgid "Documents"
+msgstr "രേഖകൾ"
+
+msgid "Eligibility"
+msgstr "യോഗ്യത"
+
+msgid "Compensation"
+msgstr "നഷ്ടപരിഹാരം"
+
+msgid "Notifications"
+msgstr "അറിയിപ്പുകൾ"
+
+msgid "Reports"
+msgstr "റിപ്പോർട്ടുകൾ"
+
+msgid "Analytics"
+msgstr "അനലിറ്റിക്സ്"
+
+msgid "Services"
+msgstr "സേവനങ്ങൾ"
+
+msgid "Certificates"
+msgstr "സർട്ടിഫിക്കറ്റുകൾ"
+
+msgid "Schemes"
+msgstr "പദ്ധതികൾ"
+
+msgid "Eligibility rules"
+msgstr "യോഗ്യതാ നിയമങ്ങൾ"
+
+msgid "Compensation rates"
+msgstr "നഷ്ടപരിഹാര നിരക്കുകൾ"
+
+msgid "Accounts"
+msgstr "അക്കൗണ്ടുകൾ"
+
+msgid "Send email"
+msgstr "ഇമെയിൽ അയയ്ക്കുക"
+
+msgid "Email templates"
+msgstr "ഇമെയിൽ ടെംപ്ലേറ്റുകൾ"
+
+msgid "Audit logs"
+msgstr "ഓഡിറ്റ് ലോഗുകൾ"
+
+msgid "Notifications log"
+msgstr "അറിയിപ്പ് ലോഗ്"
+
+msgid "Profile"
+msgstr "പ്രൊഫൈൽ"
+
+msgid "Home"
+msgstr "ഹോം"
+
+msgid "Sign out"
+msgstr "സൈൻ ഔട്ട്"
+
+msgid "Sign in"
+msgstr "സൈൻ ഇൻ"
+
+msgid "Create account"
+msgstr "അക്കൗണ്ട് സൃഷ്ടിക്കുക"
+
+msgid "Open workspace"
+msgstr "വർക്ക്സ്പേസ് തുറക്കുക"
+
+msgid "Language"
+msgstr "ഭാഷ"
+
+msgid "Citizen"
+msgstr "പൗരൻ"
+
+msgid "Government Officer"
+msgstr "ഗവൺമെന്റ് ഓഫീസർ"
+
+msgid "Administrator"
+msgstr "അഡ്മിനിസ്ട്രേറ്റർ"
+
+msgid "Less paperwork."
+msgstr "കുറഞ്ഞ കടലാസ് ജോലി."
+
+msgid "Faster decisions."
+msgstr "വേഗത്തിലുള്ള തീരുമാനങ്ങൾ."
+
+msgid "Transparent governance."
+msgstr "സുതാര്യമായ ഭരണം."
+
+msgid "Register as citizen"
+msgstr "പൗരനായി രജിസ്റ്റർ ചെയ്യുക"
+
+msgid "Open my workspace"
+msgstr "എന്റെ വർക്ക്സ്പേസ് തുറക്കുക"
+
+msgid "My dashboard"
+msgstr "എന്റെ ഡാഷ്ബോർഡ്"
+
+msgid "Demonstration platform using synthetic data"
+msgstr "സിന്തറ്റിക് ഡാറ്റ ഉപയോഗിക്കുന്ന പ്രദർശന വേദി"
+
+msgid "Final decisions rest with authorised officers"
+msgstr "അന്തിമ തീരുമാനങ്ങൾ അധികാരമുള്ള ഉദ്യോഗസ്ഥരുടെ കൈവശമാണ്"
+
+msgid "Revenue Department"
+msgstr "റവന്യൂ വകുപ്പ്"
+
+msgid "District Collectorate – Revenue Administration"
+msgstr "ജില്ലാ കലക്ട്രേറ്റ് – റവന്യൂ ഭരണം"
+
+msgid "Proposed Pilot Location:"
+msgstr "നിർദ്ദിഷ്ട പൈലറ്റ് സ്ഥലം:"
+
+msgid "Office of the Collector, South Goa."
+msgstr "കലക്ടർ ഓഫീസ്, ദക്ഷിണ ഗോവ."
+
+msgid "What this platform solves for the department"
+msgstr "ഈ വേദി വകുപ്പിനായി എന്താണ് പരിഹരിക്കുന്നത്"
+
+msgid "Land Acquisition & Compensation"
+msgstr "ഭൂമി ഏറ്റെടുക്കലും നഷ്ടപരിഹാരവും"
+
+msgid "Disaster Relief"
+msgstr "ദുരന്ത നിവാരണം"
+
+msgid "Welfare Schemes"
+msgstr "ക്ഷേമ പദ്ധതികൾ"
+
+msgid "Revenue Services"
+msgstr "റവന്യൂ സേവനങ്ങൾ"
+
+msgid "How it works"
+msgstr "ഇത് എങ്ങനെ പ്രവർത്തിക്കുന്നു"
+
+msgid "Ready to try the workflow?"
+msgstr "വർക്ക്ഫ്ലോ പരീക്ഷിക്കാൻ തയ്യാറാണോ?"
+
+msgid "Log in"
+msgstr "ലോഗിൻ"
+
+msgid "Sign up"
+msgstr "സൈൻ അപ്പ്"
+
+msgid "Create your account"
+msgstr "നിങ്ങളുടെ അക്കൗണ്ട് സൃഷ്ടിക്കുക"
+
+msgid "Sign up as a citizen to submit and track applications."
+msgstr "അപേക്ഷ സമർപ്പിക്കാനും ട്രാക്ക് ചെയ്യാനും പൗരനായി സൈൻ അപ്പ് ചെയ്യുക."
+
+msgid "Create citizen account"
+msgstr "പൗര അക്കൗണ്ട് സൃഷ്ടിക്കുക"
+
+msgid "Officer and administrator accounts are created by an administrator."
+msgstr "ഓഫീസർ, അഡ്മിനിസ്ട്രേറ്റർ അക്കൗണ്ടുകൾ ഒരു അഡ്മിനിസ്ട്രേറ്റർ സൃഷ്ടിക്കുന്നു."
+
+msgid "Log in to Jan Sutra"
+msgstr "ജൻസൂത്രയിൽ ലോഗിൻ ചെയ്യുക"
+
+msgid "Choose your account type and enter your credentials."
+msgstr "നിങ്ങളുടെ അക്കൗണ്ട് തരം തിരഞ്ഞെടുത്ത് നിങ്ങളുടെ വിവരങ്ങൾ നൽകുക."
+
+msgid "Account type"
+msgstr "അക്കൗണ്ട് തരം"
+
+msgid "Username or email"
+msgstr "ഉപയോക്തൃനാമം അല്ലെങ്കിൽ ഇമെയിൽ"
+
+msgid "Password"
+msgstr "പാസ്വേഡ്"
+
+msgid "Forgot your password?"
+msgstr "നിങ്ങളുടെ പാസ്വേഡ് മറന്നോ?"
+
+msgid "New citizen? Choose the Sign up tab to create an account."
+msgstr "പുതിയ പൗരനോ? അക്കൗണ്ട് സൃഷ്ടിക്കാൻ സൈൻ അപ്പ് ടാബ് തിരഞ്ഞെടുക്കുക."
+
+msgid "Officer"
+msgstr "ഓഫീസർ"
+
+msgid "Admin"
+msgstr "അഡ്മിനിസ്ട്രേറ്റർ"
+
+msgid "Full name"
+msgstr "പൂർണ്ണ നാമം"
+
+msgid "Email address"
+msgstr "ഇമെയിൽ വിലാസം"
+
+msgid ""
+msgstr "Project-Id-Version: JanSutra AI\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=2; plural=(n != 1);\n"
+

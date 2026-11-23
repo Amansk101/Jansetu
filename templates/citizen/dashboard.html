@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}My Dashboard · JanSutra AI{% endblock %}
+
+{% block content %}
+<main class="app-shell">
+  <div class="container-fluid px-lg-5 py-4">
+
+    <!-- Page Heading -->
+    <div class="page-heading d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+      <div>
+        <span class="eyebrow"><i class="bi bi-person-circle"></i> CITIZEN PORTAL</span>
+        <h1>My Applications</h1>
+        <p class="mb-0">Welcome back, <strong>{{ user.get_full_name|default:user.username }}</strong> — track your public service requests below.</p>
+      </div>
+      <div class="d-flex gap-2 flex-wrap align-items-center">
+        {% if unread_count %}
+        <a href="{% url 'notifications' %}" class="btn btn-outline-secondary position-relative">
+          <i class="bi bi-bell"></i> Notifications
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">{{ unread_count }}</span>
+        </a>
+        {% else %}
+        <a href="{% url 'notifications' %}" class="btn btn-outline-secondary">
+          <i class="bi bi-bell"></i> Notifications
+        </a>
+        {% endif %}
+        <a href="{% url 'assistant' %}" class="btn btn-outline-primary">
+          <i class="bi bi-robot"></i> AI Assistant
+        </a>
+        <a href="{% url 'application_history' %}" class="btn btn-outline-primary">
+          <i class="bi bi-clock-history"></i> Application History
+        </a>
+        <a href="{% url 'new_application' %}" class="btn btn-primary">
+          <i class="bi bi-plus-lg"></i> New Application
+        </a>
+      </div>
+    </div>
+
+    <!-- Metric Cards -->
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-xl-3">
+        <div class="metric">
+          <div class="metric-icon teal"><i class="bi bi-files"></i></div>
+          <small>Total Applications</small>
+          <strong>{{ total }}</strong>
+        </div>
+      </div>
+      <div class="col-6 col-xl-3">
+        <div class="metric">
+          <div class="metric-icon green"><i class="bi bi-check2-circle"></i></div>
+          <small>Approved</small>
+          <strong>{{ approved }}</strong>
+        </div>
+      </div>
+      <div class="col-6 col-xl-3">
+        <div class="metric">
+          <div class="metric-icon amber"><i class="bi bi-clock-history"></i></div>
+          <small>In Progress</small>
+          <strong>{{ pending }}</strong>
+        </div>
+      </div>
+      <div class="col-6 col-xl-3">
+        <div class="metric">
+          <div class="metric-icon coral"><i class="bi bi-file-earmark-plus"></i></div>
+          <small>Needs Documents</small>
+          <strong>{{ needs_docs }}</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Applications Panel -->
+    <section class="panel mb-4">
+      <div class="panel-head">
+        <div>
+          <h3>Recent Applications</h3>
+          <p>Your latest submissions and their current status</p>
+        </div>
+        <a href="{% url 'application_history' %}">Full history <i class="bi bi-arrow-right"></i></a>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Application ID</th>
+              <th>Category</th>
+              <th>Scheme</th>
+              <th>Status</th>
+              <th>Submitted</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for a in applications %}
+            <tr>
+              <td>
+                <a class="fw-semibold" href="{% url 'application_detail' a.public_id %}">{{ a.public_id }}</a>
+              </td>
+              <td>
+                <span class="d-flex align-items-center gap-1">
+                  {% if a.category == 'welfare' %}<i class="bi bi-heart text-primary"></i>
+                  {% elif a.category == 'disaster' %}<i class="bi bi-cloud-lightning text-warning"></i>
+                  {% elif a.category == 'land' %}<i class="bi bi-geo-alt text-success"></i>
+                  {% elif a.category == 'revenue' %}<i class="bi bi-cash-coin text-secondary"></i>
+                  {% endif %}
+                  {{ a.get_category_display }}
+                </span>
+              </td>
+              <td>{{ a.scheme.name|default:"—" }}</td>
+              <td><span class="status status-{{ a.status }}">{{ a.get_status_display }}</span></td>
+              <td><span class="text-muted small">{{ a.created_at|date:"d M Y" }}</span></td>
+              <td>
+                <div class="d-flex gap-1">
+                  <a href="{% url 'application_detail' a.public_id %}" class="btn btn-sm btn-light">
+                    View <i class="bi bi-arrow-up-right"></i>
+                  </a>
+                  {% if a.status == 'more_info' %}
+                  <a href="{% url 'application_detail' a.public_id %}" class="btn btn-sm btn-warning">
+                    <i class="bi bi-upload"></i> Upload
+                  </a>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="6">
+                <div class="empty-state">
+                  <i class="bi bi-inbox"></i>
+                  <h5>No applications yet</h5>
+                  <p>Your applications will appear here after you submit a service request.</p>
+                  <a class="btn btn-primary" href="{% url 'new_application' %}">
+                    <i class="bi bi-plus-lg"></i> Submit your first application
+                  </a>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      {% if applications %}
+      <div class="p-3 border-top d-flex justify-content-end">
+        <a href="{% url 'application_history' %}" class="btn btn-sm btn-outline-primary">
+          View all applications <i class="bi bi-arrow-right"></i>
+        </a>
+      </div>
+      {% endif %}
+    </section>
+
+    <!-- Quick Help Callout -->
+    <div class="callout">
+      <i class="bi bi-info-circle-fill" style="color:var(--teal);font-size:1.1rem;flex:none"></i>
+      <div>
+        <strong>Need help?</strong> Applications typically take 7–14 working days to process. If your application shows <em>Documents Required</em>, please upload the requested files promptly to avoid delays. Ask the <a href="{% url 'assistant' %}">AI Assistant</a> for instant answers, or contact your nearest district office for in-person assistance.
+      </div>
+    </div>
+
+  </div>
+</main>
+{% endblock %}

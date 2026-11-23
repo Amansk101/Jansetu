@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ service }} Certificate · {{ app.public_id }}</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 24px; background: #eef2f6; font-family: Georgia, 'Times New Roman', serif; color: #1f2a37; }
+  .sheet { max-width: 820px; margin: 0 auto; background: #fff; border: 1px solid #c9d4df; box-shadow: 0 6px 24px rgba(15,42,67,.12); padding: 40px 48px; position: relative; }
+  .sheet::after { content: ""; position: absolute; inset: 12px; border: 2px double #b7902f; pointer-events: none; }
+  .head { text-align: center; border-bottom: 2px solid #123b5e; padding-bottom: 14px; margin-bottom: 22px; }
+  .head .crest { font-size: 30px; color: #123b5e; }
+  .head h1 { margin: 6px 0 2px; font-size: 20px; letter-spacing: .5px; color: #123b5e; text-transform: uppercase; }
+  .head h2 { margin: 0; font-size: 13px; font-weight: normal; color: #55636f; letter-spacing: 2px; text-transform: uppercase; }
+  .title { text-align: center; margin: 18px 0 6px; }
+  .title h3 { display: inline-block; margin: 0; padding: 8px 26px; font-size: 22px; color: #0f5132; border: 1px solid #b7902f; background: #f7f4ea; letter-spacing: 1px; }
+  .meta { text-align: center; font-size: 13px; color: #55636f; margin-bottom: 22px; }
+  .meta b { color: #123b5e; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; margin-bottom: 18px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid #dde5ec; vertical-align: top; }
+  th { width: 36%; color: #55636f; font-weight: normal; background: #f7f9fb; }
+  .section-title { font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: #123b5e; margin: 20px 0 8px; font-family: Arial, sans-serif; }
+  ul { margin: 0; padding-left: 20px; font-size: 13px; color: #38424c; }
+  .verified { color: #0f5132; }
+  .sign { display: flex; justify-content: space-between; margin-top: 46px; font-size: 13px; }
+  .sign div { text-align: center; width: 45%; }
+  .sign .line { border-top: 1px solid #38424c; margin-bottom: 6px; padding-top: 4px; }
+  .foot { margin-top: 30px; font-size: 11px; color: #6b7783; text-align: center; font-family: Arial, sans-serif; line-height: 1.6; }
+  .issued { color: #0f5132; font-weight: bold; }
+  .draft-stamp { position: absolute; top: 46%; left: 50%; transform: translate(-50%, -50%) rotate(-24deg); font-size: 96px; font-weight: bold; color: rgba(191, 67, 66, .13); letter-spacing: 12px; font-family: Arial, sans-serif; pointer-events: none; z-index: 2; }
+  .draft-note { text-align: center; font-family: Arial, sans-serif; font-size: 12px; color: #b04342; background: #fdf1f0; border: 1px solid #f0c9c7; padding: 8px 12px; margin-bottom: 18px; }
+  .toolbar { text-align: center; margin: 18px 0 0; }
+  .toolbar button, .toolbar a { font-family: Arial, sans-serif; font-size: 13px; padding: 8px 18px; border-radius: 6px; border: 1px solid #123b5e; background: #123b5e; color: #fff; text-decoration: none; cursor: pointer; }
+  @media print { body { background: #fff; padding: 0; } .sheet { box-shadow: none; border: none; } .toolbar { display: none; } }
+</style>
+</head>
+<body>
+<div class="sheet">
+  {% if draft %}<div class="draft-stamp">DRAFT</div>{% endif %}
+  <div class="head">
+    <div class="crest">&#9878;</div>
+    <h1>Revenue Department &middot; Government of Goa</h1>
+    <h2>Office of the District Collector, South Goa</h2>
+  </div>
+
+  {% if draft %}
+  <div class="draft-note">DRAFT &mdash; prepared by JanSutra AI for officer verification. Not valid until an authorised officer approves the application.</div>
+  {% endif %}
+
+  <div class="title"><h3>{{ service }} Certificate</h3></div>
+  <div class="meta">
+    Certificate No. <b>{{ app.public_id }}</b> &nbsp;&middot;&nbsp; Issued on <b>{{ issued_on|date:"d M Y" }}</b>
+  </div>
+
+  <table>
+    <tr><th>Applicant name</th><td>{{ app.citizen.get_full_name|default:app.citizen.username }}</td></tr>
+    <tr><th>Address</th><td>{{ app.citizen.address|default:"As per records on file" }}{% if app.citizen.district %}, {{ app.citizen.district }}{% endif %}{% if app.citizen.taluka %}, {{ app.citizen.taluka }}{% endif %}{% if app.citizen.village %}, {{ app.citizen.village }}{% endif %}</td></tr>
+    <tr><th>Service applied for</th><td>{{ service }}</td></tr>
+    {% if app.income %}<tr><th>Annual household income</th><td>&#8377; {{ app.income|floatformat:2 }}</td></tr>{% endif %}
+    {% if app.land_area %}<tr><th>Land area</th><td>{{ app.land_area }} acres</td></tr>{% endif %}
+    <tr><th>Application ID</th><td>{{ app.public_id }}</td></tr>
+    <tr><th>Date of application</th><td>{{ app.created_at|date:"d M Y" }}</td></tr>
+    <tr><th>Decision</th><td class="{% if draft %}text-muted{% else %}issued{% endif %}">{% if draft %}Pending officer approval{% else %}{{ app.get_status_display }} on {{ app.updated_at|date:"d M Y" }}{% endif %}</td></tr>
+  </table>
+
+  {% if app.description %}
+  <div class="section-title">Subject</div>
+  <p style="font-size:13px;margin:0 0 6px;color:#38424c">{{ app.description }}</p>
+  {% endif %}
+
+  <div class="section-title">AI document verification (pre-check)</div>
+  <p style="font-size:13px;margin:0 0 6px;color:#38424c">{{ check.headline }}</p>
+  <ul>
+    {% for item in check.items %}
+    <li>{% if item.state == 'verified' %}<span class="verified">&#10004; {{ item.label }}</span>{% else %}{{ item.label }} &mdash; {{ item.note }}{% endif %}</li>
+    {% endfor %}
+  </ul>
+
+  <div class="sign">
+    <div><div class="line"></div>Applicant signature</div>
+    <div><div class="line"></div>{% if officer %}{{ officer.get_full_name|default:officer.username }}{% else %}Authorised Officer{% endif %}{% if officer.officer_record.designation %}, {{ officer.officer_record.designation }}{% endif %}</div>
+  </div>
+
+  <p class="foot">
+    This certificate was generated by JanSutra AI on the decision of an authorised officer of the Revenue Department,
+    District Collectorate, South Goa. Its authenticity can be verified with the district office using Certificate No. {{ app.public_id }}.
+  </p>
+</div>
+
+<div class="toolbar">
+  <button onclick="window.print()">Print / Save as PDF</button>
+</div>
+</body>
+</html>

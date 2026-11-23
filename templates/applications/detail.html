@@ -1,0 +1,491 @@
+{% extends 'base.html' %}{% block title %}{{ app.public_id }} · JanSutra AI{% endblock %}{% block content %}
+<main class="app-shell">
+<div class="container-fluid px-lg-5 py-4">
+
+  <!-- Page heading -->
+  <div class="page-heading d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+    <div>
+      <a class="backlink" href="{% url 'dashboard' %}"><i class="bi bi-arrow-left"></i> Back</a>
+      <h1 class="mb-1">{{ app.public_id }} <span class="status status-{{ app.status }} ms-2">{{ app.get_status_display }}</span></h1>
+      <p class="mb-0 text-muted">{{ service }}{% if app.scheme %} &middot; {{ app.scheme.name }}{% endif %}</p>
+    </div>
+    <div class="d-flex gap-2 align-items-start flex-wrap">
+      {% if app.status == 'approved' %}
+      <a class="btn btn-success btn-sm" href="{% url 'certificate' app.public_id %}"><i class="bi bi-award me-1"></i>View certificate</a>
+      <a class="btn btn-outline-success btn-sm" href="{% url 'certificate' app.public_id %}?download=1"><i class="bi bi-download me-1"></i>Download certificate</a>
+      {% elif is_officer and app.status != 'rejected' %}
+      <a class="btn btn-primary btn-sm" href="{% url 'certificate' app.public_id %}" target="_blank"><i class="bi bi-file-earmark-text me-1"></i>Open ready certificate (draft)</a>
+      {% endif %}
+      <a class="btn btn-outline-secondary btn-sm" href="{% url 'acknowledgement' app.public_id %}?download=1"><i class="bi bi-download me-1"></i>Download acknowledgement</a>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Left column -->
+    <div class="col-lg-8">
+
+      <!-- Overview grid -->
+      <section class="panel mb-4">
+        <div class="panel-head"><div><h3>Overview</h3></div></div>
+        <div class="p-4">
+          <div class="overview-grid row g-3">
+            <div class="col-6 col-md-4">
+              <small class="text-muted d-block">Category</small>
+              <strong>{{ app.get_category_display }}</strong>
+            </div>
+            <div class="col-6 col-md-4">
+              <small class="text-muted d-block">Scheme</small>
+              <strong>{{ app.scheme.name|default:"—" }}</strong>
+            </div>
+            <div class="col-6 col-md-4">
+              <small class="text-muted d-block">Citizen</small>
+              <strong>{{ app.citizen.get_full_name|default:app.citizen.username }}</strong>
+            </div>
+            <div class="col-6 col-md-4">
+              <small class="text-muted d-block">Submitted</small>
+              <strong>{{ app.created_at|date:"d M Y, H:i" }}</strong>
+            </div>
+            <div class="col-6 col-md-4">
+              <small class="text-muted d-block">Last updated</small>
+              <strong>{{ app.updated_at|date:"d M Y, H:i" }}</strong>
+            </div>
+            <div class="col-6 col-md-4">
+              <small class="text-muted d-block">Assigned officer</small>
+              <strong>{% if app.assigned_officer %}{{ app.assigned_officer.get_full_name|default:app.assigned_officer.username }}{% else %}<span class="text-muted">Unassigned</span>{% endif %}</strong>
+            </div>
+          </div>
+          {% if app.description %}
+          <div class="mt-3 description p-3 rounded-3 bg-light border">
+            <small class="text-muted d-block mb-1">Description</small>
+            {{ app.description }}
+          </div>
+          {% endif %}
+        </div>
+      </section>
+
+      <!-- Timeline -->
+      <section class="panel mb-4">
+        <div class="panel-head"><div><h3>Status Timeline</h3><p>History of status changes for this application</p></div></div>
+        <div class="p-4">
+          {% for entry in app.history.all %}
+          <div class="timeline-entry">
+            <div class="timeline-dot status-{{ entry.status }}"></div>
+            <div class="flex-grow-1">
+              <div class="d-flex justify-content-between align-items-start">
+                <strong>{{ entry.get_status_display }}</strong>
+                <small class="text-muted">{{ entry.created_at|date:"d M Y, H:i" }}</small>
+              </div>
+              {% if entry.actor %}<small class="text-muted">by {{ entry.actor.get_full_name|default:entry.actor.username }}</small>{% endif %}
+              {% if entry.remark %}<p class="mb-0 mt-1 small">{{ entry.remark }}</p>{% endif %}
+            </div>
+          </div>
+          {% empty %}
+          <div class="empty-state py-3"><i class="bi bi-clock-history"></i><p>No status history yet.</p></div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <!-- Remarks -->
+      <section class="panel mb-4">
+        <div class="panel-head"><div><h3>Remarks</h3><p>Notes from officers and citizen responses</p></div></div>
+        <div class="p-4">
+          {% for remark in app.case_remarks.all %}
+          <div class="d-flex gap-3 mb-3 pb-3 border-bottom">
+            <div class="remark-dot bg-{% if remark.kind == 'internal' %}secondary{% elif remark.kind == 'citizen' %}primary{% else %}warning{% endif %} rounded-circle flex-shrink-0" style="width:10px;height:10px;margin-top:6px"></div>
+            <div class="flex-grow-1">
+              <div class="d-flex justify-content-between align-items-start">
+                <span>
+                  <span class="badge {% if remark.kind == 'internal' %}bg-secondary{% elif remark.kind == 'citizen' %}bg-primary{% else %}bg-warning text-dark{% endif %} me-2">{{ remark.get_kind_display }}</span>
+                  <strong>{{ remark.author.get_full_name|default:remark.author.username|default:"System" }}</strong>
+                </span>
+                <small class="text-muted">{{ remark.created_at|date:"d M Y, H:i" }}</small>
+              </div>
+              <p class="mb-0 mt-1">{{ remark.text }}</p>
+            </div>
+          </div>
+          {% empty %}
+          <div class="empty-state py-3"><i class="bi bi-chat-left-dots"></i><p>No remarks on file.</p></div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <!-- Documents -->
+      <section class="panel mb-4">
+        <div class="panel-head"><div><h3>Documents</h3><p>Attached files and AI document check</p></div></div>
+        <div class="p-4">
+
+          <!-- AI document check -->
+          {% if doc_check %}
+          <div class="alert alert-{% if doc_check.status == 'complete' %}success{% elif doc_check.status == 'attention' %}warning{% else %}secondary{% endif %} py-3 px-3 mb-3">
+            <strong class="d-block mb-1"><i class="bi bi-robot me-1"></i>AI Document Check &mdash; {{ doc_check.verified_count }}/{{ doc_check.required_count }} received</strong>
+            <p class="small mb-2">{{ doc_check.headline }}</p>
+            <ul class="small mb-0 ps-3">
+              {% for item in doc_check.items %}
+              <li>
+                {% if item.state == 'verified' %}<span class="text-success"><i class="bi bi-check-circle-fill me-1"></i>{{ item.label }}</span>
+                {% elif item.state == 'unclear' %}<span class="text-warning"><i class="bi bi-exclamation-triangle-fill me-1"></i>{{ item.label }} &mdash; could not be read clearly</span>
+                {% else %}<span class="text-danger"><i class="bi bi-x-circle-fill me-1"></i>{{ item.label }} &mdash; not uploaded</span>{% endif %}
+              </li>
+              {% endfor %}
+            </ul>
+            <p class="small text-muted mb-0 mt-2"><i class="bi bi-info-circle me-1"></i>AI advice only — the officer verifies every document before deciding.</p>
+          </div>
+          {% endif %}
+
+          <!-- Required documents checklist -->
+          {% if required_documents %}
+          <div class="alert alert-info py-2 px-3 mb-3">
+            <strong class="small d-block mb-1"><i class="bi bi-list-check me-1"></i>Documents for this service (any two are mandatory)</strong>
+            <ul class="small mb-0 ps-3">
+              {% for item in required_documents %}<li>{{ item }}</li>{% endfor %}
+            </ul>
+          </div>
+          {% endif %}
+
+          <!-- Upload form: citizen applicant only. Officers and admins never upload documents. -->
+          {% if not is_officer and app.citizen_id == request.user.id %}
+          <form method="post" action="{% url 'upload_document' app.public_id %}" enctype="multipart/form-data" class="mb-4">
+            {% csrf_token %}
+            <div class="row g-2 align-items-end">
+              <div class="col-md-5">
+                <label class="form-label small fw-semibold mb-1">Document type</label>
+                <select name="doc_type" class="form-select">
+                  <option value="">— Which document is this? —</option>
+                  {% for item in required_documents %}<option value="{{ item }}">{{ item }}</option>{% endfor %}
+                  <option value="Other supporting document">Other supporting document</option>
+                </select>
+              </div>
+              <div class="col-md-5">
+                <label class="form-label small fw-semibold mb-1">File</label>
+                <input type="file" name="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required>
+              </div>
+              <div class="col-md-2 d-grid">
+                <button type="submit" class="btn btn-primary"><i class="bi bi-upload me-1"></i>Upload</button>
+              </div>
+            </div>
+          </form>
+          {% else %}
+          <div class="alert alert-secondary py-2 px-3 mb-4 small">
+            <i class="bi bi-info-circle me-1"></i>Documents are submitted by the applicant with the application. Officers do not upload documents.
+          </div>
+          {% endif %}
+
+          <!-- Document list -->
+          {% for doc in app.documents.all %}
+          <div class="document-row mb-3 border rounded-3 p-3">
+            <div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
+              <div class="d-flex align-items-center gap-2">
+                <span class="doc-icon"><i class="bi bi-file-earmark-{% if 'pdf' in doc.content_type %}pdf text-danger{% else %}image text-primary{% endif %}"></i></span>
+                <div>
+                  <strong class="d-block">{{ doc.original_name }}</strong>
+                  <small class="text-muted">Uploaded {{ doc.uploaded_at|date:"d M Y, H:i" }}{% if doc.doc_type %} &middot; <span class="badge bg-light text-dark border">{{ doc.doc_type }}</span>{% endif %}</small>
+                </div>
+              </div>
+              <div class="d-flex gap-2 flex-wrap align-items-center">
+                <span class="badge {% if doc.ocr_status == 'done' %}bg-success{% elif doc.ocr_status == 'processing' %}bg-warning text-dark{% elif doc.ocr_status == 'failed' %}bg-danger{% else %}bg-secondary{% endif %}">
+                  OCR: {{ doc.ocr_status|title }}
+                </span>
+                {% if doc.ocr_confidence %}<small class="text-muted">{{ doc.ocr_confidence|floatformat:0 }}% confidence</small>{% endif %}
+                <a class="btn btn-sm btn-outline-secondary" href="{% url 'document_preview' doc.id %}" target="_blank"><i class="bi bi-eye me-1"></i>Preview</a>
+                <a class="btn btn-sm btn-outline-primary" href="{% url 'document_download' doc.id %}"><i class="bi bi-download me-1"></i>Download</a>
+              </div>
+            </div>
+
+            {% if doc.ocr_warning %}
+            <div class="alert alert-warning py-1 px-3 mt-2 small"><i class="bi bi-exclamation-triangle me-1"></i>{{ doc.ocr_warning }}</div>
+            {% endif %}
+
+            {% if doc.extracted_text %}
+            <div class="mt-2">
+              <a class="small text-muted" data-bs-toggle="collapse" href="#ocr-text-{{ doc.id }}" role="button">
+                <i class="bi bi-chevron-down me-1"></i>OCR extracted text
+              </a>
+              <div class="collapse" id="ocr-text-{{ doc.id }}">
+                <pre class="ocr-text mt-2 p-3 rounded bg-light border small">{{ doc.extracted_text }}</pre>
+              </div>
+            </div>
+            {% endif %}
+
+            {% if doc.extracted_fields %}
+            <div class="mt-2">
+              <a class="small text-muted" data-bs-toggle="collapse" href="#fields-{{ doc.id }}" role="button">
+                <i class="bi bi-table me-1"></i>Extracted fields
+              </a>
+              <div class="collapse show" id="fields-{{ doc.id }}">
+                <table class="table table-sm mt-2 manual-fields">
+                  <thead><tr><th>Field</th><th>Value</th></tr></thead>
+                  <tbody>
+                    {% for key, val in doc.extracted_fields.items %}
+                    <tr class="{% if not val %}table-warning{% endif %}">
+                      <td class="text-capitalize">{{ key|cut:"_" }}</td>
+                      <td>{% if val %}{{ val }}{% else %}<span class="text-warning"><i class="bi bi-exclamation-circle me-1"></i>Missing</span>{% endif %}</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+                <!-- Correct extraction form -->
+                <a class="small" data-bs-toggle="collapse" href="#correct-{{ doc.id }}" role="button"><i class="bi bi-pencil me-1"></i>Edit / Correct</a>
+                <div class="collapse mt-2" id="correct-{{ doc.id }}">
+                  <form method="post" action="{% url 'correct_extraction' doc.id %}" class="border rounded-3 p-3 bg-light">
+                    {% csrf_token %}
+                    <div class="row g-2">
+                      <div class="col-md-6"><label class="form-label small">Applicant Name</label><input name="applicant_name" class="form-control form-control-sm" value="{{ doc.extracted_fields.applicant_name|default:'' }}"></div>
+                      <div class="col-md-6"><label class="form-label small">Document Number</label><input name="document_number" class="form-control form-control-sm" value="{{ doc.extracted_fields.document_number|default:'' }}"></div>
+                      <div class="col-md-6"><label class="form-label small">Address</label><input name="address" class="form-control form-control-sm" value="{{ doc.extracted_fields.address|default:'' }}"></div>
+                      <div class="col-md-6"><label class="form-label small">Date of Birth</label><input name="date_of_birth" class="form-control form-control-sm" value="{{ doc.extracted_fields.date_of_birth|default:'' }}"></div>
+                      <div class="col-md-4"><label class="form-label small">Income (&#8377;)</label><input name="income" class="form-control form-control-sm" value="{{ doc.extracted_fields.income|default:'' }}"></div>
+                      <div class="col-md-4"><label class="form-label small">Survey Number</label><input name="survey_number" class="form-control form-control-sm" value="{{ doc.extracted_fields.survey_number|default:'' }}"></div>
+                      <div class="col-md-4"><label class="form-label small">Document Date</label><input name="document_date" class="form-control form-control-sm" value="{{ doc.extracted_fields.document_date|default:'' }}"></div>
+                    </div>
+                    <button type="submit" class="btn btn-sm btn-primary mt-3"><i class="bi bi-check2 me-1"></i>Save corrections</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+          </div>
+          {% empty %}
+          <div class="empty-state py-3"><i class="bi bi-files"></i><p>No documents uploaded yet. Use the form above to attach files.</p></div>
+          {% endfor %}
+
+        </div>
+      </section>
+
+    </div><!-- /col-lg-8 -->
+
+    <!-- Right column -->
+    <div class="col-lg-4">
+
+      <!-- Eligibility panel -->
+      {% if app.scheme %}
+      <section class="panel mb-4">
+        <div class="panel-head"><div><h3><i class="bi bi-list-check me-1 text-success"></i>Eligibility</h3></div></div>
+        <div class="p-4">
+          {% with assessment=app.assessments.last %}
+          {% if assessment %}
+          <div class="assessment mb-3">
+            <div class="assessment-outcome mb-2">
+              <span class="badge fs-6 {% if assessment.outcome == 'Eligible' %}bg-success{% elif assessment.outcome == 'Not Eligible' %}bg-danger{% else %}bg-warning text-dark{% endif %}">
+                {{ assessment.outcome|title }}
+              </span>
+              <small class="text-muted ms-2">{{ assessment.created_at|date:"d M Y" }}</small>
+            </div>
+            {% if assessment.explanation %}
+            <ul class="small mb-0 ps-3">
+              {% for item in assessment.explanation %}
+              <li>{{ item }}</li>
+              {% endfor %}
+            </ul>
+            {% endif %}
+          </div>
+          {% else %}
+          <p class="text-muted small">No eligibility assessment has been run yet.</p>
+          {% endif %}
+          {% endwith %}
+
+          {% if is_officer %}
+          <form method="post" action="{% url 'assess' app.public_id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-outline-success w-100"><i class="bi bi-play-circle me-1"></i>Run Eligibility Check</button>
+          </form>
+          {% endif %}
+          <p class="small text-muted mt-2 mb-0"><i class="bi bi-info-circle me-1"></i>AI recommendation only — officer makes official decision.</p>
+        </div>
+      </section>
+      {% endif %}
+
+      <!-- Compensation panel -->
+      {% if app.category == 'land' %}
+      <section class="panel mb-4">
+        <div class="panel-head"><div><h3><i class="bi bi-calculator me-1 text-info"></i>Compensation Estimates</h3></div></div>
+        <div class="p-4">
+          {% for est in app.compensation_estimates.all %}
+          <div class="border rounded-3 p-3 mb-3 bg-light">
+            <div class="d-flex justify-content-between">
+              <strong>{{ est.configuration.land_category }}</strong>
+              <span class="text-success fw-bold">&#8377; {{ est.estimated_amount|floatformat:2 }}</span>
+            </div>
+            <small class="text-muted">Area: {{ est.area }} acres &middot; {{ est.created_at|date:"d M Y" }}</small>
+            {% if est.breakdown %}
+            <ul class="small mt-2 mb-0 ps-3">
+              {% for k, v in est.breakdown.items %}
+              <li>{{ k|title }}: &#8377; {{ v }}</li>
+              {% endfor %}
+            </ul>
+            {% endif %}
+          </div>
+          {% empty %}
+          <p class="text-muted small">No estimates calculated yet.</p>
+          {% endfor %}
+
+          <form method="post" action="{% url 'compensation' app.public_id %}" class="mt-3">
+            {% csrf_token %}
+            <div class="mb-2">
+              <label class="form-label small">Land Configuration</label>
+              <select name="configuration" class="form-select form-select-sm" required>
+                {% for cfg in compensation_configs %}
+                <option value="{{ cfg.id }}">{{ cfg.land_category }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="mb-2">
+              <label class="form-label small">Area (acres)</label>
+              <input type="number" name="area" step="0.001" min="0.001" class="form-control form-control-sm" required placeholder="e.g. 1.500">
+            </div>
+            <button type="submit" class="btn btn-sm btn-info w-100 text-white"><i class="bi bi-calculator me-1"></i>Calculate Estimate</button>
+          </form>
+          <p class="small text-muted mt-2 mb-0"><i class="bi bi-info-circle me-1"></i>Illustrative Estimate — Subject to Official Verification.</p>
+        </div>
+      </section>
+      {% endif %}
+
+      <!-- Delay Risk panel -->
+      {% if risk %}
+      <section class="panel mb-4">
+        <div class="panel-head"><div><h3><i class="bi bi-speedometer2 me-1"></i>Delay Risk</h3></div></div>
+        <div class="p-4">
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="risk-score risk-{{ risk.level|lower }}">{{ risk.score }}</div>
+            <div>
+              <span class="badge risk-{{ risk.level|lower }} text-capitalize">{{ risk.level }}</span>
+              <small class="d-block text-muted mt-1">{{ risk.next_action }}</small>
+            </div>
+          </div>
+          {% if risk.reasons %}
+          <ul class="small mb-0 ps-3">
+            {% for reason in risk.reasons %}
+            <li>{{ reason }}</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+        </div>
+      </section>
+      {% endif %}
+
+      <!-- Anomaly Flags -->
+      {% if anomalies %}
+      <section class="panel mb-4">
+        <div class="panel-head"><div><h3><i class="bi bi-flag-fill me-1 text-warning"></i>Anomaly Flags</h3></div></div>
+        <div class="p-4">
+          {% for flag in anomalies %}
+          <div class="border rounded-3 p-3 mb-2 {% if flag.dismissed %}opacity-50{% endif %}">
+            <div class="d-flex justify-content-between align-items-start">
+              <strong class="small">{{ flag.kind|title }}</strong>
+              {% if is_officer and not flag.dismissed %}
+              <form method="post" action="{% url 'dismiss_anomaly' app.public_id flag.id %}" class="ms-2">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-outline-warning py-0 px-2" title="Dismiss"><i class="bi bi-x-lg"></i></button>
+              </form>
+              {% endif %}
+            </div>
+            <p class="small mb-0 text-muted">{{ flag.detail }}</p>
+            {% if flag.dismissed %}<span class="badge bg-secondary">Dismissed</span>{% endif %}
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
+
+      <!-- Possible Duplicates -->
+      {% if possible_duplicates %}
+      <section class="panel mb-4">
+        <div class="panel-head"><div><h3><i class="bi bi-copy me-1 text-warning"></i>Possible Duplicates</h3><p>Similar applications found</p></div></div>
+        <div class="p-4">
+          {% for dup in possible_duplicates %}
+          <div class="duplicate-row d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
+            <div>
+              <a href="{% url 'application_detail' dup.public_id %}" class="fw-semibold text-primary">{{ dup.public_id }}</a>
+              <small class="d-block text-muted">{{ dup.citizen.get_full_name|default:dup.citizen.username }} &middot; {{ dup.get_category_display }}</small>
+            </div>
+            <span class="status status-{{ dup.status }}">{{ dup.get_status_display }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
+
+      <!-- Officer Actions -->
+      {% if is_officer %}
+      <section class="panel mb-4">
+        <div class="panel-head"><div><h3><i class="bi bi-person-badge me-1 text-primary"></i>Officer Actions</h3></div></div>
+        <div class="p-4">
+
+          <!-- Assign Officer (admin) -->
+          {% if request.user.role == 'admin' or request.user.is_superuser %}
+          <form method="post" action="{% url 'officer_action' app.public_id %}" class="mb-4">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="assign">
+            <label class="form-label fw-semibold small">Assign Officer</label>
+            <div class="d-flex gap-2">
+              <select name="officer" class="form-select form-select-sm">
+                <option value="">— Select officer —</option>
+                {% for officer in officers %}
+                <option value="{{ officer.id }}" {% if app.assigned_officer_id == officer.id %}selected{% endif %}>{{ officer.get_full_name|default:officer.username }}</option>
+                {% endfor %}
+              </select>
+              <button type="submit" class="btn btn-sm btn-outline-primary flex-shrink-0">Assign</button>
+            </div>
+          </form>
+          {% endif %}
+
+          <!-- Action form -->
+          <form method="post" action="{% url 'officer_action' app.public_id %}">
+            {% csrf_token %}
+            <input type="hidden" name="action" id="actionTypeInput" value="review">
+            <div class="mb-3">
+              <label class="form-label fw-semibold small">Remark <span class="text-danger" id="remarkRequired" style="display:none">* required for Approve / Reject</span></label>
+              <textarea name="remark" id="actionRemark" class="form-control form-control-sm" rows="3" placeholder="Add a note, reason, or instruction…"></textarea>
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+              <button type="submit" class="btn btn-sm btn-outline-secondary" onclick="document.getElementById('actionTypeInput').value='review'"><i class="bi bi-search me-1"></i>Review</button>
+              <button type="submit" class="btn btn-sm btn-outline-warning" onclick="document.getElementById('actionTypeInput').value='request_docs'"><i class="bi bi-paperclip me-1"></i>Request Docs</button>
+              <button type="submit" class="btn btn-sm btn-outline-info" onclick="document.getElementById('actionTypeInput').value='verify'"><i class="bi bi-patch-check me-1"></i>Verify</button>
+              <button type="submit" class="btn btn-sm btn-outline-primary" onclick="document.getElementById('actionTypeInput').value='forward'"><i class="bi bi-forward me-1"></i>Forward</button>
+              <button type="submit" class="btn btn-sm btn-success" onclick="document.getElementById('actionTypeInput').value='approve'" id="btnApprove"><i class="bi bi-check-circle me-1"></i>Approve</button>
+              <button type="submit" class="btn btn-sm btn-danger" onclick="document.getElementById('actionTypeInput').value='reject'" id="btnReject"><i class="bi bi-x-circle me-1"></i>Reject</button>
+            </div>
+            <p class="small text-muted mt-2 mb-0"><i class="bi bi-info-circle me-1"></i>Approve and Reject actions require a remark.</p>
+          </form>
+        </div>
+      </section>
+      {% endif %}
+
+      <!-- Citizen Reply -->
+      {% if app.status == 'more_info' and not is_officer %}
+      <section class="panel mb-4 border-warning">
+        <div class="panel-head" style="background:rgba(232,162,58,.1)"><div><h3><i class="bi bi-chat-left-dots-fill me-1 text-warning"></i>Reply Required</h3><p>The officer has requested additional information.</p></div></div>
+        <div class="p-4">
+          <form method="post" action="{% url 'citizen_reply' app.public_id %}">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Your response</label>
+              <textarea name="reply" class="form-control" rows="4" placeholder="Provide the requested information or clarification…" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary w-100"><i class="bi bi-send me-1"></i>Send Reply</button>
+          </form>
+        </div>
+      </section>
+      {% endif %}
+
+    </div><!-- /col-lg-4 -->
+  </div><!-- /row -->
+</div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Require remark for approve/reject
+document.querySelectorAll('#btnApprove, #btnReject').forEach(function(btn) {
+  btn.addEventListener('click', function(e) {
+    var remark = document.getElementById('actionRemark');
+    if (!remark || !remark.value.trim()) {
+      e.preventDefault();
+      remark.classList.add('is-invalid');
+      document.getElementById('remarkRequired').style.display = '';
+      remark.focus();
+    }
+  });
+});
+</script>
+{% endblock %}

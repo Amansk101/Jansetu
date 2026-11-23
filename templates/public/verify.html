@@ -1,0 +1,47 @@
+{% extends 'base.html' %}{% block title %}Verify a Certificate · JanSutra AI{% endblock %}{% block content %}
+<main class="app-shell">
+  <div class="container py-5" style="max-width:720px">
+
+    <div class="page-heading mb-4 text-center">
+      <span class="eyebrow"><i class="bi bi-patch-check"></i> CERTIFICATE VERIFICATION</span>
+      <h1>Certificate authenticity check</h1>
+      <p>Scan the QR code on a JanSutra AI certificate, or enter the verification code printed under it.</p>
+    </div>
+
+    <section class="panel mb-4">
+      <div class="p-4">
+        <form method="get" action="{% url 'verify_certificate_form' %}" class="d-flex flex-wrap gap-2">
+          <input type="text" name="code" class="form-control" style="min-width:220px;flex:1" value="{{ code }}" placeholder="Enter verification code e.g. 8F2A41C3B7D9" autocomplete="off">
+          <button class="btn btn-primary px-4" type="submit"><i class="bi bi-search me-1"></i>Verify</button>
+        </form>
+      </div>
+    </section>
+
+    {% if code %}
+      {% if record and not record.revoked %}
+      <section class="panel border-success">
+        <div class="panel-head"><div><h3 class="text-success"><i class="bi bi-check2-circle me-2"></i>Certificate is genuine</h3><p class="mb-0">Issued by the District Collectorate through JanSutra AI.</p></div></div>
+        <div class="p-4">
+          <dl class="row mb-0">
+            <dt class="col-sm-4 text-muted">Certificate number</dt><dd class="col-sm-8"><code>{{ record.certificate_number }}</code></dd>
+            <dt class="col-sm-4 text-muted">Service</dt><dd class="col-sm-8">{{ record.payload.service|default:record.application.get_category_display }}</dd>
+            <dt class="col-sm-4 text-muted">Issued to</dt><dd class="col-sm-8">{{ record.payload.citizen|default:record.application.citizen.get_full_name|default:record.application.citizen.username }}</dd>
+            <dt class="col-sm-4 text-muted">Department</dt><dd class="col-sm-8">{{ record.payload.department|default:record.application.department.name }}</dd>
+            <dt class="col-sm-4 text-muted">Application ID</dt><dd class="col-sm-8"><code>{{ record.application.public_id }}</code></dd>
+            <dt class="col-sm-4 text-muted">Issued on</dt><dd class="col-sm-8">{{ record.issued_on|date:"d M Y" }}</dd>
+            {% if record.valid_until %}<dt class="col-sm-4 text-muted">Valid until</dt><dd class="col-sm-8">{{ record.valid_until|date:"d M Y" }}</dd>{% endif %}
+          </dl>
+        </div>
+      </section>
+      {% elif record and record.revoked %}
+      <div class="alert alert-danger"><i class="bi bi-x-octagon me-2"></i>This certificate has been <strong>revoked</strong>. Contact the district office for details.</div>
+      {% else %}
+      <div class="alert alert-warning"><i class="bi bi-exclamation-triangle me-2"></i>No certificate found for code <code>{{ code }}</code>. Please check the code printed on the certificate and try again.</div>
+      {% endif %}
+    {% endif %}
+
+    <p class="text-muted small text-center mt-3">Every certificate issued by JanSutra AI carries a unique code and QR link to this page. A government officer authorises each certificate before it is issued.</p>
+
+  </div>
+</main>
+{% endblock %}

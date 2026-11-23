@@ -1,0 +1,212 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: JanSutra AI\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Dashboard"
+msgstr "ڈیش بورڈ"
+
+msgid "Departments"
+msgstr "محکمہ جات"
+
+msgid "New application"
+msgstr "نو درخواست"
+
+msgid "Application history"
+msgstr "درخواست تاریخ"
+
+msgid "AI Assistant"
+msgstr "اے آئی اسسٹنٹ"
+
+msgid "Documents"
+msgstr "دستاویزات"
+
+msgid "Eligibility"
+msgstr "اہلیت"
+
+msgid "Compensation"
+msgstr "معاوضہ"
+
+msgid "Notifications"
+msgstr "اطلاعات"
+
+msgid "Reports"
+msgstr "رپورٹس"
+
+msgid "Analytics"
+msgstr "تجزیہ"
+
+msgid "Services"
+msgstr "خدمات"
+
+msgid "Certificates"
+msgstr "سرٹیفکیٹس"
+
+msgid "Schemes"
+msgstr "اسکیمیں"
+
+msgid "Eligibility rules"
+msgstr "اہلیت قواعد"
+
+msgid "Compensation rates"
+msgstr "معاوضہ شرح"
+
+msgid "Accounts"
+msgstr "اکاؤنٹس"
+
+msgid "Send email"
+msgstr "ای میل بھیجو"
+
+msgid "Email templates"
+msgstr "ای میل ٹیمپلیٹس"
+
+msgid "Audit logs"
+msgstr "آڈٹ لاگز"
+
+msgid "Notifications log"
+msgstr "اطلاعات لاگ"
+
+msgid "Profile"
+msgstr "پروفائل"
+
+msgid "Home"
+msgstr "ہوم"
+
+msgid "Sign out"
+msgstr "سائن آؤٹ"
+
+msgid "Sign in"
+msgstr "سائن ان"
+
+msgid "Create account"
+msgstr "اکاؤنٹ بنیو"
+
+msgid "Open workspace"
+msgstr "ورک اسپیس کھولیو"
+
+msgid "Language"
+msgstr "زبان"
+
+msgid "Citizen"
+msgstr "شہری"
+
+msgid "Government Officer"
+msgstr "سرکاری افسر"
+
+msgid "Administrator"
+msgstr "منتظم"
+
+msgid "Less paperwork."
+msgstr "کٔم کاغذی کام۔"
+
+msgid "Faster decisions."
+msgstr "تیز فیصلہ۔"
+
+msgid "Transparent governance."
+msgstr "شفاف حکومت۔"
+
+msgid "Register as citizen"
+msgstr "شہری پٲٹھؠ رجسٹر کٔرِو"
+
+msgid "Open my workspace"
+msgstr "میون ورک اسپیس کھولیو"
+
+msgid "My dashboard"
+msgstr "میون ڈیش بورڈ"
+
+msgid "Demonstration platform using synthetic data"
+msgstr "مصنوعی ڈیٹا استعمال کرن والا مظاہرٕ پلیٹ فارم"
+
+msgid "Final decisions rest with authorised officers"
+msgstr "آخری فیصلہ مجاز افسرانن ہنس منٛز چھِ"
+
+msgid "Revenue Department"
+msgstr "محصولات محکمہ"
+
+msgid "District Collectorate – Revenue Administration"
+msgstr "ضلعہٕ کلیکٹریٹ – محصولات انتظامیہ"
+
+msgid "Proposed Pilot Location:"
+msgstr "تجویز کرنہٕ آمُت پائلٹ جاے:"
+
+msgid "Office of the Collector, South Goa."
+msgstr "کلیکٹر دفتر، جۆنوٗبی گوا۔"
+
+msgid "What this platform solves for the department"
+msgstr "یہ پلیٹ فارم محکمہ خٲطرٕ کیا حل کران چھُ"
+
+msgid "Land Acquisition & Compensation"
+msgstr "زمین حصول تہٕ معاوضہ"
+
+msgid "Disaster Relief"
+msgstr "آفتھ ہند امداد"
+
+msgid "Welfare Schemes"
+msgstr "فلاحی اسکیمہٕ"
+
+msgid "Revenue Services"
+msgstr "محصولاتی خدمتہٕ"
+
+msgid "How it works"
+msgstr "یہ کتھ کُن کٲم کران چھُ"
+
+msgid "Ready to try the workflow?"
+msgstr "ورک فلو آزمانہٕ خٲطرٕ تیار؟"
+
+msgid "Log in"
+msgstr "لاگ ان"
+
+msgid "Sign up"
+msgstr "سائن اپ"
+
+msgid "Create your account"
+msgstr "پننہٕ اکاؤنٹ بنٲوِو"
+
+msgid "Sign up as a citizen to submit and track applications."
+msgstr "درخواست جمع تہٕ ٹریک کرنہٕ خٲطرٕ شہری پٲٹھؠ سائن اپ کٔرِو۔"
+
+msgid "Create citizen account"
+msgstr "شہری اکاؤنٹ بنٲوِو"
+
+msgid "Officer and administrator accounts are created by an administrator."
+msgstr "افسر تہٕ منتظم اکاؤنٹ اَکھ منتظم چھُ بنان۔"
+
+msgid "Log in to Jan Sutra"
+msgstr "جنسوترا منٛز لاگ ان کٔرِو"
+
+msgid "Choose your account type and enter your credentials."
+msgstr "پننہٕ اکاؤنٹ قسم ژارِو تہٕ پننہٕ معلومات دِیو۔"
+
+msgid "Account type"
+msgstr "اکاؤنٹ قسم"
+
+msgid "Username or email"
+msgstr "ورتاو کرن والُک ناو یا ای میل"
+
+msgid "Password"
+msgstr "پاس ورڈ"
+
+msgid "Forgot your password?"
+msgstr "پننہٕ پاس ورڈ بُلاو؟"
+
+msgid "New citizen? Choose the Sign up tab to create an account."
+msgstr "نٔو شہری؟ اکاؤنٹ بنٲونہٕ خٲطرٕ سائن اپ ٹیب ژارِو۔"
+
+msgid "Officer"
+msgstr "افسر"
+
+msgid "Admin"
+msgstr "منتظم"
+
+msgid "Full name"
+msgstr "پورہ ناو"
+
+msgid "Email address"
+msgstr "ای میل ایڈریس"
+
+msgid ""
+msgstr "Project-Id-Version: JanSutra AI\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=2; plural=(n != 1);\n"
+
