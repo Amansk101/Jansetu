@@ -2,6 +2,8 @@
 {% load static %}
 
 {% block content %}
+<main class="app-shell">
+  <div class="container-fluid px-lg-5 py-4">
 <div class="page-heading mb-4">
   <div>
     <span class="eyebrow">ILLUSTRATIVE ESTIMATES</span>
@@ -24,11 +26,13 @@
 {# Quick Estimate Form #}
 {% if configs %}
 <div class="panel mb-4">
-  <div class="panel-head d-flex align-items-center gap-2">
-    <i class="bi bi-calculator" style="color:var(--teal);"></i>
-    <span class="fw-semibold">Quick Estimate</span>
+  <div class="panel-head">
+    <div class="panel-title-group">
+      <i class="bi bi-calculator"></i>
+      <h5>Quick Estimate</h5>
+    </div>
   </div>
-  <div class="p-3">
+  <div>
     <form id="quickEstimateForm" method="post" action="">
       {% csrf_token %}
       <input type="hidden" name="action" value="estimate">
@@ -72,9 +76,9 @@
 {% if applications %}
   {% for application in applications %}
   <div class="panel mb-4">
-    <div class="panel-head d-flex flex-wrap align-items-center justify-content-between gap-2">
-      <div class="d-flex align-items-center gap-2">
-        <i class="bi bi-map" style="color:var(--teal);"></i>
+    <div class="panel-head">
+      <div class="panel-title-group">
+        <i class="bi bi-map"></i>
         <a href="{% url 'application_detail' application.public_id %}"
            class="fw-semibold text-decoration-none" style="color:var(--navy);">
           #{{ application.public_id }}
@@ -92,7 +96,7 @@
       </div>
     </div>
 
-    <div class="p-3">
+    <div>
       {% with estimates=application.compensation_estimates.all %}
       {% if estimates %}
         {% for est in estimates %}
@@ -181,4 +185,6 @@
   </div>
 {% endif %}
 
+  </div>
+</main>
 {% endblock %}

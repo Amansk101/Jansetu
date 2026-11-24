@@ -77,15 +77,15 @@
     <div class="row g-3 mb-4">
       <div class="col-6 col-md-3 col-xl-2">
         <div class="metric">
-          <div class="metric-label">Total shown</div>
-          <div class="metric-value">{{ total }}</div>
+          <small>Total shown</small>
+          <strong>{{ total }}</strong>
         </div>
       </div>
       {% for row in by_status %}
       <div class="col-6 col-md-3 col-xl-2">
         <div class="metric">
-          <div class="metric-label">{{ row.status|title }}</div>
-          <div class="metric-value">{{ row.n }}</div>
+          <small>{{ row.status|title }}</small>
+          <strong>{{ row.n }}</strong>
           <div class="metric-sub">
             <span class="status status-{{ row.status }}">{{ row.status|title }}</span>
           </div>
@@ -96,9 +96,10 @@
 
     <!-- Applications Table -->
     <section class="panel p-0">
-      <div class="panel-head px-3 pt-3 pb-2">
-        <div>
-          <h5 class="mb-0" style="color:var(--navy);"><i class="bi bi-table me-2"></i>Applications</h5>
+      <div class="panel-head">
+        <div class="panel-title-group">
+          <i class="bi bi-table"></i>
+          <h5>Applications</h5>
         </div>
       </div>
 

@@ -111,12 +111,12 @@
       </div>
 
       <!-- Search / Filter Form -->
-      <form class="row g-2 align-items-end mb-3 px-3 pt-1" method="get" id="filterForm">
-        <div class="col-12 col-md-3">
+      <form class="row g-2 align-items-end mb-3" method="get" id="filterForm">
+        <div class="col-12 col-lg-3">
           <label class="form-label">Search</label>
           <input class="form-control" name="q" placeholder="Application ID or citizen name" value="{{ request.GET.q }}">
         </div>
-        <div class="col-6 col-md-2">
+        <div class="col-6 col-md-3 col-lg-2">
           <label class="form-label">Status</label>
           <select class="form-select" name="status">
             <option value="">All statuses</option>
@@ -125,7 +125,7 @@
             {% endfor %}
           </select>
         </div>
-        <div class="col-6 col-md-2">
+        <div class="col-6 col-md-3 col-lg-2">
           <label class="form-label">Category</label>
           <select class="form-select" name="category">
             <option value="">All categories</option>
@@ -134,16 +134,16 @@
             {% endfor %}
           </select>
         </div>
-        <div class="col-6 col-md-2">
+        <div class="col-6 col-md-3 col-lg">
           <label class="form-label">From</label>
           <input class="form-control" type="date" name="date_from" value="{{ request.GET.date_from }}">
         </div>
-        <div class="col-6 col-md-2">
+        <div class="col-6 col-md-3 col-lg">
           <label class="form-label">To</label>
           <input class="form-control" type="date" name="date_to" value="{{ request.GET.date_to }}">
         </div>
-        <div class="col-6 col-md-1 d-grid">
-          <label class="form-label d-none d-md-block">&nbsp;</label>
+        <div class="col-6 col-md-3 col-lg-2">
+          <label class="form-label">Sort</label>
           <select class="form-select" name="sort">
             <option value="-created_at" {% if sort == '-created_at' %}selected{% endif %}>Newest</option>
             <option value="created_at" {% if sort == 'created_at' %}selected{% endif %}>Oldest</option>
@@ -152,13 +152,11 @@
             <option value="public_id" {% if sort == 'public_id' %}selected{% endif %}>App ID</option>
           </select>
         </div>
-        <div class="col-6 col-md-auto d-grid">
-          <label class="form-label d-none d-md-block">&nbsp;</label>
+        <div class="col-auto">
           <button class="btn btn-outline-primary" type="submit"><i class="bi bi-funnel"></i> Filter</button>
         </div>
         {% if request.GET.q or request.GET.status or request.GET.category or request.GET.date_from or request.GET.date_to %}
         <div class="col-auto">
-          <label class="form-label d-none d-md-block">&nbsp;</label>
           <a href="{% url 'dashboard' %}" class="btn btn-link text-secondary">Clear filters</a>
         </div>
         {% endif %}

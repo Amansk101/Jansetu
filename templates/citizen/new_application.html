@@ -24,7 +24,7 @@
       <!-- Step 1: Department -->
       <section class="panel mb-4">
         <div class="panel-head"><div><h3><span class="badge bg-secondary me-2">1</span>Choose Department</h3><p>Which government department do you need a service from?</p></div></div>
-        <div class="p-4">
+        <div>
           <div class="row g-3">
             {% for d in departments %}
             <div class="col-6 col-md-4">
@@ -44,7 +44,7 @@
       <!-- Step 2: Service -->
       <section class="panel mb-4 d-none" id="step-service">
         <div class="panel-head"><div><h3><span class="badge bg-secondary me-2">2</span>Choose Service</h3><p>Select the exact service you are applying for.</p></div></div>
-        <div class="p-4">
+        <div>
           <label class="form-label fw-semibold" for="serviceSelect">Service</label>
           <select name="service_slug" id="serviceSelect" class="form-select" disabled>
             <option value="">— Choose a department first —</option>
@@ -56,7 +56,7 @@
       <!-- Step 3: Details -->
       <section class="panel mb-4 d-none" id="step-details">
         <div class="panel-head"><div><h3><span class="badge bg-secondary me-2">3</span>Application Details</h3><p>Tell us about your request.</p></div></div>
-        <div class="p-4">
+        <div>
 
           <div id="field-scheme" class="mb-3 d-none">
             <label class="form-label fw-semibold" for="{{ form.scheme.id_for_label }}">Welfare Scheme <span class="text-danger">*</span></label>
@@ -88,7 +88,7 @@
       <!-- Category-specific extras -->
       <section class="panel mb-4 extra-fields d-none" id="extra-welfare">
         <div class="panel-head"><div><h3><i class="bi bi-people me-2 text-primary"></i>Welfare Details</h3></div></div>
-        <div class="p-4 row g-3">
+        <div class="row g-3">
           <div class="col-md-6">
             <label class="form-label fw-semibold">Beneficiary Type</label>
             <input type="text" name="beneficiary_type" class="form-control" placeholder="e.g. BPL household, widow, farmer">
@@ -102,7 +102,7 @@
 
       <section class="panel mb-4 extra-fields d-none" id="extra-disaster">
         <div class="panel-head"><div><h3><i class="bi bi-exclamation-triangle me-2 text-warning"></i>Disaster Details</h3></div></div>
-        <div class="p-4 row g-3">
+        <div class="row g-3">
           <div class="col-md-6">
             <label class="form-label fw-semibold">Type of Disaster</label>
             <input type="text" name="disaster_type" class="form-control" placeholder="e.g. flood, drought, cyclone">
@@ -116,7 +116,7 @@
 
       <section class="panel mb-4 extra-fields d-none" id="extra-land">
         <div class="panel-head"><div><h3><i class="bi bi-geo-alt me-2 text-success"></i>Land Details</h3></div></div>
-        <div class="p-4 row g-3">
+        <div class="row g-3">
           <div class="col-md-6">
             <label class="form-label fw-semibold">Survey Number</label>
             <input type="text" name="survey_number" class="form-control" placeholder="e.g. 123/4A">
@@ -130,7 +130,7 @@
 
       <section class="panel mb-4 extra-fields d-none" id="extra-revenue">
         <div class="panel-head"><div><h3><i class="bi bi-receipt me-2 text-info"></i>Revenue Service Details</h3></div></div>
-        <div class="p-4 row g-3">
+        <div class="row g-3">
           <div class="col-md-6">
             <label class="form-label fw-semibold">Property / Record ID</label>
             <input type="text" name="property_id" class="form-control" placeholder="e.g. CTS-4512, Survey no.">
@@ -141,7 +141,7 @@
       <!-- Step 4: Documents -->
       <section class="panel mb-4 d-none" id="step-docs">
         <div class="panel-head"><div><h3><span class="badge bg-secondary me-2">4</span>Upload Documents</h3><p>Upload any <strong>2</strong> documents from the checklist below — those two are mandatory. The AI checks them and the case goes straight to the officer.</p></div></div>
-        <div class="p-4">
+        <div>
           <div id="docUploadSlots">
             <p class="text-muted mb-0"><i class="bi bi-arrow-up-circle me-1"></i>Select a service above to see the documents you must upload.</p>
           </div>

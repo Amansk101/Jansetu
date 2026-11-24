@@ -18,6 +18,7 @@
     <a class="sidebar-brand" href="{% url 'dashboard' %}"><span class="brand-mark"><i class="bi bi-diagram-3-fill"></i></span> JanSutra <span class="brand-ai">AI</span></a>
     <p class="sidebar-role">{% if user.role == 'citizen' %}{% trans "Citizen" %}{% elif user.role == 'officer' %}{% trans "Government Officer" %}{% else %}{% trans "Administrator" %}{% endif %}</p>
     <nav>
+      <p class="sidebar-group">{% trans "Workspace" %}</p>
       {% if user.role == 'citizen' %}
         <a class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}"><i class="bi bi-grid"></i> {% trans "Dashboard" %}</a>
         <a class="{% if request.resolver_match.url_name == 'departments' or request.resolver_match.url_name == 'department_detail' or request.resolver_match.url_name == 'service_detail' %}active{% endif %}" href="{% url 'departments' %}"><i class="bi bi-diagram-3"></i> {% trans "Departments" %}</a>
@@ -27,11 +28,13 @@
       {% else %}
         <a class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}"><i class="bi bi-grid"></i> {% trans "Dashboard" %}</a>
       {% endif %}
+      <p class="sidebar-group">{% trans "Modules" %}</p>
       {% if user.role != 'officer' or 'documents' in allowed_modules %}<a class="{% if request.resolver_match.url_name == 'documents_hub' %}active{% endif %}" href="{% url 'documents_hub' %}"><i class="bi bi-file-earmark-text"></i> {% trans "Documents" %}</a>{% endif %}
       {% if user.role != 'officer' or 'eligibility' in allowed_modules %}<a class="{% if request.resolver_match.url_name == 'eligibility_hub' %}active{% endif %}" href="{% url 'eligibility_hub' %}"><i class="bi bi-list-check"></i> {% trans "Eligibility" %}</a>{% endif %}
       {% if user.role != 'officer' or 'compensation' in allowed_modules %}<a class="{% if request.resolver_match.url_name == 'compensation_hub' %}active{% endif %}" href="{% url 'compensation_hub' %}"><i class="bi bi-calculator"></i> {% trans "Compensation" %}</a>{% endif %}
       <a class="{% if request.resolver_match.url_name == 'notifications' %}active{% endif %}" href="{% url 'notifications' %}"><i class="bi bi-bell"></i> {% trans "Notifications" %}{% if unread_count %}<span class="badge rounded-pill bg-danger ms-auto">{{ unread_count }}</span>{% endif %}</a>
       {% if user.role == 'admin' or user.is_superuser %}
+        <p class="sidebar-group">{% trans "Administration" %}</p>
         <a class="{% if request.resolver_match.url_name == 'reports' %}active{% endif %}" href="{% url 'reports' %}"><i class="bi bi-file-earmark-bar-graph"></i> {% trans "Reports" %}</a>
         <a class="{% if request.resolver_match.url_name == 'analytics' %}active{% endif %}" href="{% url 'analytics' %}"><i class="bi bi-graph-up-arrow"></i> {% trans "Analytics" %}</a>
         <a class="{% if request.resolver_match.url_name == 'manage_departments' %}active{% endif %}" href="{% url 'manage_departments' %}"><i class="bi bi-building"></i> {% trans "Departments" %}</a>
@@ -46,6 +49,7 @@
         <a class="{% if request.resolver_match.url_name == 'audit_logs' %}active{% endif %}" href="{% url 'audit_logs' %}"><i class="bi bi-journal-text"></i> {% trans "Audit logs" %}</a>
         <a class="{% if request.resolver_match.url_name == 'email_log' %}active{% endif %}" href="{% url 'email_log' %}"><i class="bi bi-envelope-paper"></i> {% trans "Notifications log" %}</a>
       {% endif %}
+      <p class="sidebar-group">{% trans "Account" %}</p>
       <a class="{% if request.resolver_match.url_name == 'profile' %}active{% endif %}" href="{% url 'profile' %}"><i class="bi bi-person"></i> {% trans "Profile" %}</a>
     </nav>
   </aside>

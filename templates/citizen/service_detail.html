@@ -22,7 +22,7 @@
 
     <section class="panel mb-4">
       <div class="panel-head"><div><h3>Documents for this service</h3><p>Upload any <strong>2</strong> documents from this checklist — those two are mandatory. The AI checks each file before the officer reviews your case.</p></div></div>
-      <div class="p-3">
+      <div>
         <ol class="mb-0 ps-3">
           {% for r in requirements %}
           <li class="mb-2">
@@ -41,14 +41,14 @@
     {% if service.eligibility %}
     <section class="panel mb-4">
       <div class="panel-head"><div><h3>Who can apply</h3></div></div>
-      <div class="p-3">{{ service.eligibility|linebreaks }}</div>
+      <div>{{ service.eligibility|linebreaks }}</div>
     </section>
     {% endif %}
 
     {% if service.instructions %}
     <section class="panel mb-4">
       <div class="panel-head"><div><h3>How to apply</h3></div></div>
-      <div class="p-3">{{ service.instructions|linebreaks }}</div>
+      <div>{{ service.instructions|linebreaks }}</div>
     </section>
     {% endif %}
 

@@ -1,4 +1,6 @@
 {% extends 'base.html' %}{% load static %}{% block title %}{{ title }} · JanSutra AI{% endblock %}{% block content %}
+<main class="app-shell">
+  <div class="container-fluid px-lg-5 py-4">
 <div class="page-heading mb-4">
   <div><span class="eyebrow"><i class="bi bi-graph-up-arrow"></i> ADMINISTRATION</span><h1>{{ title }}</h1>
   <p class="mb-0">Monitor AI verification outcomes, processing time, department load and officer workload.</p></div>
@@ -11,11 +13,11 @@
   <div class="col-6 col-xl-3"><div class="metric"><div class="metric-icon coral"><i class="bi bi-file-earmark-plus"></i></div><small>Open correction requests</small><strong>{{ corrections_open }}</strong></div></div>
 </div>
 
-<div class="row g-4">
+<div class="row g-4 mb-4">
   <div class="col-lg-6">
-    <section class="panel h-100">
+    <section class="panel h-100 mb-0">
       <div class="panel-head"><div><h3>AI verification</h3><p>Automated pre-screening before officer review.</p></div></div>
-      <div class="p-4">
+      <div>
         <div class="d-flex justify-content-between small mb-1"><span>Cases pre-screened by AI</span><strong>{{ ai_checked }} / {{ total }}</strong></div>
         <div class="progress mb-3" style="height:10px"><div class="progress-bar bg-primary" style="width:{% if total %}{% widthratio ai_checked total 100 %}{% else %}0{% endif %}%"></div></div>
         <div class="d-flex justify-content-between small mb-1"><span>Checklists complete (ready for officer)</span><strong>{{ ai_ready }}</strong></div>
@@ -26,21 +28,21 @@
   </div>
 
   <div class="col-lg-6">
-    <section class="panel h-100">
+    <section class="panel h-100 mb-0">
       <div class="panel-head"><div><h3>Certificates</h3><p>Issued and emailed by the system.</p></div></div>
-      <div class="p-4">
+      <div>
         <div class="d-flex justify-content-between border-bottom py-2"><span class="text-muted">Generated</span><strong>{{ certificates }}</strong></div>
         <div class="d-flex justify-content-between border-bottom py-2"><span class="text-muted">Emailed to citizens</span><strong>{{ certificates_emailed }}</strong></div>
         <div class="d-flex justify-content-between py-2"><span class="text-muted">Awaiting delivery</span><strong>{{ certificates_pending }}</strong></div>
-        <p class="text-muted small mb-0">Each certificate carries a unique number and a QR code that opens the public verification page.</p>
+        <p class="text-muted small mt-2 mb-0">Each certificate carries a unique number and a QR code that opens the public verification page.</p>
       </div>
     </section>
   </div>
 </div>
 
-<div class="row g-4 mt-1">
+<div class="row g-4 mb-4">
   <div class="col-lg-6">
-    <section class="panel h-100">
+    <section class="panel p-0 h-100 mb-0">
       <div class="panel-head"><div><h3>Cases by department</h3></div></div>
       <div class="table-responsive">
         <table class="table align-middle mb-0 small">
@@ -56,7 +58,7 @@
   </div>
 
   <div class="col-lg-6">
-    <section class="panel h-100">
+    <section class="panel p-0 h-100 mb-0">
       <div class="panel-head"><div><h3>Officer workload</h3></div></div>
       <div class="table-responsive">
         <table class="table align-middle mb-0 small">
@@ -72,7 +74,7 @@
   </div>
 </div>
 
-<div class="panel mt-4">
+<div class="panel p-0">
   <div class="panel-head"><div><h3>Applications by status</h3><p>The twelve statuses used across the case lifecycle.</p></div></div>
   <div class="table-responsive">
     <table class="table align-middle mb-0 small">
@@ -85,4 +87,6 @@
     </table>
   </div>
 </div>
+  </div>
+</main>
 {% endblock %}

@@ -1,4 +1,6 @@
 {% extends 'base.html' %}{% block title %}{{ title }} · JanSutra AI{% endblock %}{% block content %}
+<main class="app-shell">
+  <div class="container-fluid px-lg-5 py-4">
 <div class="page-heading mb-4">
   <div><span class="eyebrow"><i class="bi bi-envelope-gear"></i> ADMINISTRATION</span><h1>{{ title }}</h1>
   <p class="mb-0">Control the subject and body of every automatic notification email. Placeholders such as <code>{application_id}</code> and <code>{name}</code> are filled automatically when the email is sent.</p></div>
@@ -6,12 +8,14 @@
 
 <div class="row g-4">
   <div class="col-lg-6">
-    <div class="panel h-100">
-      <div class="panel-head d-flex align-items-center gap-2">
-        <i class="bi {% if edit %}bi-pencil-square{% else %}bi-envelope{% endif %}" style="color:var(--teal)"></i>
-        <span class="fw-semibold">{% if edit %}Edit: {{ edit.name }}{% else %}Select a template to edit{% endif %}</span>
+    <div class="panel h-100 mb-0">
+      <div class="panel-head">
+        <div class="panel-title-group">
+          <i class="bi {% if edit %}bi-pencil-square{% else %}bi-envelope{% endif %}"></i>
+          <h5>{% if edit %}Edit: {{ edit.name }}{% else %}Select a template to edit{% endif %}</h5>
+        </div>
       </div>
-      <div class="p-3">
+      <div>
         {% if edit %}
         <form method="post" action="">
           {% csrf_token %}
@@ -55,10 +59,13 @@
   </div>
 
   <div class="col-lg-6">
-    <div class="panel">
-      <div class="panel-head d-flex align-items-center gap-2">
-        <i class="bi bi-list-ul" style="color:var(--teal)"></i><span class="fw-semibold">Notification emails</span>
-        <span class="badge bg-secondary ms-auto">{{ rows|length }}</span>
+    <div class="panel p-0 mb-0">
+      <div class="panel-head">
+        <div class="panel-title-group">
+          <i class="bi bi-list-ul"></i>
+          <h5>Notification emails</h5>
+        </div>
+        <span class="badge bg-secondary">{{ rows|length }}</span>
       </div>
       <div class="table-responsive">
         <table class="table table-hover align-middle mb-0 small">
@@ -83,4 +90,6 @@
     </div>
   </div>
 </div>
+  </div>
+</main>
 {% endblock %}

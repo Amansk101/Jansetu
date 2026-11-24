@@ -67,10 +67,13 @@
 
     <!-- Officer accounts -->
     <section class="panel p-0">
-      <div class="panel-head px-3 pt-3 pb-2">
-        <div>
-          <h5 class="mb-0" style="color:var(--navy);"><i class="bi bi-people me-2"></i>Officer Accounts</h5>
-          <p class="small text-muted mb-0">{{ accounts|length }} account{{ accounts|length|pluralize }}</p>
+      <div class="panel-head">
+        <div class="panel-title-group">
+          <i class="bi bi-people"></i>
+          <div>
+            <h5>Officer Accounts</h5>
+            <p>{{ accounts|length }} account{{ accounts|length|pluralize }}</p>
+          </div>
         </div>
         {% if accounts %}
         <div class="account-search">

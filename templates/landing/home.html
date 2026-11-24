@@ -11,26 +11,30 @@
 
 <!-- Hero -->
 <section class="hero">
-  <div class="container py-5">
-    <div class="row align-items-center g-5">
+  <div class="container py-4 py-lg-5">
+    <div class="row align-items-center g-4 g-lg-5">
       <div class="col-lg-7">
         <span class="eyebrow"><i class="bi bi-patch-check"></i> INTELLIGENT GOVERNANCE · PROPOSED PILOT</span>
         <h1>{% trans "Less paperwork." %}<br>{% trans "Faster decisions." %}<br><span>{% trans "Transparent governance." %}</span></h1>
         <p class="lead">JanSutra AI is a citizen-service and case-management platform built for the Revenue Department. It brings applications, document review, eligibility checks and compensation estimation into one accountable workflow — with officers making every final decision.</p>
         <div class="d-flex flex-wrap gap-2 mt-4">
           <a class="btn btn-primary" href="{% if user.is_authenticated %}{% url 'dashboard' %}{% else %}{% url 'register' %}{% endif %}">
-            {% if user.is_authenticated %}{% trans "Open my workspace" %}{% else %}{% trans "Register as citizen" %}{% endif %}<i class="bi bi-arrow-right ms-2"></i>
+            {% if user.is_authenticated %}{% trans "Open my workspace" %}{% else %}{% trans "Register as citizen" %}{% endif %}<i class="bi bi-arrow-right ms-1"></i>
           </a>
           <a class="btn btn-outline-primary" href="{% if user.is_authenticated %}{% url 'dashboard' %}{% else %}{% url 'login' %}{% endif %}">
             {% if user.is_authenticated %}{% trans "My dashboard" %}{% else %}{% trans "Sign in" %}{% endif %}
+          </a>
+          <a class="btn btn-outline-primary" href="{% url 'verify_certificate_form' %}">
+            <i class="bi bi-qr-code-scan"></i> {% trans "Verify certificate" %}
           </a>
         </div>
         <div class="hero-stats">
           <div class="hero-stat"><strong>4</strong><span>{% trans "Service areas" %}</span></div>
           <div class="hero-stat"><strong>23</strong><span>{% trans "Languages" %}</span></div>
+          <div class="hero-stat"><strong>2 Docs</strong><span>{% trans "Minimum checklist" %}</span></div>
           <div class="hero-stat"><strong>100%</strong><span>{% trans "Audited decisions" %}</span></div>
         </div>
-        <p class="trustline mt-4 mb-0">
+        <p class="trustline mt-3 mb-0">
           <i class="bi bi-shield-check"></i> {% trans "Demonstration platform using synthetic data" %}
           <span>·</span> {% trans "Final decisions rest with authorised officers" %}
         </p>
@@ -38,24 +42,23 @@
       <div class="col-lg-5">
         <figure class="hero-photo">
           <img src="{% static 'images/home-collectorate.jpg' %}"
-               alt="{% trans 'District Collectorate office building' %}" width="1200" height="900">
+               alt="{% trans 'District Collectorate office building' %}" width="1200" height="750">
           <figcaption><i class="bi bi-geo-alt-fill"></i> {% trans "District Collectorate · South Goa" %}</figcaption>
         </figure>
-        <div class="panel mb-0">
-          <div class="panel-head">
+        <div class="panel hero-dept-card">
+          <div class="hero-dept-grid">
             <div>
-              <span class="eyebrow mb-1">PRIMARY DEPARTMENT</span>
-              <h3 class="mb-1">{% trans "Revenue Department" %}</h3>
-              <p>{% trans "District Collectorate – Revenue Administration" %}</p>
+              <small>{% trans "Primary Department" %}</small>
+              <strong>{% trans "Revenue Administration" %}</strong>
+            </div>
+            <div>
+              <small>{% trans "Pilot Location" %}</small>
+              <strong>{% trans "Collectorate, South Goa" %}</strong>
             </div>
           </div>
-          <div class="callout mb-3">
-            <i class="bi bi-geo-alt"></i>
-            <span><strong>{% trans "Proposed Pilot Location:" %}</strong> {% trans "Office of the Collector, South Goa." %}</span>
-          </div>
-          <div class="callout">
-            <i class="bi bi-info-circle"></i>
-            <span>This is a proposed pilot concept for demonstration only. It is not an official government service and is not connected to any live government database.</span>
+          <div class="callout mb-0">
+            <i class="bi bi-info-circle flex-shrink-0 mt-1"></i>
+            <span>Demonstration pilot only — uses synthetic records and is not connected to any live government database.</span>
           </div>
         </div>
       </div>
@@ -63,20 +66,66 @@
   </div>
 </section>
 
-<!-- Scope: what the platform solves -->
-<section class="section">
+<!-- Quick Public Access Bar -->
+<section class="quick-bar" aria-label="Quick citizen actions">
   <div class="container">
-    <div class="section-head mb-4">
-      <span class="eyebrow"><i class="bi bi-diagram-3"></i> SCOPE</span>
-      <h2>{% trans "What this platform solves for the department" %}</h2>
-      <p class="mb-0">Four service areas handled end to end — from citizen submission to officer decision and department reporting.</p>
+    <div class="quick-grid">
+      <a class="quick-card" href="{% if user.is_authenticated %}{% url 'new_application' %}{% else %}{% url 'register' %}{% endif %}">
+        <span class="iconbox"><i class="bi bi-file-earmark-plus"></i></span>
+        <div>
+          <b>{% trans "Apply Online" %}</b>
+          <small>{% trans "Submit service requests in minutes" %}</small>
+        </div>
+        <i class="bi bi-arrow-right"></i>
+      </a>
+      <a class="quick-card" href="{% url 'departments' %}">
+        <span class="iconbox"><i class="bi bi-diagram-3"></i></span>
+        <div>
+          <b>{% trans "Service Directory" %}</b>
+          <small>{% trans "Checklists, fees & timelines" %}</small>
+        </div>
+        <i class="bi bi-arrow-right"></i>
+      </a>
+      <a class="quick-card" href="{% url 'verify_certificate_form' %}">
+        <span class="iconbox"><i class="bi bi-patch-check"></i></span>
+        <div>
+          <b>{% trans "Verify Certificate" %}</b>
+          <small>{% trans "QR or unique verification code" %}</small>
+        </div>
+        <i class="bi bi-arrow-right"></i>
+      </a>
+      <a class="quick-card" href="{% url 'login' %}">
+        <span class="iconbox"><i class="bi bi-shield-lock"></i></span>
+        <div>
+          <b>{% trans "Portal Sign In" %}</b>
+          <small>{% trans "Citizen, Officer & Collector access" %}</small>
+        </div>
+        <i class="bi bi-arrow-right"></i>
+      </a>
     </div>
-    <div class="row g-4">
+  </div>
+</section>
+
+<!-- Scope: what the platform solves -->
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-head-row">
+      <div class="section-head">
+        <span class="eyebrow"><i class="bi bi-diagram-3"></i> SCOPE</span>
+        <h2>{% trans "What this platform solves for the department" %}</h2>
+        <p class="mb-0">Four service areas handled end to end — from citizen submission to officer decision and department reporting.</p>
+      </div>
+      <a class="btn btn-outline-primary" href="{% if user.is_authenticated %}{% url 'departments' %}{% else %}{% url 'register' %}{% endif %}">
+        {% if user.is_authenticated %}{% trans "Browse departments" %}{% else %}{% trans "Start an application" %}{% endif %} <i class="bi bi-arrow-right"></i>
+      </a>
+    </div>
+    <div class="row g-3 g-lg-4">
       <div class="col-md-6 col-xl-3">
         <div class="feature-card">
           <span class="iconbox"><i class="bi bi-map"></i></span>
           <h5>{% trans "Land Acquisition & Compensation" %}</h5>
           <p>Land-related applications with a transparent, configurable compensation estimator. Every figure is an illustrative estimate subject to official verification.</p>
+          <span class="feature-tag"><i class="bi bi-calculator"></i> Formula-backed estimate</span>
         </div>
       </div>
       <div class="col-md-6 col-xl-3">
@@ -84,6 +133,7 @@
           <span class="iconbox"><i class="bi bi-cloud-rain-heavy"></i></span>
           <h5>{% trans "Disaster Relief" %}</h5>
           <p>Flood and other disaster relief applications with document capture, verification and status tracking from submission to decision.</p>
+          <span class="feature-tag"><i class="bi bi-clock-history"></i> Priority case routing</span>
         </div>
       </div>
       <div class="col-md-6 col-xl-3">
@@ -91,6 +141,7 @@
           <span class="iconbox"><i class="bi bi-people"></i></span>
           <h5>{% trans "Welfare Schemes" %}</h5>
           <p>Government scheme applications with a rule-based eligibility check that explains every result for officer review — never an automatic rejection.</p>
+          <span class="feature-tag"><i class="bi bi-list-check"></i> Explainable rules engine</span>
         </div>
       </div>
       <div class="col-md-6 col-xl-3">
@@ -98,6 +149,7 @@
           <span class="iconbox"><i class="bi bi-file-earmark-text"></i></span>
           <h5>{% trans "Revenue Services" %}</h5>
           <p>Citizen applications, document verification and complete status tracking with notifications, remarks and downloadable acknowledgements.</p>
+          <span class="feature-tag"><i class="bi bi-qr-code"></i> QR-verified certificates</span>
         </div>
       </div>
     </div>
@@ -105,13 +157,13 @@
 </section>
 
 <!-- District administration at a glance -->
-<section class="section pt-0">
+<section class="section">
   <div class="container">
-    <div class="row g-5 align-items-center">
+    <div class="row g-4 g-lg-5 align-items-center">
       <div class="col-lg-6">
         <figure class="media-card split-photo">
           <img src="{% static 'images/district-office-interior.jpg' %}"
-               alt="{% trans 'District administrative office interior' %}" loading="lazy" width="1200" height="900">
+               alt="{% trans 'District administrative office interior' %}" loading="lazy" width="1200" height="750">
           <figcaption>
             <b>{% trans "The district office, digitised" %}</b>
             <span>Every counter, file and decision tracked in one accountable system.</span>
@@ -130,10 +182,22 @@
           <li>{% trans "AI assists with reading documents and estimating compensation; officers decide." %}</li>
           <li>{% trans "Every action is written to an audit trail for accountability." %}</li>
         </ul>
-        <div class="hero-stats">
-          <div class="hero-stat"><strong>4</strong><span>{% trans "Service areas" %}</span></div>
-          <div class="hero-stat"><strong>2</strong><span>{% trans "Document minimum" %}</span></div>
-          <div class="hero-stat"><strong>24×7</strong><span>{% trans "Status tracking" %}</span></div>
+        <div class="role-mini-grid">
+          <div class="role-mini">
+            <i class="bi bi-person-vcard"></i>
+            <b>{% trans "Citizen" %}</b>
+            <small>{% trans "Apply, upload docs, track status & download QR certificates." %}</small>
+          </div>
+          <div class="role-mini">
+            <i class="bi bi-clipboard2-check"></i>
+            <b>{% trans "Officer" %}</b>
+            <small>{% trans "Review OCR & eligibility insights and record official decisions." %}</small>
+          </div>
+          <div class="role-mini">
+            <i class="bi bi-bar-chart-line"></i>
+            <b>{% trans "Collector / Admin" %}</b>
+            <small>{% trans "Manage officers, rules, rates, audit logs & CSV reports." %}</small>
+          </div>
         </div>
       </div>
     </div>
@@ -141,18 +205,21 @@
 </section>
 
 <!-- Gallery: how the platform looks in the field -->
-<section class="section pt-0">
+<section class="section section-alt">
   <div class="container">
-    <div class="section-head mb-4">
-      <span class="eyebrow"><i class="bi bi-camera"></i> {% trans "FIELD VIEW" %}</span>
-      <h2>{% trans "Built for the district office" %}</h2>
-      <p class="mb-0">Designed around how a Collectorate actually works — citizens at the counter, verified paperwork, and officers deciding on screen.</p>
+    <div class="section-head-row">
+      <div class="section-head">
+        <span class="eyebrow"><i class="bi bi-camera"></i> {% trans "FIELD VIEW" %}</span>
+        <h2>{% trans "Built for the district office" %}</h2>
+        <p class="mb-0">Designed around how a Collectorate actually works — citizens at the counter, verified paperwork, and officers deciding on screen.</p>
+      </div>
+      <span class="section-pill"><i class="bi bi-geo-alt"></i> {% trans "6 touchpoints · Counter to Taluka" %}</span>
     </div>
-    <div class="row g-4">
+    <div class="row g-3 g-lg-4">
       <div class="col-md-6 col-lg-4">
         <figure class="media-card">
           <img src="{% static 'images/service-counter.jpg' %}"
-               alt="{% trans 'Citizens submitting documents at a public service counter' %}" loading="lazy" width="1200" height="900">
+               alt="{% trans 'Citizens submitting documents at a public service counter' %}" loading="lazy" width="1200" height="750">
           <figcaption>
             <b>{% trans "Service counter" %}</b>
             <span>Application intake with per-service document checklists instead of loose paperwork.</span>
@@ -162,7 +229,7 @@
       <div class="col-md-6 col-lg-4">
         <figure class="media-card">
           <img src="{% static 'images/document-verification.jpg' %}"
-               alt="{% trans 'Official documents with stamp and seal' %}" loading="lazy" width="1200" height="900">
+               alt="{% trans 'Official documents with stamp and seal' %}" loading="lazy" width="1200" height="750">
           <figcaption>
             <b>{% trans "Document verification" %}</b>
             <span>OCR extracts key fields, flags unreadable or possibly duplicated submissions for the officer.</span>
@@ -172,7 +239,7 @@
       <div class="col-md-6 col-lg-4">
         <figure class="media-card">
           <img src="{% static 'images/officer-dashboard.jpg' %}"
-               alt="{% trans 'Officer reviewing a dashboard on screen' %}" loading="lazy" width="1200" height="900">
+               alt="{% trans 'Officer reviewing a dashboard on screen' %}" loading="lazy" width="1200" height="750">
           <figcaption>
             <b>{% trans "Officer decision desk" %}</b>
             <span>AI highlights hold the record — the authorised officer records every approve or reject decision.</span>
@@ -182,7 +249,7 @@
       <div class="col-md-6 col-lg-4">
         <figure class="media-card">
           <img src="{% static 'images/village-revenue-desk.jpg' %}"
-               alt="{% trans 'Rural revenue desk assisting villagers' %}" loading="lazy" width="1200" height="900">
+               alt="{% trans 'Rural revenue desk assisting villagers' %}" loading="lazy" width="1200" height="750">
           <figcaption>
             <b>{% trans "Village revenue desk" %}</b>
             <span>The same case record reaches the taluka and village level, so citizens are not sent between offices.</span>
@@ -192,7 +259,7 @@
       <div class="col-md-6 col-lg-4">
         <figure class="media-card">
           <img src="{% static 'images/egovernance-data-centre.jpg' %}"
-               alt="{% trans 'Secure e-governance data centre' %}" loading="lazy" width="1200" height="900">
+               alt="{% trans 'Secure e-governance data centre' %}" loading="lazy" width="1200" height="750">
           <figcaption>
             <b>{% trans "Secure records" %}</b>
             <span>Documents and decisions are stored with role-based access and a full audit trail.</span>
@@ -202,7 +269,7 @@
       <div class="col-md-6 col-lg-4">
         <figure class="media-card">
           <img src="{% static 'images/land-field-survey.jpg' %}"
-               alt="{% trans 'Officer conducting a field land survey' %}" loading="lazy" width="1200" height="900">
+               alt="{% trans 'Officer conducting a field land survey' %}" loading="lazy" width="1200" height="750">
           <figcaption>
             <b>{% trans "Field verification" %}</b>
             <span>Land details captured on site feed straight into the compensation estimate and the case file.</span>
@@ -213,17 +280,20 @@
   </div>
 </section>
 
-<!-- How it works -->
-<section class="section pt-0">
+<!-- How it works + inline certificate verification -->
+<section class="section">
   <div class="container">
-    <div class="section-head mb-4">
-      <span class="eyebrow"><i class="bi bi-signpost-split"></i> WORKFLOW</span>
-      <h2>{% trans "How it works" %}</h2>
-      <p class="mb-0">A transparent six-step journey where AI assists and authorised officers decide.</p>
+    <div class="section-head-row">
+      <div class="section-head">
+        <span class="eyebrow"><i class="bi bi-signpost-split"></i> WORKFLOW</span>
+        <h2>{% trans "How it works" %}</h2>
+        <p class="mb-0">A transparent six-step journey where AI assists and authorised officers decide.</p>
+      </div>
+      <span class="section-pill"><i class="bi bi-shield-check"></i> {% trans "6-step audited lifecycle" %}</span>
     </div>
     <div class="row g-4">
       <div class="col-lg-6">
-        <div class="panel h-100">
+        <div class="panel h-100 mb-0">
           <div class="journey-step done">
             <span>1</span>
             <div><b>Citizen submits an application</b><small>Selects a service, fills the category form and uploads supporting documents.</small></div>
@@ -242,7 +312,7 @@
         </div>
       </div>
       <div class="col-lg-6">
-        <div class="panel h-100">
+        <div class="panel h-100 mb-0">
           <div class="journey-step current">
             <span>4</span>
             <div><b>Officer reviews the case</b><small>Verifies documents, corrects extracted data, requests missing documents and records the official approve or reject decision with a reason.</small></div>
@@ -261,6 +331,17 @@
         </div>
       </div>
     </div>
+
+    <div class="verify-strip">
+      <div>
+        <strong class="d-block" style="color:var(--navy);"><i class="bi bi-patch-check-fill me-2" style="color:var(--teal);"></i>{% trans "Public certificate authenticity check" %}</strong>
+        <small class="text-muted">{% trans "Have a JanSutra AI certificate? Enter its verification code to verify authenticity instantly." %}</small>
+      </div>
+      <form method="get" action="{% url 'verify_certificate_form' %}">
+        <input type="text" name="code" class="form-control" placeholder="Verification code e.g. 8F2A41C3B7D9" aria-label="Certificate verification code">
+        <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i> {% trans "Verify" %}</button>
+      </form>
+    </div>
   </div>
 </section>
 
@@ -271,11 +352,12 @@
   <div class="container d-flex flex-wrap justify-content-between align-items-center gap-3">
     <div>
       <h3 class="mb-1 text-white">{% trans "Ready to try the workflow?" %}</h3>
-      <p class="mb-0">Sign in with a demo account or register as a citizen to submit an application.</p>
+      <p class="mb-0">Sign in with a demo account, verify a certificate, or register as a citizen to submit an application.</p>
     </div>
     <div class="d-flex flex-wrap gap-2">
       <a class="btn btn-primary" href="{% url 'login' %}">{% trans "Sign in" %}</a>
       <a class="btn btn-outline-light" href="{% url 'register' %}">{% trans "Create citizen account" %}</a>
+      <a class="btn btn-outline-light" href="{% url 'verify_certificate_form' %}">{% trans "Verify certificate" %}</a>
     </div>
   </div>
 </section>

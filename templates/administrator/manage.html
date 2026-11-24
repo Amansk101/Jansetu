@@ -7,6 +7,9 @@
 {% elif kind == 'rule' %}{% url 'manage_rules' as manage_url %}
 {% else %}{% url 'manage_rates' as manage_url %}{% endif %}
 
+<main class="app-shell">
+  <div class="container-fluid px-lg-5 py-4">
+
 <div class="page-heading d-flex flex-wrap justify-content-between align-items-end gap-3 mb-3">
   <div>
     <span class="eyebrow">ADMINISTRATION</span>
@@ -34,10 +37,13 @@
 {% endif %}
 
 <section class="panel p-0">
-  <div class="panel-head px-3 pt-3 pb-2">
-    <div>
-      <h5 class="mb-0" style="color:var(--navy);"><i class="bi bi-table me-2"></i>Existing {{ kind|title }}s</h5>
-      <p class="small text-muted mb-0">{{ rows|length }} record{{ rows|length|pluralize }} configured</p>
+  <div class="panel-head">
+    <div class="panel-title-group">
+      <i class="bi bi-table"></i>
+      <div>
+        <h5>Existing {{ kind|title }}s</h5>
+        <p>{{ rows|length }} record{{ rows|length|pluralize }} configured</p>
+      </div>
     </div>
   </div>
 
@@ -263,6 +269,9 @@
     </div>
   </div>
 </div>
+
+  </div>
+</main>
 {% endblock %}
 
 {% block scripts %}
