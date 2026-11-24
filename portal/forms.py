@@ -1,18 +1,53 @@
+import re
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.utils.translation import gettext_lazy as _
 from .models import User, Application, ApplicationDocument, Citizen, UserProfile, Department, Scheme, EligibilityRule, CompensationConfiguration, CertificateTemplate, GovernmentService, ServiceDocumentRequirement, EmailTemplate, MODULES
 
+# Indian mobile numbers: 10 digits beginning with 6, 7, 8 or 9.
+MOBILE_PATTERN = re.compile(r'^[6-9]\d{9}$')
+
+def clean_indian_mobile(value, required=False):
+    """Normalise (+91 / 0 prefixes, spaces, dashes) and validate a mobile number."""
+    digits = re.sub(r'\D', '', value or '')
+    if len(digits) == 12 and digits.startswith('91'):
+        digits = digits[2:]
+    elif len(digits) == 11 and digits.startswith('0'):
+        digits = digits[1:]
+    if not digits:
+        if required:
+            raise forms.ValidationError(_('Enter your 10-digit mobile number.'))
+        return ''
+    if not MOBILE_PATTERN.match(digits):
+        raise forms.ValidationError(_('Enter a valid 10-digit mobile number starting with 6, 7, 8 or 9.'))
+    return digits
+
 class RegisterForm(UserCreationForm):
     name = forms.CharField(
         label=_('Full name'), max_length=150,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Aman Shaikh'}))
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Aman Shaikh', 'autocomplete': 'name'}))
     email = forms.EmailField(
         label=_('Email address'), required=True,
-        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'aman.shaikh@example.com'}))
+        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'aman.shaikh@example.com', 'autocomplete': 'email'}))
     class Meta:
         model = User
         fields = ('name', 'email', 'mobile', 'password1', 'password2')
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        mobile = self.fields['mobile']
+        mobile.required = True
+        mobile.label = _('Mobile number')
+        mobile.help_text = _('10 digits, starting with 6, 7, 8 or 9.')
+        mobile.widget = forms.TextInput(attrs={
+            'class': 'form-control', 'placeholder': '98765 43210', 'inputmode': 'numeric',
+            'autocomplete': 'tel', 'maxlength': '17', 'pattern': r'[0-9+\-\s]{10,17}',
+        })
+        for field in ('password1', 'password2'):
+            self.fields[field].widget.attrs['class'] = 'form-control'
+        self.fields['password1'].widget.attrs['autocomplete'] = 'new-password'
+        self.fields['password2'].widget.attrs['autocomplete'] = 'new-password'
+    def clean_mobile(self):
+        return clean_indian_mobile(self.cleaned_data.get('mobile'), required=True)
     def clean_email(self):
         email = (self.cleaned_data.get('email') or '').strip().lower()
         if User.objects.filter(email__iexact=email).exists():
@@ -80,6 +115,8 @@ class ProfileForm(forms.ModelForm):
         widgets = {name: forms.TextInput(attrs={'class': 'form-control'}) for name in ('first_name', 'last_name', 'email', 'mobile', 'district', 'taluka', 'village')}
         widgets['address'] = forms.Textarea(attrs={'class': 'form-control', 'rows': 3})
         widgets['email'] = forms.EmailInput(attrs={'class': 'form-control'})
+    def clean_mobile(self):
+        return clean_indian_mobile(self.cleaned_data.get('mobile'))
 
 class DepartmentForm(forms.ModelForm):
     categories = forms.MultipleChoiceField(
@@ -129,25 +166,43 @@ class CompensationConfigForm(forms.ModelForm):
 class StaffAccountForm(forms.Form):
     username = forms.CharField(
         max_length=150, required=False,
-        label='Officer ID / username (leave blank to auto-generate)',
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'auto-generated if left empty'}))
-    first_name = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    last_name = forms.CharField(max_length=150, required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    email = forms.EmailField(label='Official email (activation link is sent here)', widget=forms.EmailInput(attrs={'class': 'form-control', 'autocomplete': 'off', 'placeholder': "Officer's real email address"}))
+        label='Officer ID (optional)',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Auto-generated from the name if left empty', 'autocomplete': 'off'}))
+    first_name = forms.CharField(
+        max_length=150, label='First name',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Ravi', 'autocomplete': 'off'}))
+    last_name = forms.CharField(
+        max_length=150, required=False, label='Last name (optional)',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Naik', 'autocomplete': 'off'}))
+    email = forms.EmailField(
+        label='Official email', help_text='The activation email and temporary password are sent to this address.',
+        widget=forms.EmailInput(attrs={'class': 'form-control', 'autocomplete': 'off', 'placeholder': "officer@gov.in"}))
     password = forms.CharField(
         min_length=8, required=False,
-        label='Temporary password (leave blank to auto-generate)',
-        widget=forms.PasswordInput(attrs={'class': 'form-control', 'autocomplete': 'new-password'}))
-    department = forms.ModelChoiceField(queryset=Department.objects.filter(active=True), required=False, widget=forms.Select(attrs={'class': 'form-select'}))
-    designation = forms.CharField(max_length=120, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Deputy Collector'}))
+        label='Temporary password (optional)',
+        help_text='Leave blank to auto-generate a secure temporary password.',
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'autocomplete': 'new-password', 'placeholder': 'Auto-generated if left empty'}))
+    department = forms.ModelChoiceField(
+        queryset=Department.objects.filter(active=True), required=False, label='Department',
+        empty_label='— Assign later —', widget=forms.Select(attrs={'class': 'form-select'}))
+    designation = forms.CharField(
+        max_length=120, required=False, label='Designation',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Deputy Collector'}))
     allowed_modules = forms.MultipleChoiceField(
-        choices=MODULES, required=False,
-        widget=forms.SelectMultiple(attrs={'class': 'form-select', 'size': '3'}),
-        help_text='Hold Ctrl/Cmd to select. Leave empty to allow every module.')
+        choices=MODULES, required=False, label='Allowed modules',
+        widget=forms.CheckboxSelectMultiple(),
+        help_text='Leave empty to allow every module.')
     allowed_categories = forms.MultipleChoiceField(
-        choices=Application.Category.choices, required=False,
-        widget=forms.SelectMultiple(attrs={'class': 'form-select', 'size': '4'}),
-        help_text='Hold Ctrl/Cmd to select. Leave empty to allow every category.')
+        choices=Application.Category.choices, required=False, label='Allowed application categories',
+        widget=forms.CheckboxSelectMultiple(),
+        help_text='Leave empty to allow every category.')
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for name in self.errors:
+            widget = self.fields[name].widget
+            css = widget.attrs.get('class', '')
+            if 'is-invalid' not in css:
+                widget.attrs['class'] = f'{css} is-invalid'.strip()
     def clean_username(self):
         username = (self.cleaned_data.get('username') or '').strip()
         if username and User.objects.filter(username=username).exists():

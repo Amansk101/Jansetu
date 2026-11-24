@@ -206,7 +206,12 @@ def manage_accounts(request):
                 messages.warning(request, f'Officer {username} created. Email delivery failed, so share this temporary password securely: {temp_password} — the officer must change it at first sign-in.')
             return redirect('manage_accounts')
     accounts = User.objects.filter(role=User.Role.OFFICER).select_related('officer_record__department').order_by('username')
-    return render(request, 'administrator/accounts.html', {'form': form, 'accounts': accounts, 'departments': Department.objects.filter(active=True), 'modules': MODULES, 'categories': Application.Category.choices})
+    stats = {
+        'total': accounts.count(),
+        'active': accounts.filter(is_active=True).count(),
+        'unassigned': accounts.filter(officer_record__department__isnull=True).count(),
+    }
+    return render(request, 'administrator/accounts.html', {'form': form, 'accounts': accounts, 'stats': stats, 'departments': Department.objects.filter(active=True), 'modules': MODULES, 'categories': Application.Category.choices, 'create_modal_open': bool(form.errors)})
 
 
 @role_required(User.Role.ADMIN)
