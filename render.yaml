@@ -54,6 +54,6 @@ services:
         value: '3'
       # --- Outgoing email via Google Apps Script HTTPS webhook (100% free) ---
       - key: EMAIL_WEBHOOK_URL
-        value: https://script.google.com/macros/s/AKfycbytTpshwaxptV5GTZFFHW8iGczvQrukicWxxwP3mDfRVgeB6C-nq4fH3VHaGU2Smrkb/exec
+        value: https://script.google.com/macros/s/AKfycbxZOBiiWiAwCiM2TBPigYbwOylDk_irCs6yUYtImzpdwmH_ANi3S4nVMAJfaTKVlTzm/exec
       - key: DEFAULT_FROM_EMAIL
         value: 'JanSutra AI <armaan.sk113@gmail.com>'
