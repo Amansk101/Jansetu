@@ -218,9 +218,34 @@ def render_template(kind, subject, body, user=None, application=None, extra=None
 
 
 def _send_via_http_api(subject, body, recipients, attachments=None):
-    """Send email via HTTPS REST API (Brevo or Resend), bypassing Render free tier's blocked SMTP ports (25, 465, 587)."""
+    """Send email via HTTPS REST API (Google Apps Script webhook, Brevo, or Resend), bypassing Render free tier's blocked SMTP ports (25, 465, 587)."""
+    webhook_url = (os.environ.get('EMAIL_WEBHOOK_URL') or getattr(settings, 'EMAIL_WEBHOOK_URL', '')).strip()
     brevo_key = (os.environ.get('BREVO_API_KEY') or getattr(settings, 'BREVO_API_KEY', '')).strip()
     resend_key = (os.environ.get('RESEND_API_KEY') or getattr(settings, 'RESEND_API_KEY', '')).strip()
+
+    if webhook_url:
+        payload = {
+            'to': ','.join(recipients),
+            'subject': subject,
+            'body': body,
+        }
+        data = json.dumps(payload).encode('utf-8')
+        req = urllib.request.Request(
+            webhook_url,
+            data=data,
+            headers={'Content-Type': 'application/json'},
+            method='POST',
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                if 200 <= resp.status < 400:
+                    return True
+        except urllib.error.HTTPError as err:
+            err_body = err.read().decode('utf-8', errors='replace')
+            raise RuntimeError(f'Webhook error {err.code}: {err_body[:150]}')
+        except Exception as e:
+            raise RuntimeError(f'Webhook request failed: {e}')
+        return False
 
     if brevo_key:
         url = 'https://api.brevo.com/v3/smtp/email'
