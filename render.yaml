@@ -52,16 +52,10 @@ services:
         value: 'gemini-flash-latest,gemini-3.1-flash-lite'
       - key: GEMINI_TIMEOUT
         value: '3'
-      # --- Outgoing email (certificates, status updates) ---
-      - key: EMAIL_HOST
-        value: smtp.gmail.com
-      - key: EMAIL_PORT
-        value: '587'
-      - key: EMAIL_USE_TLS
-        value: 'true'
-      - key: EMAIL_HOST_USER
-        value: armaan.sk113@gmail.com
-      - key: EMAIL_HOST_PASSWORD
+      # --- Outgoing email via Resend HTTPS API (bypasses Render free tier port block) ---
+      - key: RESEND_API_KEY
         sync: false
+      - key: RESEND_FROM_EMAIL
+        value: 'JanSutra AI <onboarding@resend.dev>'
       - key: DEFAULT_FROM_EMAIL
-        value: 'JanSutra AI <armaan.sk113@gmail.com>'
+        value: 'JanSutra AI <onboarding@resend.dev>'

@@ -219,12 +219,12 @@ def render_template(kind, subject, body, user=None, application=None, extra=None
 
 def _send_via_http_api(subject, body, recipients, attachments=None):
     """Send email via HTTPS REST API (Resend or Brevo), bypassing Render free tier's blocked SMTP ports (25, 465, 587)."""
-    resend_key = os.environ.get('RESEND_API_KEY', '').strip()
-    brevo_key = os.environ.get('BREVO_API_KEY', '').strip()
+    resend_key = (os.environ.get('RESEND_API_KEY') or getattr(settings, 'RESEND_API_KEY', '')).strip()
+    brevo_key = (os.environ.get('BREVO_API_KEY') or getattr(settings, 'BREVO_API_KEY', '')).strip()
 
     if resend_key:
         url = 'https://api.resend.com/emails'
-        from_email = os.environ.get('RESEND_FROM_EMAIL') or settings.DEFAULT_FROM_EMAIL or 'JanSutra AI <onboarding@resend.dev>'
+        from_email = os.environ.get('RESEND_FROM_EMAIL') or getattr(settings, 'RESEND_FROM_EMAIL', '') or 'JanSutra AI <onboarding@resend.dev>'
         payload = {
             'from': from_email,
             'to': recipients,
@@ -247,9 +247,15 @@ def _send_via_http_api(subject, body, recipients, attachments=None):
             },
             method='POST',
         )
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            if resp.status in (200, 201):
-                return True
+        try:
+            with urllib.request.urlopen(req, timeout=12) as resp:
+                if resp.status in (200, 201):
+                    return True
+        except urllib.error.HTTPError as err:
+            err_body = err.read().decode('utf-8', errors='replace')
+            raise RuntimeError(f'Resend error {err.code}: {err_body}')
+        except Exception as e:
+            raise RuntimeError(f'Resend request failed: {e}')
         return False
 
     if brevo_key:
@@ -277,9 +283,15 @@ def _send_via_http_api(subject, body, recipients, attachments=None):
             },
             method='POST',
         )
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            if resp.status in (200, 201):
-                return True
+        try:
+            with urllib.request.urlopen(req, timeout=12) as resp:
+                if resp.status in (200, 201):
+                    return True
+        except urllib.error.HTTPError as err:
+            err_body = err.read().decode('utf-8', errors='replace')
+            raise RuntimeError(f'Brevo error {err.code}: {err_body}')
+        except Exception as e:
+            raise RuntimeError(f'Brevo request failed: {e}')
         return False
 
     return None
