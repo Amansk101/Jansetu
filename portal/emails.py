@@ -5,6 +5,12 @@ can be inspected from the administrator panel. Configuration (SMTP host,
 credentials, from address) is read from environment-backed settings and is
 never hardcoded here.
 """
+import base64
+import json
+import os
+import urllib.error
+import urllib.request
+
 from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMultiAlternatives
@@ -211,6 +217,74 @@ def render_template(kind, subject, body, user=None, application=None, extra=None
 
 
 
+def _send_via_http_api(subject, body, recipients, attachments=None):
+    """Send email via HTTPS REST API (Resend or Brevo), bypassing Render free tier's blocked SMTP ports (25, 465, 587)."""
+    resend_key = os.environ.get('RESEND_API_KEY', '').strip()
+    brevo_key = os.environ.get('BREVO_API_KEY', '').strip()
+
+    if resend_key:
+        url = 'https://api.resend.com/emails'
+        from_email = os.environ.get('RESEND_FROM_EMAIL') or settings.DEFAULT_FROM_EMAIL or 'JanSutra AI <onboarding@resend.dev>'
+        payload = {
+            'from': from_email,
+            'to': recipients,
+            'subject': subject,
+            'text': body,
+        }
+        if attachments:
+            payload['attachments'] = [
+                {'filename': name, 'content': base64.b64encode(content if isinstance(content, bytes) else content.encode('utf-8')).decode('ascii')}
+                for name, content, _ in attachments
+            ]
+        data = json.dumps(payload).encode('utf-8')
+        req = urllib.request.Request(
+            url,
+            data=data,
+            headers={
+                'Authorization': f'Bearer {resend_key}',
+                'Content-Type': 'application/json',
+                'User-Agent': 'JanSutra-AI/1.0',
+            },
+            method='POST',
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            if resp.status in (200, 201):
+                return True
+        return False
+
+    if brevo_key:
+        url = 'https://api.brevo.com/v3/smtp/email'
+        from_email = os.environ.get('BREVO_FROM_EMAIL') or os.environ.get('EMAIL_HOST_USER') or 'armaan.sk113@gmail.com'
+        payload = {
+            'sender': {'email': from_email, 'name': 'JanSutra AI'},
+            'to': [{'email': r} for r in recipients],
+            'subject': subject,
+            'textContent': body,
+        }
+        if attachments:
+            payload['attachment'] = [
+                {'name': name, 'content': base64.b64encode(content if isinstance(content, bytes) else content.encode('utf-8')).decode('ascii')}
+                for name, content, _ in attachments
+            ]
+        data = json.dumps(payload).encode('utf-8')
+        req = urllib.request.Request(
+            url,
+            data=data,
+            headers={
+                'api-key': brevo_key,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            method='POST',
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            if resp.status in (200, 201):
+                return True
+        return False
+
+    return None
+
+
 def send_email(kind, subject, body, recipients, user=None, application=None, attachments=None):
     """Send one email to one or more recipients and log the outcome per address.
 
@@ -224,10 +298,16 @@ def send_email(kind, subject, body, recipients, user=None, application=None, att
         return []
     status, error = EmailLog.Status.SENT, ''
     try:
-        message = EmailMultiAlternatives(subject, body, settings.DEFAULT_FROM_EMAIL, targets)
-        for name, content, mimetype in (attachments or []):
-            message.attach(name, content, mimetype)
-        message.send(fail_silently=False)
+        http_result = _send_via_http_api(subject, body, targets, attachments=attachments)
+        if http_result is True:
+            pass
+        elif http_result is False:
+            raise RuntimeError('HTTP email delivery returned an unsuccessful status code')
+        else:
+            message = EmailMultiAlternatives(subject, body, settings.DEFAULT_FROM_EMAIL, targets)
+            for name, content, mimetype in (attachments or []):
+                message.attach(name, content, mimetype)
+            message.send(fail_silently=False)
     except Exception as exc:  # noqa: BLE001 - record any transport error
         status, error = EmailLog.Status.FAILED, str(exc)
     logs = []
