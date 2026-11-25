@@ -295,19 +295,162 @@ form input[type=checkbox]:not(.form-check-input){width:1.05rem;height:1.05rem;ac
 .checkbox-grid>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 .75rem}
 .checkbox-grid label{display:flex;align-items:center;gap:.5rem;margin:.28rem 0;font-size:.85rem;color:#35586b;cursor:pointer}
 .checkbox-grid input[type=checkbox]{width:1.05rem;height:1.05rem;margin:0;accent-color:var(--teal);flex:none}
-.modal-content{border:0;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);overflow:hidden}
-.modal-dialog-scrollable .modal-content{max-height:100%;display:flex;flex-direction:column}
-.modal-dialog-scrollable .modal-content > form{display:flex;flex-direction:column;flex:1 1 auto;min-height:0;overflow:hidden}
-.modal-dialog-scrollable .modal-body,
-.modal-dialog-scrollable .modal-content > form > .modal-body{overflow-y:auto!important;flex:1 1 auto;min-height:0;-webkit-overflow-scrolling:touch}
+/* --- Modal Scroll & Accessibility --- */
+body.modal-open {
+  overflow: hidden !important;
+  touch-action: none;
+}
+
+.modal-dialog-scrollable,
+#createOfficerModal .modal-dialog {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  max-height: calc(100vh - 2rem) !important;
+  max-height: calc(100dvh - 2rem) !important;
+  height: calc(100% - 2rem) !important;
+  margin: 1rem auto !important;
+}
+
+.modal-content {
+  border: 0;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+.modal-dialog-scrollable .modal-content,
+#createOfficerModal .modal-content {
+  display: flex !important;
+  flex-direction: column !important;
+  max-height: calc(100vh - 2rem) !important;
+  max-height: calc(100dvh - 2rem) !important;
+  height: auto !important;
+  overflow: hidden !important;
+  border: 0;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+
+.modal-dialog-scrollable .modal-content > form,
+#createOfficerModal .modal-content > form {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
 .modal-dialog-scrollable .modal-header,
-.modal-dialog-scrollable .modal-footer{flex-shrink:0}
+#createOfficerModal .modal-header {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 10 !important;
+  background: #ffffff !important;
+  border-bottom: 1px solid var(--line) !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  flex-shrink: 0 !important;
+}
+
+.modal-dialog-scrollable .modal-body,
+.modal-dialog-scrollable .modal-content > form > .modal-body,
+#createOfficerModal .modal-body {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  max-height: calc(100vh - 11rem) !important;
+  max-height: calc(100dvh - 11rem) !important;
+  overscroll-behavior: contain !important;
+  -webkit-overflow-scrolling: touch !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 77, 102, 0.35) #f1f5f9;
+}
+
+.modal-dialog-scrollable .modal-body::-webkit-scrollbar,
+#createOfficerModal .modal-body::-webkit-scrollbar {
+  width: 7px;
+}
+
+.modal-dialog-scrollable .modal-body::-webkit-scrollbar-track,
+#createOfficerModal .modal-body::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.modal-dialog-scrollable .modal-body::-webkit-scrollbar-thumb,
+#createOfficerModal .modal-body::-webkit-scrollbar-thumb {
+  background: rgba(0, 77, 102, 0.35);
+  border-radius: 4px;
+}
+
+.modal-dialog-scrollable .modal-body::-webkit-scrollbar-thumb:hover,
+#createOfficerModal .modal-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 77, 102, 0.65);
+}
+
+.modal-dialog-scrollable .modal-footer,
+#createOfficerModal .modal-footer {
+  position: sticky !important;
+  bottom: 0 !important;
+  z-index: 10 !important;
+  background: #fbfdfe !important;
+  border-top: 1px solid var(--line) !important;
+  gap: 0.5rem !important;
+  flex-shrink: 0 !important;
+}
+
 .modal-header{border-bottom:1px solid var(--line);align-items:flex-start}
 .modal-footer{border-top:1px solid var(--line);background:#fbfdfe;gap:.5rem}
 .modal-title{font-size:1.05rem;color:var(--navy)}
 .modal-body input[type=checkbox]{width:1.05rem;height:1.05rem;margin:0;accent-color:var(--teal);flex:none}
 .modal-body .form-check{display:flex;align-items:center;gap:.5rem;min-height:26px;padding-left:0;margin-bottom:.15rem}
 .modal-body .form-check-label{cursor:pointer;margin:0}
+
+@media(max-width:767.98px){
+  .modal-dialog-scrollable,
+  #createOfficerModal .modal-dialog{
+    max-width:calc(100% - 1.25rem)!important;
+    max-height:calc(100vh - 1.25rem)!important;
+    max-height:calc(100dvh - 1.25rem)!important;
+    height:calc(100% - 1.25rem)!important;
+    margin:0.625rem auto!important;
+  }
+  .modal-dialog-scrollable .modal-content,
+  #createOfficerModal .modal-content{
+    max-height:calc(100vh - 1.25rem)!important;
+    max-height:calc(100dvh - 1.25rem)!important;
+  }
+  .modal-dialog-scrollable .modal-body,
+  #createOfficerModal .modal-body{
+    max-height:calc(100vh - 9.5rem)!important;
+    max-height:calc(100dvh - 9.5rem)!important;
+    padding:1rem!important;
+  }
+}
+
+@media(max-width:575.98px){
+  .modal-dialog-scrollable,
+  #createOfficerModal .modal-dialog{
+    max-width:calc(100% - 0.75rem)!important;
+    max-height:calc(100vh - 0.75rem)!important;
+    max-height:calc(100dvh - 0.75rem)!important;
+    height:calc(100% - 0.75rem)!important;
+    margin:0.375rem auto!important;
+  }
+  .modal-dialog-scrollable .modal-content,
+  #createOfficerModal .modal-content{
+    max-height:calc(100vh - 0.75rem)!important;
+    max-height:calc(100dvh - 0.75rem)!important;
+  }
+  .modal-dialog-scrollable .modal-body,
+  #createOfficerModal .modal-body{
+    max-height:calc(100vh - 8.5rem)!important;
+    max-height:calc(100dvh - 8.5rem)!important;
+    padding:0.85rem!important;
+  }
+}
 @media(max-width:991px){.onboard-strip{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:575px){.onboard-strip{grid-template-columns:1fr}.checkbox-grid>div{grid-template-columns:1fr}}
 @media(max-width:767px){.hero .container{padding-top:1.75rem!important;padding-bottom:2rem!important}.hero-photo img{aspect-ratio:16/10;max-height:210px}}

@@ -364,6 +364,16 @@
   var modalEl = document.getElementById('createOfficerModal');
   {% if create_modal_open %}if (modalEl) { new bootstrap.Modal(modalEl).show(); }{% endif %}
 
+  if (modalEl) {
+    modalEl.addEventListener('show.bs.modal', function () {
+      document.body.classList.add('modal-open');
+      document.body.style.overflow = 'hidden';
+    });
+    modalEl.addEventListener('hidden.bs.modal', function () {
+      document.body.style.overflow = '';
+    });
+  }
+
   var search = document.getElementById('officerSearch');
   var table = document.getElementById('officerTable');
   if (search && table) {
