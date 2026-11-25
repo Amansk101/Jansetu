@@ -187,7 +187,10 @@
 <!-- Create / edit modal -->
 <div class="modal fade" id="manageModal" tabindex="-1" aria-labelledby="manageModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content">
+    <form method="post" action="" class="modal-content">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="save">
+      {% if edit %}<input type="hidden" name="id" value="{{ edit.pk }}">{% endif %}
       <div class="modal-header">
         <div>
           <h5 class="modal-title mb-0" id="manageModalLabel">
@@ -196,77 +199,72 @@
         </div>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <form method="post" action="">
-        {% csrf_token %}
-        <input type="hidden" name="action" value="save">
-        {% if edit %}<input type="hidden" name="id" value="{{ edit.pk }}">{% endif %}
-        <div class="modal-body">
-          {% if form.non_field_errors %}
-            <div class="alert alert-danger py-2 small">{{ form.non_field_errors|join:" " }}</div>
-          {% endif %}
-          <div class="row g-3">
-            {% for field in form %}
-            <div class="col-md-6{% if field.field.widget.input_type == 'textarea' or field.field.widget.allow_multiple_selected %} col-12{% endif %}">
-              {% if field.field.widget.input_type == 'checkbox' %}
-                <div class="form-check mt-md-4">
-                  {{ field }}
-                  <label class="form-check-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
-                </div>
+      <div class="modal-body">
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger py-2 small">{{ form.non_field_errors|join:" " }}</div>
+        {% endif %}
+        <div class="row g-3">
+          {% for field in form %}
+          <div class="col-md-6{% if field.field.widget.input_type == 'textarea' or field.field.widget.allow_multiple_selected %} col-12{% endif %}">
+            {% if field.field.widget.input_type == 'checkbox' %}
+              <div class="form-check mt-md-4">
+                {{ field }}
+                <label class="form-check-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
+              </div>
+            {% else %}
+              <label for="{{ field.id_for_label }}" class="form-label">
+                {{ field.label }}
+                {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
+              </label>
+              {% if field.field.widget.allow_multiple_selected %}
+                <select name="{{ field.html_name }}" id="{{ field.id_for_label }}" multiple
+                        class="form-select{% if field.errors %} is-invalid{% endif %}" size="4">
+                  {% for opt_val, opt_label in field.field.choices %}
+                    <option value="{{ opt_val }}" {% if field.value and opt_val in field.value %}selected{% endif %}>
+                      {{ opt_label }}
+                    </option>
+                  {% endfor %}
+                </select>
+              {% elif field.field.widget.input_type == 'select' %}
+                <select name="{{ field.html_name }}" id="{{ field.id_for_label }}"
+                        class="form-select{% if field.errors %} is-invalid{% endif %}">
+                  {% for opt_val, opt_label in field.field.choices %}
+                    <option value="{{ opt_val }}"
+                      {% if field.value|stringformat:"s" == opt_val|stringformat:"s" %}selected{% endif %}>
+                      {{ opt_label }}
+                    </option>
+                  {% endfor %}
+                </select>
+              {% elif field.field.widget.input_type == 'textarea' %}
+                <textarea name="{{ field.html_name }}" id="{{ field.id_for_label }}" rows="3"
+                          class="form-control{% if field.errors %} is-invalid{% endif %}"
+                          placeholder="{{ field.label }}">{{ field.value|default:'' }}</textarea>
               {% else %}
-                <label for="{{ field.id_for_label }}" class="form-label">
-                  {{ field.label }}
-                  {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
-                </label>
-                {% if field.field.widget.allow_multiple_selected %}
-                  <select name="{{ field.html_name }}" id="{{ field.id_for_label }}" multiple
-                          class="form-select{% if field.errors %} is-invalid{% endif %}" size="4">
-                    {% for opt_val, opt_label in field.field.choices %}
-                      <option value="{{ opt_val }}" {% if field.value and opt_val in field.value %}selected{% endif %}>
-                        {{ opt_label }}
-                      </option>
-                    {% endfor %}
-                  </select>
-                {% elif field.field.widget.input_type == 'select' %}
-                  <select name="{{ field.html_name }}" id="{{ field.id_for_label }}"
-                          class="form-select{% if field.errors %} is-invalid{% endif %}">
-                    {% for opt_val, opt_label in field.field.choices %}
-                      <option value="{{ opt_val }}"
-                        {% if field.value|stringformat:"s" == opt_val|stringformat:"s" %}selected{% endif %}>
-                        {{ opt_label }}
-                      </option>
-                    {% endfor %}
-                  </select>
-                {% elif field.field.widget.input_type == 'textarea' %}
-                  <textarea name="{{ field.html_name }}" id="{{ field.id_for_label }}" rows="3"
-                            class="form-control{% if field.errors %} is-invalid{% endif %}"
-                            placeholder="{{ field.label }}">{{ field.value|default:'' }}</textarea>
-                {% else %}
-                  <input type="{{ field.field.widget.input_type }}"
-                         name="{{ field.html_name }}"
-                         id="{{ field.id_for_label }}"
-                         value="{{ field.value|default:'' }}"
-                         class="form-control{% if field.errors %} is-invalid{% endif %}"
-                         placeholder="{{ field.label }}">
-                {% endif %}
-                {% if field.errors %}
-                  <div class="invalid-feedback d-block">{{ field.errors|join:" " }}</div>
-                {% endif %}
-                {% if field.help_text %}
-                  <div class="form-text text-muted small">{{ field.help_text }}</div>
-                {% endif %}
+                <input type="{{ field.field.widget.input_type }}"
+                       name="{{ field.html_name }}"
+                       id="{{ field.id_for_label }}"
+                       value="{{ field.value|default:'' }}"
+                       class="form-control{% if field.errors %} is-invalid{% endif %}"
+                       placeholder="{{ field.label }}">
               {% endif %}
-            </div>
-            {% endfor %}
+              {% if field.errors %}
+                <div class="invalid-feedback d-block">{{ field.errors|join:" " }}</div>
+              {% endif %}
+              {% if field.help_text %}
+                <div class="form-text text-muted small">{{ field.help_text }}</div>
+              {% endif %}
+            {% endif %}
           </div>
+          {% endfor %}
         </div>
-        <div class="modal-footer">
-          <a href="{{ manage_url }}" class="btn btn-light" data-bs-dismiss="modal">Cancel</a>
-          <button type="submit" class="btn btn-primary">
-            {% if edit %}<i class="bi bi-check2 me-1"></i>Update{% else %}<i class="bi bi-plus-lg me-1"></i>Save{% endif %}
-          </button>
-        </div>
-      </form>
-    </div>
+      </div>
+      <div class="modal-footer">
+        <a href="{{ manage_url }}" class="btn btn-light" data-bs-dismiss="modal">Cancel</a>
+        <button type="submit" class="btn btn-primary">
+          {% if edit %}<i class="bi bi-check2 me-1"></i>Update{% else %}<i class="bi bi-plus-lg me-1"></i>Save{% endif %}
+        </button>
+      </div>
+    </form>
   </div>
 </div>
 

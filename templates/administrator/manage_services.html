@@ -159,7 +159,10 @@
 <!-- Create service modal -->
 <div class="modal fade" id="serviceModal" tabindex="-1" aria-labelledby="serviceModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content">
+    <form method="post" action="" class="modal-content">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="save">
+      {% if edit %}<input type="hidden" name="id" value="{{ edit.pk }}">{% endif %}
       <div class="modal-header">
         <div>
           <h5 class="modal-title mb-0" id="serviceModalLabel"><i class="bi bi-plus-circle me-2"></i>{% if edit %}Update {{ edit.name }}{% else %}Add new service{% endif %}</h5>
@@ -167,36 +170,31 @@
         </div>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <form method="post" action="">
-        {% csrf_token %}
-        <input type="hidden" name="action" value="save">
-        {% if edit %}<input type="hidden" name="id" value="{{ edit.pk }}">{% endif %}
-        <div class="modal-body">
-          {% if form.non_field_errors %}<div class="alert alert-danger py-2 small">{{ form.non_field_errors|join:" " }}</div>{% endif %}
-          <div class="row g-3">
-            {% for field in form %}
-            <div class="{% if field.field.widget.input_type == 'textarea' %}col-12{% else %}col-md-6{% endif %}">
-              {% if field.field.widget.input_type == 'checkbox' %}
-                <div class="form-check mt-md-4">
-                  {{ field }}
-                  <label class="form-check-label fw-semibold small" for="{{ field.id_for_label }}">{{ field.label }}</label>
-                </div>
-              {% else %}
-                <label class="form-label fw-semibold small" for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} <span class="text-danger">*</span>{% endif %}</label>
+      <div class="modal-body">
+        {% if form.non_field_errors %}<div class="alert alert-danger py-2 small">{{ form.non_field_errors|join:" " }}</div>{% endif %}
+        <div class="row g-3">
+          {% for field in form %}
+          <div class="{% if field.field.widget.input_type == 'textarea' %}col-12{% else %}col-md-6{% endif %}">
+            {% if field.field.widget.input_type == 'checkbox' %}
+              <div class="form-check mt-md-4">
                 {{ field }}
-                {% if field.errors %}<div class="text-danger small mt-1">{{ field.errors|join:" " }}</div>{% endif %}
-                {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
-              {% endif %}
-            </div>
-            {% endfor %}
+                <label class="form-check-label fw-semibold small" for="{{ field.id_for_label }}">{{ field.label }}</label>
+              </div>
+            {% else %}
+              <label class="form-label fw-semibold small" for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} <span class="text-danger">*</span>{% endif %}</label>
+              {{ field }}
+              {% if field.errors %}<div class="text-danger small mt-1">{{ field.errors|join:" " }}</div>{% endif %}
+              {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+            {% endif %}
           </div>
+          {% endfor %}
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary"><i class="bi bi-check2"></i> {% if edit %}Update{% else %}Save service{% endif %}</button>
-        </div>
-      </form>
-    </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-primary"><i class="bi bi-check2"></i> {% if edit %}Update{% else %}Save service{% endif %}</button>
+      </div>
+    </form>
   </div>
 </div>
 {% endblock %}
