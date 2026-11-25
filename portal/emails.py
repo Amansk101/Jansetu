@@ -253,7 +253,12 @@ def _send_via_http_api(subject, body, recipients, attachments=None):
                     return True
         except urllib.error.HTTPError as err:
             err_body = err.read().decode('utf-8', errors='replace')
-            raise RuntimeError(f'Resend error {err.code}: {err_body}')
+            try:
+                err_data = json.loads(err_body)
+                msg = err_data.get('message', err_body)
+            except Exception:
+                msg = err_body
+            raise RuntimeError(f'Resend: {msg}')
         except Exception as e:
             raise RuntimeError(f'Resend request failed: {e}')
         return False
@@ -326,8 +331,9 @@ def send_email(kind, subject, body, recipients, user=None, application=None, att
     for address in targets:
         logs.append(EmailLog.objects.create(
             recipient=address, subject=subject[:200], kind=kind,
-            user=user if (user and user.email and user.email == address) else None,
-            application=application, status=status, error=error[:250],
+            user=user if (user and getattr(user, 'pk', None) and user.email and user.email == address) else None,
+            application=application if (application and getattr(application, 'pk', None)) else None,
+            status=status, error=error[:250],
         ))
     return logs
 

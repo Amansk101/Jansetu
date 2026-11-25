@@ -157,7 +157,8 @@ def manage_accounts(request):
             if logs and logs[0].status == EmailLog.Status.SENT:
                 messages.success(request, f'A new temporary password was emailed to {officer_user.email}. The officer must change it at first sign-in.')
             else:
-                messages.warning(request, f'Email could not be delivered. New temporary password for {officer_user.username}: {temp_password} — share it securely; it must be changed at first sign-in.')
+                err_detail = f' ({logs[0].error})' if (logs and logs[0].error) else ''
+                messages.warning(request, f'Email could not be delivered{err_detail}. New temporary password for {officer_user.username}: {temp_password} — share it securely; it must be changed at first sign-in.')
             return redirect('manage_accounts')
         if action == 'update_officer':
             officer_user = get_object_or_404(User, pk=request.POST.get('id'), role=User.Role.OFFICER)
@@ -203,7 +204,8 @@ def manage_accounts(request):
             if logs and logs[0].status == EmailLog.Status.SENT:
                 messages.success(request, f'Officer {username} created. An activation email with the temporary password was sent to {user.email}.')
             else:
-                messages.warning(request, f'Officer {username} created. Email delivery failed, so share this temporary password securely: {temp_password} — the officer must change it at first sign-in.')
+                err_detail = f' ({logs[0].error})' if (logs and logs[0].error) else ''
+                messages.warning(request, f'Officer {username} created. Email delivery failed{err_detail}, so share this temporary password securely: {temp_password} — the officer must change it at first sign-in.')
             return redirect('manage_accounts')
     accounts = User.objects.filter(role=User.Role.OFFICER).select_related('officer_record__department').order_by('username')
     stats = {
