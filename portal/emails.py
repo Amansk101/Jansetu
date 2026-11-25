@@ -218,9 +218,52 @@ def render_template(kind, subject, body, user=None, application=None, extra=None
 
 
 def _send_via_http_api(subject, body, recipients, attachments=None):
-    """Send email via HTTPS REST API (Resend or Brevo), bypassing Render free tier's blocked SMTP ports (25, 465, 587)."""
-    resend_key = (os.environ.get('RESEND_API_KEY') or getattr(settings, 'RESEND_API_KEY', '')).strip()
+    """Send email via HTTPS REST API (Brevo or Resend), bypassing Render free tier's blocked SMTP ports (25, 465, 587)."""
     brevo_key = (os.environ.get('BREVO_API_KEY') or getattr(settings, 'BREVO_API_KEY', '')).strip()
+    resend_key = (os.environ.get('RESEND_API_KEY') or getattr(settings, 'RESEND_API_KEY', '')).strip()
+
+    if brevo_key:
+        url = 'https://api.brevo.com/v3/smtp/email'
+        from_email = (os.environ.get('BREVO_FROM_EMAIL') or os.environ.get('EMAIL_HOST_USER') or 'armaan.sk113@gmail.com').strip()
+        if '<' in from_email and '>' in from_email:
+            from_email = from_email.split('<', 1)[1].split('>', 1)[0].strip()
+        payload = {
+            'sender': {'email': from_email, 'name': 'JanSutra AI'},
+            'to': [{'email': r} for r in recipients],
+            'subject': subject,
+            'textContent': body,
+        }
+        if attachments:
+            payload['attachment'] = [
+                {'name': name, 'content': base64.b64encode(content if isinstance(content, bytes) else content.encode('utf-8')).decode('ascii')}
+                for name, content, _ in attachments
+            ]
+        data = json.dumps(payload).encode('utf-8')
+        req = urllib.request.Request(
+            url,
+            data=data,
+            headers={
+                'api-key': brevo_key,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            method='POST',
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=12) as resp:
+                if resp.status in (200, 201):
+                    return True
+        except urllib.error.HTTPError as err:
+            err_body = err.read().decode('utf-8', errors='replace')
+            try:
+                err_data = json.loads(err_body)
+                msg = err_data.get('message', err_body)
+            except Exception:
+                msg = err_body
+            raise RuntimeError(f'Brevo: {msg}')
+        except Exception as e:
+            raise RuntimeError(f'Brevo request failed: {e}')
+        return False
 
     if resend_key:
         url = 'https://api.resend.com/emails'
@@ -261,42 +304,6 @@ def _send_via_http_api(subject, body, recipients, attachments=None):
             raise RuntimeError(f'Resend: {msg}')
         except Exception as e:
             raise RuntimeError(f'Resend request failed: {e}')
-        return False
-
-    if brevo_key:
-        url = 'https://api.brevo.com/v3/smtp/email'
-        from_email = os.environ.get('BREVO_FROM_EMAIL') or os.environ.get('EMAIL_HOST_USER') or 'armaan.sk113@gmail.com'
-        payload = {
-            'sender': {'email': from_email, 'name': 'JanSutra AI'},
-            'to': [{'email': r} for r in recipients],
-            'subject': subject,
-            'textContent': body,
-        }
-        if attachments:
-            payload['attachment'] = [
-                {'name': name, 'content': base64.b64encode(content if isinstance(content, bytes) else content.encode('utf-8')).decode('ascii')}
-                for name, content, _ in attachments
-            ]
-        data = json.dumps(payload).encode('utf-8')
-        req = urllib.request.Request(
-            url,
-            data=data,
-            headers={
-                'api-key': brevo_key,
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            },
-            method='POST',
-        )
-        try:
-            with urllib.request.urlopen(req, timeout=12) as resp:
-                if resp.status in (200, 201):
-                    return True
-        except urllib.error.HTTPError as err:
-            err_body = err.read().decode('utf-8', errors='replace')
-            raise RuntimeError(f'Brevo error {err.code}: {err_body}')
-        except Exception as e:
-            raise RuntimeError(f'Brevo request failed: {e}')
         return False
 
     return None
