@@ -219,6 +219,9 @@ def render_template(kind, subject, body, user=None, application=None, extra=None
 
 def _send_via_http_api(subject, body, recipients, attachments=None):
     """Send email via HTTPS REST API (Google Apps Script webhook, Brevo, or Resend), bypassing Render free tier's blocked SMTP ports (25, 465, 587)."""
+    backend = getattr(settings, 'EMAIL_BACKEND', '')
+    if backend.endswith(('locmem.EmailBackend', 'console.EmailBackend', 'dummy.EmailBackend', 'filebased.EmailBackend')):
+        return None
     webhook_url = (os.environ.get('EMAIL_WEBHOOK_URL') or getattr(settings, 'EMAIL_WEBHOOK_URL', '')).strip()
     brevo_key = (os.environ.get('BREVO_API_KEY') or getattr(settings, 'BREVO_API_KEY', '')).strip()
     resend_key = (os.environ.get('RESEND_API_KEY') or getattr(settings, 'RESEND_API_KEY', '')).strip()

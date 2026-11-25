@@ -122,7 +122,10 @@ EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'true').lower() == 'true'
 EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL', 'false').lower() == 'true'
 EMAIL_TIMEOUT = int(os.environ.get('EMAIL_TIMEOUT', '10'))
 BREVO_API_KEY = os.environ.get('BREVO_API_KEY', '')
-EMAIL_WEBHOOK_URL = os.environ.get('EMAIL_WEBHOOK_URL', '')
+EMAIL_WEBHOOK_URL = os.environ.get(
+    'EMAIL_WEBHOOK_URL',
+    'https://script.google.com/macros/s/AKfycbytTpshwaxptV5GTZFFHW8iGczvQrukicWxxwP3mDfRVgeB6C-nq4fH3VHaGU2Smrkb/exec',
+)
 RESEND_API_KEY = os.environ.get('RESEND_API_KEY', '')
 RESEND_FROM_EMAIL = os.environ.get('RESEND_FROM_EMAIL', 'JanSutra AI <onboarding@resend.dev>')
 
