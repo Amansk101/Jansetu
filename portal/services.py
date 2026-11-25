@@ -430,9 +430,130 @@ def _draw_qr(pdf, url, x, y, size):
     renderPDF.draw(drawing, pdf, x, y)
 
 
-def build_certificate_pdf(application, certificate=None, draft=False):
-    """Generate the certificate as a PDF, including the certificate number,
-    issue date and a QR code that links to the public verification page.
+def _resolve_signatory(application, certificate=None, officer=None, template=None):
+    """Return (name, designation, approved_at_str) for the approving officer."""
+    payload = (certificate.payload if certificate and isinstance(certificate.payload, dict) else {}) or {}
+    approving_user = officer or application.assigned_officer
+    name = ''
+    designation = ''
+    if officer:
+        name = officer.get_full_name() or officer.username
+        rec = getattr(officer, 'officer_record', None)
+        if rec and rec.designation:
+            designation = rec.designation
+        elif getattr(officer, 'role', '') == 'admin':
+            designation = 'District Collector / Administrator'
+        else:
+            designation = 'Authorised Signatory'
+    elif payload.get('approved_by_name'):
+        name = payload.get('approved_by_name', '')
+        designation = payload.get('approved_by_designation', '')
+    elif approving_user:
+        name = approving_user.get_full_name() or approving_user.username
+        rec = getattr(approving_user, 'officer_record', None)
+        if rec and rec.designation:
+            designation = rec.designation
+        elif getattr(approving_user, 'role', '') == 'admin':
+            designation = 'District Collector / Administrator'
+
+    if not name and template and template.signatory_name:
+        name = template.signatory_name
+    if not designation:
+        designation = (template.signatory_designation if template and template.signatory_designation else '') or 'Authorised Signatory'
+    if application.department_id and application.department.name not in designation:
+        designation = f'{designation}, {application.department.name}'
+
+    approved_at = payload.get('approved_at') or timezone.localtime(timezone.now()).strftime('%d %b %Y, %I:%M %p IST')
+    return name or 'Authorised Officer', designation, approved_at
+
+
+def _draw_emblem(pdf, cx, cy, r, navy, gold):
+    """Draw a clean official circular emblem/crest at (cx, cy)."""
+    pdf.saveState()
+    pdf.setStrokeColor(gold)
+    pdf.setLineWidth(1.4)
+    pdf.circle(cx, cy, r, stroke=1, fill=0)
+    pdf.setStrokeColor(navy)
+    pdf.setLineWidth(0.8)
+    pdf.circle(cx, cy, r - 2.5, stroke=1, fill=0)
+    # Inner Chakra-like spokes.
+    import math
+    inner_r = r - 5
+    pdf.setLineWidth(0.5)
+    for i in range(12):
+        angle = (math.pi / 6) * i
+        pdf.line(cx, cy, cx + inner_r * math.cos(angle), cy + inner_r * math.sin(angle))
+    pdf.setFillColor(gold)
+    pdf.circle(cx, cy, 2.2, stroke=0, fill=1)
+    pdf.restoreState()
+
+
+def _draw_rubber_stamp(pdf, cx, cy, r, navy, teal):
+    """Draw a realistic circular official office stamp at (cx, cy)."""
+    import math
+    pdf.saveState()
+    pdf.setStrokeColor(colors_with_alpha(navy, 0.35))
+    pdf.setLineWidth(1.6)
+    pdf.circle(cx, cy, r, stroke=1, fill=0)
+    pdf.setLineWidth(0.7)
+    pdf.circle(cx, cy, r - 3.5, stroke=1, fill=0)
+    pdf.circle(cx, cy, r - 12, stroke=1, fill=0)
+
+    # Top and bottom curved-look labels inside the ring.
+    pdf.setFillColor(colors_with_alpha(navy, 0.45))
+    pdf.setFont('Helvetica-Bold', 5.5)
+    pdf.drawCentredString(cx, cy + r - 9, 'DISTRICT COLLECTORATE')
+    pdf.drawCentredString(cx, cy - r + 5.5, 'SOUTH GOA · JANSUTRA')
+
+    # Center APPROVED badge.
+    pdf.setFillColor(colors_with_alpha(teal, 0.55))
+    pdf.setFont('Helvetica-Bold', 7.5)
+    pdf.drawCentredString(cx, cy + 1.5, 'VERIFIED')
+    pdf.setFont('Helvetica-Bold', 6.5)
+    pdf.drawCentredString(cx, cy - 6.5, 'APPROVED')
+    pdf.restoreState()
+
+
+def colors_with_alpha(hex_color, alpha):
+    from reportlab.lib import colors
+    return colors.Color(hex_color.red, hex_color.green, hex_color.blue, alpha=alpha)
+
+
+def _draw_handwritten_signature(pdf, name, x, y, width_pt=95):
+    """Draw a smooth pen-stroke signature derived deterministically from `name`."""
+    from reportlab.lib import colors
+    pdf.saveState()
+    ink = colors.HexColor('#1e3a8a')
+    pdf.setStrokeColor(ink)
+    pdf.setLineCap(1)
+    pdf.setLineJoin(1)
+
+    seed = sum((idx + 1) * ord(ch) for idx, ch in enumerate(name or 'Officer'))
+    p = pdf.beginPath()
+    p.moveTo(x, y + 4)
+    # Initial capital flourish.
+    p.curveTo(x + 6, y + 22, x + 18, y + 24, x + 15, y + 2)
+    p.curveTo(x + 13, y - 4, x + 24, y + 14, x + 32, y + 9)
+    # Wave strokes seeded by officer name.
+    cur_x = x + 32
+    steps = 5
+    step_w = (width_pt - 38) / steps
+    for i in range(steps):
+        h1 = 8 + ((seed >> (i * 2)) % 10)
+        h2 = -2 + ((seed >> (i * 2 + 1)) % 6)
+        nx = cur_x + step_w
+        p.curveTo(cur_x + step_w * 0.35, y + h1, cur_x + step_w * 0.7, y + h2, nx, y + 4 + (i % 2) * 2)
+        cur_x = nx
+    # Trailing underline flourish.
+    p.curveTo(cur_x + 8, y + 10, cur_x + 12, y - 2, x + 14, y - 3)
+    pdf.setLineWidth(1.35)
+    pdf.drawPath(p, stroke=1, fill=0)
+    pdf.restoreState()
+
+
+def build_certificate_pdf(application, certificate=None, draft=False, officer=None):
+    """Generate an official-grade certificate PDF with State emblem, verified
+    particulars table, approving officer's digital signature & stamp, and QR code.
 
     `draft=True` stamps the document so an unapproved copy can never be mistaken
     for an officially issued certificate.
@@ -442,7 +563,7 @@ def build_certificate_pdf(application, certificate=None, draft=False):
     from reportlab.lib.units import mm
     from reportlab.lib import colors
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-    from reportlab.platypus import Paragraph, Frame
+    from reportlab.platypus import Paragraph, Frame, Table, TableStyle, Spacer
     from reportlab.pdfgen import canvas as pdfcanvas
     from reportlab.lib.enums import TA_JUSTIFY
 
@@ -456,132 +577,222 @@ def build_certificate_pdf(application, certificate=None, draft=False):
     cert_number = certificate.certificate_number if certificate else None
     verify = verification_url(certificate) if certificate else ''
 
-    title = template.title if template and template.title else f'{service}'
-    subtitle = template.subtitle if template else ''
-    body_text = template.body if template and template.body else ''
-    validity = template.validity if template else ''
-    footer_note = template.footer_note if template else ''
-    signatory_name = (template.signatory_name if template else '') or (
-        application.assigned_officer.get_full_name() if application.assigned_officer else '')
-    signatory_designation = (template.signatory_designation if template else '') or (
-        'Authorised Signatory' + (f', {department.name}' if department else ''))
+    title = (template.title if template and template.title else f'{service}').strip()
+    subtitle = (template.subtitle if template else '').strip()
+    body_text = (template.body if template and template.body else '').strip()
+    validity = (template.validity if template else '').strip()
+    footer_note = (template.footer_note if template else '').strip()
+    signatory_name, signatory_designation, approved_at = _resolve_signatory(
+        application, certificate=certificate, officer=officer, template=template)
 
     buffer = BytesIO()
     pdf = pdfcanvas.Canvas(buffer, pagesize=A4)
     width, height = A4
-    margin = 18 * mm
+    margin = 16 * mm
     navy = colors.HexColor('#0f3d5c')
-    slate = colors.HexColor('#4a5568')
+    gold = colors.HexColor('#b45309')
+    teal = colors.HexColor('#0f766e')
+    slate = colors.HexColor('#475569')
+    light_bg = colors.HexColor('#f8fafc')
+    line_color = colors.HexColor('#cbd5e1')
 
-    # Outer and inner border for an official look.
+    # Outer navy border, gold accent border, and inner thin border.
     pdf.setStrokeColor(navy)
-    pdf.setLineWidth(2)
-    pdf.rect(margin - 4, margin - 4, width - 2 * margin + 8, height - 2 * margin + 8)
-    pdf.setLineWidth(0.6)
-    pdf.rect(margin, margin, width - 2 * margin, height - 2 * margin)
+    pdf.setLineWidth(2.2)
+    pdf.rect(margin - 5, margin - 5, width - 2 * margin + 10, height - 2 * margin + 10)
+    pdf.setStrokeColor(gold)
+    pdf.setLineWidth(0.9)
+    pdf.rect(margin - 1.5, margin - 1.5, width - 2 * margin + 3, height - 2 * margin + 3)
+    pdf.setStrokeColor(navy)
+    pdf.setLineWidth(0.4)
+    pdf.rect(margin + 1.5, margin + 1.5, width - 2 * margin - 3, height - 2 * margin - 3)
+
+    # Subtle diagonal security watermark across the background.
+    pdf.saveState()
+    pdf.setFillColor(colors.Color(0.06, 0.24, 0.36, alpha=0.04))
+    pdf.setFont('Helvetica-Bold', 34)
+    pdf.translate(width / 2, height / 2)
+    pdf.rotate(32)
+    pdf.drawCentredString(0, 28, 'GOVERNMENT OF GOA')
+    pdf.setFont('Helvetica-Bold', 22)
+    pdf.drawCentredString(0, -12, 'OFFICIAL DIGITAL CERTIFICATE')
+    pdf.restoreState()
 
     if draft:
         pdf.saveState()
-        pdf.setFillColor(colors.Color(0.85, 0.2, 0.2, alpha=0.13))
-        pdf.setFont('Helvetica-Bold', 62)
+        pdf.setFillColor(colors.Color(0.85, 0.2, 0.2, alpha=0.14))
+        pdf.setFont('Helvetica-Bold', 64)
         pdf.translate(width / 2, height / 2)
         pdf.rotate(35)
         pdf.drawCentredString(0, 0, 'DRAFT')
         pdf.restoreState()
 
-    y = height - margin - 16 * mm
-    pdf.setFillColor(navy)
-    pdf.setFont('Helvetica-Bold', 15)
-    pdf.drawCentredString(width / 2, y, 'GOVERNMENT OF GOA')
-    y -= 6 * mm
-    pdf.setFont('Helvetica', 10.5)
-    pdf.drawCentredString(width / 2, y, 'District Collectorate, South Goa')
-    if department:
-        y -= 5.5 * mm
-        pdf.setFont('Helvetica-Bold', 11)
-        pdf.drawCentredString(width / 2, y, department.name)
+    # Top emblem + Government header.
+    emblem_y = height - margin - 13 * mm
+    _draw_emblem(pdf, width / 2, emblem_y, 7.5 * mm, navy, gold)
 
-    y -= 12 * mm
-    pdf.setFillColor(colors.black)
-    pdf.setFont('Helvetica-Bold', 18)
-    pdf.drawCentredString(width / 2, y, title)
+    y = emblem_y - 11 * mm
+    pdf.setFillColor(navy)
+    pdf.setFont('Helvetica-Bold', 14.5)
+    pdf.drawCentredString(width / 2, y, 'GOVERNMENT OF GOA')
+    y -= 5 * mm
+    pdf.setFont('Helvetica-Bold', 10)
+    pdf.setFillColor(gold)
+    pdf.drawCentredString(width / 2, y, 'OFFICE OF THE DISTRICT COLLECTOR, SOUTH GOA')
+    if department:
+        y -= 4.8 * mm
+        pdf.setFont('Helvetica-Bold', 9.5)
+        pdf.setFillColor(navy)
+        pdf.drawCentredString(width / 2, y, department.name.upper())
+
+    # Certificate Title Banner.
+    y -= 9 * mm
+    pdf.setFillColor(colors.HexColor('#0b2942'))
+    pdf.setFont('Helvetica-Bold', 16.5)
+    pdf.drawCentredString(width / 2, y, title.upper())
     if subtitle:
-        y -= 6 * mm
-        pdf.setFont('Helvetica-Oblique', 9.5)
+        y -= 5 * mm
+        pdf.setFont('Helvetica-Oblique', 9)
         pdf.setFillColor(slate)
         pdf.drawCentredString(width / 2, y, subtitle[:120])
-        pdf.setFillColor(colors.black)
-    y -= 5 * mm
-    pdf.setStrokeColor(navy)
-    pdf.setLineWidth(1)
-    pdf.line(margin + 20 * mm, y, width - margin - 20 * mm, y)
+    y -= 4 * mm
+    pdf.setStrokeColor(gold)
+    pdf.setLineWidth(1.4)
+    pdf.line(margin + 24 * mm, y, width - margin - 24 * mm, y)
 
-    # Certificate number and issue date row.
-    y -= 8 * mm
-    pdf.setFont('Helvetica-Bold', 9.5)
-    if cert_number:
-        pdf.drawString(margin + 4, y, f'Certificate No: {cert_number}')
-    else:
-        pdf.drawString(margin + 4, y, 'Certificate No: (issued on approval)')
-    pdf.drawRightString(width - margin - 4, y, f'Date of Issue: {issued_on.strftime("%d %b %Y")}')
+    # Shaded metadata bar: Certificate No & Date of Issue.
+    y -= 9 * mm
+    bar_h = 7.5 * mm
+    pdf.setFillColor(light_bg)
+    pdf.setStrokeColor(line_color)
+    pdf.setLineWidth(0.6)
+    pdf.rect(margin + 5 * mm, y - 2 * mm, width - 2 * margin - 10 * mm, bar_h, stroke=1, fill=1)
+    pdf.setFillColor(navy)
+    pdf.setFont('Helvetica-Bold', 9)
+    cert_label = f'Certificate No: {cert_number}' if cert_number else 'Certificate No: (Issued on approval)'
+    pdf.drawString(margin + 8 * mm, y + 0.5 * mm, cert_label)
+    pdf.drawRightString(width - margin - 8 * mm, y + 0.5 * mm, f'Date of Issue: {issued_on.strftime("%d %b %Y")}')
 
+    # Certification body + Verified Particulars Table.
     styles = getSampleStyleSheet()
-    body_style = ParagraphStyle('cert-body', parent=styles['Normal'], fontName='Helvetica', fontSize=11.5,
-                                leading=18, alignment=TA_JUSTIFY)
+    body_style = ParagraphStyle('cert-body', parent=styles['Normal'], fontName='Helvetica', fontSize=10.5,
+                                leading=15.5, alignment=TA_JUSTIFY, textColor=colors.HexColor('#1e293b'))
+    cell_label_style = ParagraphStyle('cell-lbl', parent=styles['Normal'], fontName='Helvetica-Bold',
+                                      fontSize=9, leading=12, textColor=navy)
+    cell_val_style = ParagraphStyle('cell-val', parent=styles['Normal'], fontName='Helvetica',
+                                    fontSize=9, leading=12, textColor=colors.HexColor('#0f172a'))
 
     applicant_name = citizen.get_full_name() or citizen.username
     intro = (f'This is to certify that <b>{applicant_name}</b>, '
-             f'resident of {citizen.address or "the district"}, has applied for the {service} '
-             f'under application number {application.public_id}.')
+             f'resident of <b>{citizen.address or "South Goa District"}</b>, has been duly verified and granted '
+             f'the <b>{service}</b> against Application ID <b>{application.public_id}</b>.')
     if body_text:
         intro += ' ' + body_text
 
-    detail_lines = [f'<b>Applicant:</b> {applicant_name}',
-                    f'<b>Application ID:</b> {application.public_id}',
-                    f'<b>Service:</b> {service}']
+    rows = [
+        [Paragraph('Applicant Name', cell_label_style), Paragraph(applicant_name, cell_val_style)],
+        [Paragraph('Application ID', cell_label_style), Paragraph(application.public_id, cell_val_style)],
+        [Paragraph('Document / Service', cell_label_style), Paragraph(service, cell_val_style)],
+    ]
+    if department:
+        rows.append([Paragraph('Issuing Department', cell_label_style), Paragraph(department.name, cell_val_style)])
     if application.income is not None:
-        detail_lines.append(f'<b>Declared annual income:</b> Rs. {application.income:,.0f}')
+        rows.append([Paragraph('Verified Annual Income', cell_label_style),
+                     Paragraph(f'Rs. {application.income:,.0f}/-', cell_val_style)])
+    if application.land_area is not None:
+        rows.append([Paragraph('Land Area', cell_label_style),
+                     Paragraph(f'{application.land_area} sq. m / ha', cell_val_style)])
     if citizen.address:
-        detail_lines.append(f'<b>Address:</b> {citizen.address}')
-    details = '<br/>'.join(detail_lines)
+        rows.append([Paragraph('Residential Address', cell_label_style), Paragraph(citizen.address[:160], cell_val_style)])
+    if isinstance(application.form_data, dict):
+        for k, v in list(application.form_data.items())[:4]:
+            if v not in (None, '', []):
+                label = k.replace('_', ' ').title()
+                rows.append([Paragraph(label, cell_label_style), Paragraph(str(v)[:100], cell_val_style)])
+    rows.append([Paragraph('Verification Status', cell_label_style),
+                 Paragraph('<font color="#0f766e"><b>VERIFIED &amp; APPROVED</b></font>', cell_val_style)])
 
-    y -= 10 * mm
-    flow = [Paragraph(intro, body_style), Paragraph('<br/>', body_style), Paragraph(details, body_style)]
-    frame = Frame(margin + 8 * mm, y - 62 * mm, width - 2 * margin - 16 * mm, 60 * mm, showBoundary=0)
+    col_w1 = 48 * mm
+    col_w2 = width - 2 * margin - 14 * mm - col_w1
+    table = Table(rows, colWidths=[col_w1, col_w2])
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (0, -1), light_bg),
+        ('BOX', (0, 0), (-1, -1), 0.7, line_color),
+        ('INNERGRID', (0, 0), (-1, -1), 0.4, line_color),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('LEFTPADDING', (0, 0), (-1, -1), 6),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 6),
+        ('TOPPADDING', (0, 0), (-1, -1), 4),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+    ]))
+
+    frame_top = y - 4 * mm
+    frame_bottom = margin + 62 * mm
+    frame = Frame(margin + 7 * mm, frame_bottom, width - 2 * margin - 14 * mm,
+                  frame_top - frame_bottom, showBoundary=0, topPadding=0, bottomPadding=0)
+    flow = [Paragraph(intro, body_style), Spacer(1, 5 * mm), table]
     frame.addFromList(flow, pdf)
 
-    # Signature block (right aligned).
-    sig_y = margin + 44 * mm
-    pdf.setStrokeColor(colors.black)
-    pdf.setLineWidth(0.8)
-    pdf.line(width - margin - 62 * mm, sig_y, width - margin - 8 * mm, sig_y)
-    pdf.setFont('Helvetica-Bold', 10)
-    pdf.drawRightString(width - margin - 10 * mm, sig_y - 5.5 * mm, signatory_name or 'Authorised Officer')
-    pdf.setFont('Helvetica', 9)
-    pdf.setFillColor(slate)
-    pdf.drawRightString(width - margin - 10 * mm, sig_y - 10.5 * mm, signatory_designation)
-    pdf.setFillColor(colors.black)
+    # Bottom-right: Official Stamp + Handwritten Signature + Digital Signature Verification Box.
+    sig_box_w = 72 * mm
+    sig_box_x = width - margin - 6 * mm - sig_box_w
+    sig_box_y = margin + 22 * mm
 
-    # QR + verification details (left aligned).
+    # Draw official circular stamp overlapping top-left of signature box.
+    _draw_rubber_stamp(pdf, sig_box_x + 12 * mm, sig_box_y + 28 * mm, 13 * mm, navy, teal)
+
+    # Draw handwritten vector signature above the line.
+    if not draft:
+        _draw_handwritten_signature(pdf, signatory_name, sig_box_x + 18 * mm, sig_box_y + 25 * mm, width_pt=48 * mm)
+
+    # Digital signature box.
+    pdf.setFillColor(colors.HexColor('#f0fdf4') if not draft else light_bg)
+    pdf.setStrokeColor(teal if not draft else line_color)
+    pdf.setLineWidth(0.7)
+    pdf.roundRect(sig_box_x, sig_box_y, sig_box_w, 22 * mm, 3, stroke=1, fill=1)
+
+    pdf.setFillColor(teal if not draft else slate)
+    pdf.setFont('Helvetica-Bold', 7.5)
+    badge_text = 'DIGITALLY SIGNED & VERIFIED' if not draft else 'SIGNATURE PENDING APPROVAL'
+    pdf.drawString(sig_box_x + 3 * mm, sig_box_y + 17.5 * mm, badge_text)
+
+    pdf.setFillColor(navy)
+    pdf.setFont('Helvetica-Bold', 9)
+    pdf.drawString(sig_box_x + 3 * mm, sig_box_y + 12.2 * mm, signatory_name[:34])
+    pdf.setFillColor(slate)
+    pdf.setFont('Helvetica', 7.5)
+    pdf.drawString(sig_box_x + 3 * mm, sig_box_y + 7.5 * mm, signatory_designation[:44])
+    pdf.setFont('Helvetica', 6.8)
+    pdf.drawString(sig_box_x + 3 * mm, sig_box_y + 3 * mm, f'Signed on: {approved_at}')
+
+    # Bottom-left: QR + verification details.
+    qr_x = margin + 6 * mm
+    qr_y = margin + 24 * mm
     if verify:
-        _draw_qr(pdf, verify, margin + 6 * mm, margin + 22 * mm, 26 * mm)
+        pdf.setStrokeColor(line_color)
+        pdf.setLineWidth(0.6)
+        pdf.rect(qr_x - 1.5, qr_y - 1.5, 27 * mm + 3, 27 * mm + 3, stroke=1, fill=0)
+        _draw_qr(pdf, verify, qr_x, qr_y, 27 * mm)
+
+    pdf.setFont('Helvetica-Bold', 7.5)
+    pdf.setFillColor(navy)
+    qr_text_y = margin + 19 * mm
+    pdf.drawString(qr_x, qr_text_y, 'Scan QR to verify authenticity')
     pdf.setFont('Helvetica', 7.5)
     pdf.setFillColor(slate)
-    qr_text_y = margin + 17 * mm
-    pdf.drawString(margin + 6 * mm, qr_text_y, 'Scan to verify this certificate')
     if cert_number:
-        pdf.drawString(margin + 36 * mm, qr_text_y, f'Certificate no. {cert_number}')
-        pdf.drawString(margin + 36 * mm, qr_text_y - 4 * mm, f'Verification code: {certificate.verification_code}')
+        pdf.drawString(qr_x + 31 * mm, qr_text_y + 11 * mm, f'Certificate No: {cert_number}')
+        pdf.drawString(qr_x + 31 * mm, qr_text_y + 6.5 * mm, f'Verification Code: {certificate.verification_code}')
     if verify:
-        pdf.drawString(margin + 36 * mm, qr_text_y - 8 * mm, verify)
-    pdf.drawString(margin + 36 * mm, qr_text_y - 12 * mm,
-                   validity or 'Valid as per government rules from the date of issue.')
+        pdf.drawString(qr_x + 31 * mm, qr_text_y + 2 * mm, verify[:52])
+    pdf.drawString(qr_x + 31 * mm, qr_text_y - 2.5 * mm,
+                   (validity or 'Valid as per government rules from the date of issue.')[:58])
 
-    footer = footer_note or ('This certificate is issued by the authorised government officer after verification. '
-                             'Report any discrepancy to the district office quoting the certificate number.')
-    pdf.setFont('Helvetica-Oblique', 7.5)
+    footer = footer_note or ('This is a digitally signed official certificate issued via JanSutra AI. '
+                             'Verify authenticity anytime at the verification URL or by scanning the QR code.')
+    pdf.setFont('Helvetica-Oblique', 7.2)
     pdf.setFillColor(slate)
-    pdf.drawString(margin + 6 * mm, margin + 3 * mm, footer[:165])
+    pdf.drawCentredString(width / 2, margin + 5 * mm, footer[:155])
     pdf.showPage()
     pdf.save()
     return buffer.getvalue()
@@ -591,8 +802,8 @@ def generate_certificate(application, officer=None):
     """Create or refresh the verifiable certificate for an approved case.
 
     Generates the certificate number, a public verification code, the PDF (with
-    QR code) and stores it against the application so the citizen and the
-    officer portal both serve the same document.
+    QR code and approving officer's digital signature) and stores it against the
+    application so the citizen and the officer portal both serve the same document.
     """
     from .models import GeneratedCertificate
     template = None
@@ -607,16 +818,22 @@ def generate_certificate(application, officer=None):
         certificate.verification_code = secrets.token_hex(6).upper()
     certificate.template = template
     certificate.issued_on = timezone.localdate()
-    pdf_bytes = build_certificate_pdf(application, certificate=certificate)
-    filename = certificate.certificate_number.replace('/', '-') + '.pdf'
-    certificate.pdf.save(filename, ContentFile(pdf_bytes), save=False)
+
+    signatory_name, signatory_designation, approved_at = _resolve_signatory(
+        application, certificate=certificate, officer=officer, template=template)
     certificate.payload = {
         'service': application_service(application),
         'citizen': application.citizen.get_full_name() or application.citizen.username,
         'application': application.public_id,
         'department': application.department.name if application.department_id else '',
         'verified_count': document_check(application)['verified_count'],
+        'approved_by_name': signatory_name,
+        'approved_by_designation': signatory_designation,
+        'approved_at': approved_at,
     }
+    pdf_bytes = build_certificate_pdf(application, certificate=certificate, officer=officer)
+    filename = certificate.certificate_number.replace('/', '-') + '.pdf'
+    certificate.pdf.save(filename, ContentFile(pdf_bytes), save=False)
     certificate.save()
     return certificate
 

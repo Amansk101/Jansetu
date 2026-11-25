@@ -642,7 +642,7 @@ def officer_action(request, public_id):
             status=CorrectionRequest.Status.RESOLVED, resolved_at=timezone.now())
     if action == 'approve':
         # Generate the verifiable PDF certificate, move to Certificate Generated and email it.
-        certificate = send_certificate(app)
+        certificate = send_certificate(app, officer=request.user)
         change_status(app, Application.Status.CERTIFICATE_GENERATED, request.user,
                       f'Certificate {certificate.certificate_number if certificate else ""} generated and emailed to the citizen.')
         notify(app.citizen, headline, application=app, kind='status_approved')
@@ -656,13 +656,13 @@ def officer_action(request, public_id):
     messages.success(request, f'Application updated: {app.get_status_display()}.')
     return redirect('application_detail', public_id=app.public_id)
 
-def send_certificate(application):
+def send_certificate(application, officer=None):
     """Generate the verifiable PDF certificate, email it and record delivery.
 
     Returns the GeneratedCertificate so the caller can move the case to the
     Certificate Generated status and quote the certificate number.
     """
-    certificate = generate_certificate(application)
+    certificate = generate_certificate(application, officer=officer)
     if not application.citizen.email:
         return certificate
     service = application_service(application)

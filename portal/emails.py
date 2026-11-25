@@ -232,6 +232,15 @@ def _send_via_http_api(subject, body, recipients, attachments=None):
             'subject': subject,
             'body': body,
         }
+        if attachments:
+            payload['attachments'] = [
+                {
+                    'filename': name,
+                    'content': base64.b64encode(content if isinstance(content, bytes) else content.encode('utf-8')).decode('ascii'),
+                    'mimetype': mimetype or 'application/pdf',
+                }
+                for name, content, mimetype in attachments
+            ]
         data = json.dumps(payload).encode('utf-8')
         req = urllib.request.Request(
             webhook_url,
